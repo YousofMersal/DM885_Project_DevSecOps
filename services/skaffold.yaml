@@ -1,0 +1,9 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: mq-all
+requires:
+  - configs: []
+    path: ./consumer/skaffold.yaml
+  - configs: []
+    path: ./producer/skaffold.yaml

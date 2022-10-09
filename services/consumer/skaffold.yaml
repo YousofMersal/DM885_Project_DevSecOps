@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: consumer
+build:
+  artifacts:
+  - image: consumer
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: consumer-release
+        chartPath: helm
+        namespace: "test-mq"
+        artifactOverrides:
+          image: consumer
+        imageStrategy:
+          helm: {}

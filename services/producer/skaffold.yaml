@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: producer
+build:
+  artifacts:
+  - image: producer
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: producer-release
+        chartPath: helm
+        namespace: "test-mq"
+        artifactOverrides:
+          image: producer
+        imageStrategy:
+          helm: {}

@@ -1,0 +1,9 @@
+.DS_Store
+
+# Node
+node_modules
+
+# Terraform
+*.tfstate*
+.terraform
+*.lock.hcl
