@@ -211,7 +211,7 @@ paths:
                 $ref: '#/components/schemas/Job_result'
       operationId: get-jobs-jobId-result
     post:
-      summary: ''
+      summary: Add job result
       operationId: post-jobs-jobId-result
       responses:
         '200':
@@ -256,8 +256,21 @@ paths:
         '200':
           description: OK
       operationId: post-models
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                content:
+                  type: string
+              required:
+                - name
+                - content
     get:
-      summary: ''
+      summary: List models
       operationId: get-models
       responses:
         '200':
@@ -265,7 +278,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model_info'
       tags:
         - models
   '/models/{modelId}':
@@ -282,6 +297,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model_info'
       operationId: get-models-modelId
     put:
       summary: Update model
@@ -314,12 +333,28 @@ paths:
         '200':
           description: OK
       operationId: post-models-modelId-data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                content:
+                  type: string
     get:
-      summary: ''
+      summary: List data
       operationId: get-models-modelId-data
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Data_info'
       tags:
         - models
   '/models/{modelId}/data/{dataId}':
@@ -341,6 +376,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Data_info'
       operationId: get-models-modelId-data-dataId
     put:
       summary: Update data
@@ -350,6 +389,17 @@ paths:
         '200':
           description: OK
       operationId: put-models-modelId-data-dataId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                content:
+                  type: string
+      description: ''
     delete:
       summary: Delete data
       tags:
@@ -377,6 +427,14 @@ paths:
                   value:
                     - string
       operationId: get-solvers
+    put:
+      summary: Update solvers
+      operationId: put-solvers
+      responses:
+        '200':
+          description: OK
+      tags:
+        - solvers
 components:
   schemas:
     User_create:
@@ -407,6 +465,14 @@ components:
           type: string
         email:
           type: string
+        jobIds:
+          type: array
+          items:
+            type: string
+        modelIds:
+          type: array
+          items:
+            type: string
     Job_info:
       title: Job_info
       x-stoplight:
@@ -423,15 +489,8 @@ components:
           type: string
         dataId:
           type: string
-        options:
-          type: object
-          properties:
-            timeout_ms:
-              type: integer
-            max_memory_mb:
-              type: integer
-            no_of_vcpu:
-              type: integer
+        userId:
+          type: string
       required:
         - solverTypes
         - modelId
@@ -454,11 +513,11 @@ components:
         options:
           type: object
           properties:
-            timeout_ms:
+            timeoutMs:
               type: integer
-            max_memory_mb:
+            maxMemoryMb:
               type: integer
-            no_of_vcpu:
+            noOfVcpu:
               type: integer
     Job_result:
       title: Job_result
@@ -474,4 +533,30 @@ components:
           type: string
         solveTimeMs:
           type: integer
+    Model_info:
+      title: Model_info
+      x-stoplight:
+        id: txnq5kqs4wjas
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        content:
+          type: string
+        userId:
+          type: string
+    Data_info:
+      title: Data_info
+      x-stoplight:
+        id: ilykln96rl0fs
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        content:
+          type: string
 
