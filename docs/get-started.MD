@@ -2,7 +2,7 @@
 
 1. Install Minikube for local development: https://minikube.sigs.k8s.io/docs/start/
 
-2. Minikube needs container/vm environment. Start docker instance.
+2. Minikube needs container/vm environment. If docker already installed on system, run it.
 
 3. Run `minikube start`
 
