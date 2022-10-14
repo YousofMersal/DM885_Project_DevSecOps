@@ -12,7 +12,8 @@ deploy:
     releases:
       - name: producer-release
         chartPath: helm
-        namespace: "test-mq"
+        namespace: "project"
+        createNamespace: true
         artifactOverrides:
           image: producer
         imageStrategy:

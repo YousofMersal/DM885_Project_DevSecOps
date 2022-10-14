@@ -11,8 +11,10 @@ Testing different tools for managing Kubernetes development.
 
 ### How to run it
 
-In the `./terraform/` directory run `terraform apply` to start a RabbitMQ server in Kubernetes.
+- In the `./terraform/` directory run `terraform apply` to start a RabbitMQ server in Kubernetes.
 And potentially other 3rd party services in the future
+- Run `skaffold dev` in the `./services/` directory, this starts up a `consumer` and `producer` service that automatically restarts when files change.
 
-Run `skaffold dev` in the `./services/` directory, this starts up a `consumer` and `producer` service that automatically restarts when files change.
+# External resources
 
+Guide on configuring RabbitMQ for Kubernetes: https://blog.rabbitmq.com/posts/2020/08/deploying-rabbitmq-to-kubernetes-whats-involved/

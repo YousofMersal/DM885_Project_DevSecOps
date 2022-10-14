@@ -12,7 +12,8 @@ deploy:
     releases:
       - name: consumer-release
         chartPath: helm
-        namespace: "test-mq"
+        namespace: "project"
+        createNamespace: true
         artifactOverrides:
           image: consumer
         imageStrategy:

@@ -2,3 +2,6 @@
 image:
   repository: consumer
   tag: "latest"
+
+rabbitmq:
+  user_secrets: "rabbitmq-default-user"

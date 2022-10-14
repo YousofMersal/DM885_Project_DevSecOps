@@ -1,7 +1,13 @@
 import amqp from 'amqplib'
 
+const RABBIT_URL = process.env.RABBIT_URL
+if (!RABBIT_URL) {
+  console.error('Environment variable RABBIT_URL is not set')
+  process.exit(1)
+}
+
 const queue = 'tasks'
-const conn = await amqp.connect('amqp://user:secret@rabbitmq')
+const conn = await amqp.connect(RABBIT_URL)
 
 // Listener
 const ch = await conn.createChannel()
