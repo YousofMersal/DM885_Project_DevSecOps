@@ -101,8 +101,8 @@ paths:
       tags:
         - users
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       operationId: post-users-userId-jobs-cancel
   /users/login:
     post:
@@ -110,8 +110,8 @@ paths:
       tags:
         - users
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       operationId: post-auth-login
       requestBody:
         content:
@@ -130,8 +130,8 @@ paths:
       summary: Logout
       operationId: post-auth-logout
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       tags:
         - users
     parameters: []
@@ -210,14 +210,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Job_result'
       operationId: get-jobs-jobId-result
-    post:
-      summary: Add job result
-      operationId: post-jobs-jobId-result
-      responses:
-        '200':
-          description: OK
-      tags:
-        - jobs
   '/jobs/{jobId}/cancel':
     parameters:
       - schema:
@@ -230,8 +222,8 @@ paths:
       tags:
         - jobs
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
       operationId: post-jobs-jobId-cancel
       requestBody:
         content:
@@ -253,8 +245,8 @@ paths:
       tags:
         - models
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
       operationId: post-models
       requestBody:
         content:
@@ -330,19 +322,14 @@ paths:
       tags:
         - models
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
       operationId: post-models-modelId-data
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                content:
-                  type: string
+              $ref: '#/components/schemas/Data_create'
     get:
       summary: List data
       operationId: get-models-modelId-data
@@ -478,6 +465,14 @@ components:
       x-stoplight:
         id: ln3dyvs5h60g1
       type: object
+      examples:
+        - id: '1'
+          solverTypes:
+            - gecode
+          modelId: '1'
+          dataId: '2'
+          userId: '3'
+          jobStatus: running
       properties:
         id:
           type: string
@@ -491,17 +486,18 @@ components:
           type: string
         userId:
           type: string
-      required:
-        - solverTypes
-        - modelId
+        jobStatus:
+          type: string
+          enum:
+            - waiting
+            - running
+            - finished
     Job_create:
       title: Job_create
       x-stoplight:
         id: ov0zdtn4094u5
       type: object
       properties:
-        id:
-          type: string
         solverTypes:
           type: array
           items:
@@ -510,15 +506,9 @@ components:
           type: string
         dataId:
           type: string
-        options:
-          type: object
-          properties:
-            timeoutMs:
-              type: integer
-            maxMemoryMb:
-              type: integer
-            noOfVcpu:
-              type: integer
+      required:
+        - solverTypes
+        - modelId
     Job_result:
       title: Job_result
       x-stoplight:
@@ -555,8 +545,23 @@ components:
       properties:
         id:
           type: string
+        modelId:
+          type: string
         name:
           type: string
         content:
           type: string
+    Data_create:
+      title: Data_create
+      x-stoplight:
+        id: jkjymnxpuyqf9
+      type: object
+      properties:
+        name:
+          type: string
+        content:
+          type: string
+      required:
+        - name
+        - content
 
