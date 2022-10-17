@@ -22,7 +22,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User_info'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User_info'
             application/xml:
               schema:
                 type: object
@@ -47,11 +49,11 @@ paths:
         '403':
           description: Forbidden
     parameters: []
-  '/users/{userId}':
+  '/users/{username}':
     parameters:
       - schema:
           type: string
-        name: userId
+        name: username
         in: path
         required: true
     get:
@@ -66,15 +68,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/User_info'
               examples: {}
-      operationId: get-users-userId
+      operationId: get-users-username
     delete:
       summary: Delete user
       tags:
         - users
       responses:
-        '200':
-          description: OK
-      operationId: delete-users-userId
+        '204':
+          description: No Content
+      operationId: delete-users-username
     put:
       summary: Update user
       tags:
@@ -82,18 +84,18 @@ paths:
       responses:
         '200':
           description: OK
-      operationId: put-users-userId
+      operationId: put-users-username
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User_create'
         description: ''
-  '/users/{userId}/jobs/cancel':
+  '/users/{username}/jobs/cancel':
     parameters:
       - schema:
           type: string
-        name: userId
+        name: username
         in: path
         required: true
     post:
@@ -103,7 +105,7 @@ paths:
       responses:
         '204':
           description: No Content
-      operationId: post-users-userId-jobs-cancel
+      operationId: post-users-username-jobs-cancel
   /users/login:
     post:
       summary: Login
@@ -188,8 +190,8 @@ paths:
       tags:
         - jobs
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       operationId: delete-jobs-jobId
   '/jobs/{jobId}/result':
     parameters:
@@ -222,8 +224,8 @@ paths:
       tags:
         - jobs
       responses:
-        '201':
-          description: Created
+        '204':
+          description: No Content
       operationId: post-jobs-jobId-cancel
       requestBody:
         content:
@@ -307,8 +309,8 @@ paths:
       tags:
         - models
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       operationId: delete-models-modelId
   '/models/{modelId}/data':
     parameters:
@@ -392,8 +394,8 @@ paths:
       tags:
         - models
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
       operationId: delete-models-modelId-data-dataId
   /solvers:
     get:
@@ -408,20 +410,61 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
-              examples:
-                example-1:
-                  value:
-                    - string
+                  $ref: '#/components/schemas/Solver_info'
       operationId: get-solvers
-    put:
-      summary: Update solvers
-      operationId: put-solvers
+    post:
+      summary: Add solver
+      operationId: post-solvers
+      responses:
+        '201':
+          description: Created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Solver_info'
+      tags:
+        - solvers
+  '/solvers/{solverName}':
+    parameters:
+      - schema:
+          type: string
+        name: solverName
+        in: path
+        required: true
+    get:
+      summary: Get solver
+      tags:
+        - solvers
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Solver_info'
+      operationId: get-solvers-solverId
+    put:
+      summary: Update solver
       tags:
         - solvers
+      responses:
+        '200':
+          description: OK
+      operationId: put-solvers-solverId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Solver_info'
+    delete:
+      summary: Delete solver
+      tags:
+        - solvers
+      responses:
+        '204':
+          description: No Content
+      operationId: delete-solvers-solverId
 components:
   schemas:
     User_create:
@@ -446,8 +489,6 @@ components:
         id: o990xy1y1f5i8
       type: object
       properties:
-        id:
-          type: string
         username:
           type: string
         email:
@@ -471,7 +512,7 @@ components:
             - gecode
           modelId: '1'
           dataId: '2'
-          userId: '3'
+          username: user1
           jobStatus: running
       properties:
         id:
@@ -484,7 +525,7 @@ components:
           type: string
         dataId:
           type: string
-        userId:
+        username:
           type: string
         jobStatus:
           type: string
@@ -535,7 +576,7 @@ components:
           type: string
         content:
           type: string
-        userId:
+        username:
           type: string
     Data_info:
       title: Data_info
@@ -564,4 +605,14 @@ components:
       required:
         - name
         - content
+    Solver_info:
+      title: Solver_info
+      x-stoplight:
+        id: mo37kfa4f9lqq
+      type: object
+      properties:
+        name:
+          type: string
+        containerImage:
+          type: string
 
