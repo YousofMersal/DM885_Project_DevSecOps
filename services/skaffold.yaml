@@ -7,3 +7,5 @@ requires:
     path: ./consumer/skaffold.yaml
   - configs: []
     path: ./producer/skaffold.yaml
+  - configs: []
+    path: ./mzn-controller/skaffold.yaml

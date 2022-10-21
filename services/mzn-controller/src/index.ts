@@ -1,27 +1,99 @@
-import amqp from "amqplib"
+import k8s, { V1Job } from '@kubernetes/client-node'
+import fs from 'fs'
 
-const RABBIT_URL = process.env.RABBIT_URL
-if (!RABBIT_URL) {
-  console.error("Environment variable RABBIT_URL is not set")
-  process.exit(1)
+// kubernetes automatically mounts this file in all Pods by default.
+// the name of the namespace this pod is running in.
+const ns = fs.readFileSync(
+  '/var/run/secrets/kubernetes.io/serviceaccount/namespace',
+  { encoding: 'utf8' }
+)
+
+// automatically load kubernetes API credentials from Pod environment
+const kc = new k8s.KubeConfig()
+kc.loadFromDefault()
+
+const k8sApi = kc.makeApiClient(k8s.CoreV1Api)
+const batchK8sApi = kc.makeApiClient(k8s.BatchV1Api)
+
+// setup watcher for job events, calls callback everytime jobs are created/deleted/modified
+const watch = new k8s.Watch(kc)
+watch.watch(
+  `/apis/batch/v1/namespaces/${ns}/jobs`,
+  {},
+  async (type, apiObj: V1Job, _watchObj) => {
+    // only process MODIFIED events
+    if (type != 'MODIFIED') {
+      return
+    }
+
+    const jobName = apiObj.metadata!.name!
+    const jobFinished = (apiObj.status?.succeeded ?? 0) > 0
+    const jobFailed = (apiObj.status?.failed ?? 0) > 0
+
+    console.log('JOBS CHANGED', type, jobName, apiObj.status)
+
+    if (jobFinished) {
+      console.log('JOB FINISHED', jobName)
+
+      // get the completed Pod associated with the finished job
+      const jobPod = await k8sApi.listNamespacedPod(
+        ns,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        `job-name=${jobName}`
+      )
+
+      const jobPodName = jobPod.body.items.at(0)?.metadata?.name
+      if (!jobPodName) throw 'pod for complete job not found'
+
+      // read the logs of the Pod to get the result of the computation
+      const result = await k8sApi.readNamespacedPodLog(jobPodName, ns)
+      console.log(`JOB result: ${result.body}`)
+    }
+
+    if (jobFailed) {
+      console.log('JOB FAILED', jobName)
+    }
+  },
+  (err) => {
+    console.error('Watch stream closed:', err)
+  }
+)
+
+async function startJob(jobName: string) {
+  // construct a new kubernetes Job object
+  // https://kubernetes.io/docs/concepts/workloads/controllers/job/#running-an-example-job
+
+  const job = new k8s.V1Job()
+  job.apiVersion = 'batch/v1'
+  job.kind = 'Job'
+  job.metadata = {
+    name: `solver-job-${jobName}`,
+  }
+  job.spec = {
+    backoffLimit: 0,
+    ttlSecondsAfterFinished: 5 * 60,
+    template: {
+      spec: {
+        restartPolicy: 'Never',
+        containers: [
+          {
+            name: 'pi',
+            image: 'perl:5.34.0',
+            command: ['perl', '-Mbignum=bpi', '-wle', 'print bpi(2000)'],
+            // command: ['perl', '-wle', 'sleep(2); exit(1)'], // simulate failure
+          },
+        ],
+      },
+    },
+  }
+
+  // send the Job object to the kubernetes API to create it
+  await batchK8sApi.createNamespacedJob(ns, job)
 }
 
-const queue = "tasks"
-const conn = await amqp.connect(RABBIT_URL)
+await startJob('test')
 
-// Listener
-const ch = await conn.createChannel()
-await ch.assertQueue(queue)
-
-setInterval(async () => {
-  await ch.consume(queue, (msg) => {
-    if (msg !== null) {
-      console.log("Recieved:", msg.content.toString())
-      ch.ack(msg)
-    } else {
-      console.log("Consumer cancelled by server")
-    }
-  })
-}, 500)
-
-console.log("Minizinc controller: running")
+console.log('Minizinc controller: running')
