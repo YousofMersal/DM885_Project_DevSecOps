@@ -1,7 +1,8 @@
 .DS_Store
 
 # Node
-node_modules
+node_modules/
+build/
 
 # Terraform
 *.tfstate*

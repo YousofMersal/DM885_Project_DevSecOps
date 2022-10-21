@@ -1,0 +1,34 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: mzn-controller
+build:
+  artifacts:
+  - image: mzn-controller
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      manual:
+        - src: "src/**/*.ts"
+          dest: "."
+deploy:
+  helm:
+    releases:
+      - name: mzn-controller-release
+        chartPath: helm
+        namespace: "project"
+        createNamespace: true
+        artifactOverrides:
+          image: mzn-controller
+        imageStrategy:
+          helm: {}
+profiles:
+  - name: development
+    activation:
+      - kubeContext: minikube
+        command: dev
+    patches:
+      # Use Dockerfile.dev for development profile
+      - op: replace
+        path: /build/artifacts/0/docker/dockerfile
+        value: Dockerfile.dev

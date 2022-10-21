@@ -1,0 +1,7 @@
+
+image:
+  repository: mzn-controller
+  tag: "latest"
+
+rabbitmq:
+  user_secrets: "rabbitmq-default-user"
