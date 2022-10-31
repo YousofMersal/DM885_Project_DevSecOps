@@ -1,7 +1,0 @@
-
-image:
-  repository: producer
-  tag: "latest"
-
-rabbitmq:
-  user_secrets: "rabbitmq-default-user"

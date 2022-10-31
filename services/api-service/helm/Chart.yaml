@@ -1,6 +1,6 @@
 apiVersion: v2
-name: producer
-description: Demo producer
+name: mzn-controller
+description: MiniZinc solver controller
 
 # A chart can be either an 'application' or a 'library' chart.
 #

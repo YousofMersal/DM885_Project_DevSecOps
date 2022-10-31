@@ -62,7 +62,7 @@ watch.watch(
   }
 )
 
-async function startJob(jobName: string) {
+async function startJob() {
   // construct a new kubernetes Job object
   // https://kubernetes.io/docs/concepts/workloads/controllers/job/#running-an-example-job
 
@@ -70,11 +70,11 @@ async function startJob(jobName: string) {
   job.apiVersion = 'batch/v1'
   job.kind = 'Job'
   job.metadata = {
-    name: `solver-job-${jobName}`,
+    name: 'solver-job-test',
   }
   job.spec = {
     backoffLimit: 0,
-    ttlSecondsAfterFinished: 5 * 60,
+    ttlSecondsAfterFinished: 10, // auto-delete after 10 seconds
     template: {
       spec: {
         restartPolicy: 'Never',
@@ -94,6 +94,6 @@ async function startJob(jobName: string) {
   await batchK8sApi.createNamespacedJob(ns, job)
 }
 
-await startJob('test')
+await startJob()
 
 console.log('Minizinc controller: running')

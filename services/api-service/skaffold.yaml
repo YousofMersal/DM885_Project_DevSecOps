@@ -1,10 +1,10 @@
 apiVersion: skaffold/v3alpha1
 kind: Config
 metadata:
-  name: mzn-controller
+  name: api-service
 build:
   artifacts:
-  - image: mzn-controller
+  - image: dev.local/api-service
     docker:
       dockerfile: Dockerfile
     sync:
@@ -14,7 +14,7 @@ build:
 deploy:
   helm:
     releases:
-      - name: mzn-controller-release
+      - name: api-service-release
         chartPath: helm
         namespace: "project"
         createNamespace: true

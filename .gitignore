@@ -8,3 +8,6 @@ build/
 *.tfstate*
 .terraform
 *.lock.hcl
+
+# Skaffold
+.kpt-pipeline/
