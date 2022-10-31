@@ -9,9 +9,13 @@ metadata:
   name: knative-serving
   namespace: knative-serving
 spec:
+  # install the "Kourier" load balancer automatically
   ingress:
     kourier:
       enabled: true
   config:
     network:
       ingress-class: "kourier.ingress.networking.knative.dev"
+    # limit autoscaler to max 10 concurrent instances of each micro service
+    autoscaler:
+      max-scale-limit: "10"

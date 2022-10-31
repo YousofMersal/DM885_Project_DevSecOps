@@ -1,10 +1,10 @@
 apiVersion: skaffold/v3alpha1
 kind: Config
 metadata:
-  name: api-service
+  name: auth-service
 build:
   artifacts:
-  - image: dev.local/api-service
+  - image: dev.local/auth-service
     docker:
       dockerfile: Dockerfile
     sync:
@@ -14,7 +14,7 @@ build:
 deploy:
   helm:
     releases:
-      - name: api-service-release
+      - name: auth-service-release
         chartPath: helm
         namespace: "project"
         createNamespace: true

@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
 })
 
 const server = app.listen(port, () => {
-  console.log(`API service listening on port ${port}`)
+  console.log(`Authentication service listening on port ${port}`)
 })
 
 process.on('SIGTERM', () => {
