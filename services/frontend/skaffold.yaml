@@ -1,0 +1,16 @@
+apiVersion: skaffold/v3alpha1
+kind: Config
+metadata:
+  name: frontend
+build:
+  artifacts:
+  - image: dev.local/frontend
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: frontend-release
+        chartPath: helm
+        namespace: "project"
+        createNamespace: true

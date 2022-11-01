@@ -1,0 +1,13 @@
+.DS_Store
+
+# Node
+node_modules/
+build/
+
+# Terraform
+*.tfstate*
+.terraform
+*.lock.hcl
+
+# Skaffold
+.kpt-pipeline/

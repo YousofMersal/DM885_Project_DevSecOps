@@ -1,0 +1,11 @@
+apiVersion: skaffold/v3alpha1
+kind: Config
+metadata:
+  name: mq-all
+requires:
+  - configs: []
+    path: ./frontend/skaffold.yaml
+  - configs: []
+    path: ./auth-service/skaffold.yaml
+  # - configs: []
+  #   path: ./mzn-controller/skaffold.yaml

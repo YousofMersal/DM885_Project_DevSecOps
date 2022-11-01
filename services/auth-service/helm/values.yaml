@@ -1,0 +1,4 @@
+
+image:
+  repository: dev.local/auth-service
+  tag: "latest"

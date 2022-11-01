@@ -1,0 +1,5 @@
+node_modules/
+helm/
+skaffold.yaml
+Dockerfile
+README.md
