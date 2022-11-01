@@ -4,6 +4,8 @@ metadata:
   name: mq-all
 requires:
   - configs: []
-    path: ./auth-service/skaffold.yaml
+    path: ./frontend/skaffold.yaml
   - configs: []
-    path: ./mzn-controller/skaffold.yaml
+    path: ./auth-service/skaffold.yaml
+  # - configs: []
+  #   path: ./mzn-controller/skaffold.yaml
