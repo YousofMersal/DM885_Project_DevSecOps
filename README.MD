@@ -13,10 +13,24 @@ Testing different tools for managing Kubernetes development.
 
 ### How to run it
 
-- In the `./terraform/` directory run `terraform apply` to start a RabbitMQ server in Kubernetes.
-And potentially other 3rd party services in the future
-- Run `skaffold dev` in the `./services/` directory, this starts up a `consumer` and `producer` service that automatically restarts when files change.
+- Make sure Minikube is running `minikube start`.
+  Then make sure the tunnel is running by running `minikube tunnel` in a separate terminal.
 
-## External resources
+- In the `./terraform/` directory:
+  - run `terraform init`
+  - run `terraform apply` to start 3rd party dependencies
+  - wait for it to completeley finish without errors before proceeding.
 
-Guide on configuring RabbitMQ for Kubernetes: https://blog.rabbitmq.com/posts/2020/08/deploying-rabbitmq-to-kubernetes-whats-involved/
+- Run `skaffold dev` in the `./services/` directory, to build and start all micro services at once.
+  When changes are made to any service, Skaffold will automatically rebuild them.
+
+The project can now be accessed at http://project.127.0.0.1.sslip.io/
+
+### Interacting with the services
+
+The `kubectl` CLI can be used to interact with the local Kubernetes cluster.
+
+- `kubectl get all -A` get an overview of most of the running resources.
+- `kubectl get kservice -n project` get all running Knative services and their exposed URLs.
+- `kubectl get virtualservice -n project` get all Istio VirtualServices (API routes).
+- `kubectl get vs -n project api-service-routes -o yaml` get info about a specific VirtualService.

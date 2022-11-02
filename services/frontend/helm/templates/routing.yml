@@ -9,7 +9,7 @@ spec:
   - knative-serving/knative-ingress-gateway
   # Set host to the domain name that you own.
   hosts:
-  - dev.localhost
+  - project.127.0.0.1.sslip.io
   http:
   - match:
     - uri:
