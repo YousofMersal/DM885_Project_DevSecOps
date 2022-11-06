@@ -1,36 +1,3 @@
 # DM885 Term project
 
-## Current setup / idea
-
-- Use Google's [Skaffold](https://skaffold.dev/) for development of local pods
-- Use Terraform to start all 3rd party services (Message queues, Databases, etc...)
-- Skaffold has a pipeline to build and deploy to Helm charts, and has guides on how to integrate with CI/CD.
-  It also has `profiles` could maybe be used for production and development environments
-
-## Local development
-
-Testing different tools for managing Kubernetes development.
-
-### How to run it
-
-- Make sure Minikube is running `minikube start`.
-  Then make sure the tunnel is running by running `minikube tunnel` in a separate terminal.
-
-- In the `./terraform/` directory:
-  - run `terraform init`
-  - run `terraform apply` to start 3rd party dependencies
-  - wait for it to completeley finish without errors before proceeding.
-
-- Run `skaffold dev` in the `./services/` directory, to build and start all micro services at once.
-  When changes are made to any service, Skaffold will automatically rebuild them.
-
-The project can now be accessed at http://project.127.0.0.1.sslip.io/
-
-### Interacting with the services
-
-The `kubectl` CLI can be used to interact with the local Kubernetes cluster.
-
-- `kubectl get all -A` get an overview of most of the running resources.
-- `kubectl get kservice -n project` get all running Knative services and their exposed URLs.
-- `kubectl get virtualservice -n project` get all Istio VirtualServices (API routes).
-- `kubectl get vs -n project api-service-routes -o yaml` get info about a specific VirtualService.
+## CI testing
