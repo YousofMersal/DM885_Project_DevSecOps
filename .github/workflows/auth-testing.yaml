@@ -35,9 +35,9 @@ jobs:
 
     - name: Build
       run: npm build --if-present
-      working-directory: ./service/auth-service/
+      working-directory: service/auth-service/
 
     # Run the tests
     - name: Test
       run: npm test
-      working-directory: ./service/auth-service/
+      working-directory: service/auth-service/
