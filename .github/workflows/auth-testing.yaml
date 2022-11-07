@@ -33,6 +33,11 @@ jobs:
       run: npm ci
       working-directory: ./services/auth-service
 
+    # Install Mocha
+    - name: InstallMocha
+      run: npm install mocha
+      working-directory: ./services/auth-service
+      
     # Run the tests
     - name: Test
       run: npm test
