@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ Stefan-Danni-auth-testing ]
 
-# only one job  that does the following
+# Only one job  that does the following
 jobs:
   unittest:
     runs-on: ubuntu-latest
@@ -15,12 +15,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    # Download Node.js version 17 for GitHub Actions to run
-    - name: Use Node 17.x
+    # Download and set up Node.js version 17
+    - name: Set up Node 17.x
       uses: actions/setup-node@v3
       with:
         node-version: '17.x'
     
+    
+    # Cache dependencies
     - name: Cache dependencies
       uses: actions/cache@v3
       with:
@@ -28,13 +30,7 @@ jobs:
         key: npm-${{ hashFiles('package-lock.json') }}
         restore-keys: npm-
 
-      
-      # Install Jest
-   # - name: Install Jest
-   #   run: npm install jest
-   #   working-directory: ./services/auth-service
-
-    # Install the required dependencies
+    # Clean install the required dependencies
     - name: Install dependencies
       run: npm ci
       working-directory: ./services/auth-service
