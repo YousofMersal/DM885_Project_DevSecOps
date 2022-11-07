@@ -30,9 +30,9 @@ jobs:
 
       
       # Install Jest
-    - name: Install Jest
-      run: npm install jest
-      working-directory: ./services/auth-service
+   # - name: Install Jest
+   #   run: npm install jest
+   #   working-directory: ./services/auth-service
 
     # Install the required dependencies
     - name: Install dependencies
