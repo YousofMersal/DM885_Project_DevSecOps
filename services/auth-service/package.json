@@ -11,7 +11,7 @@
     "start": "node ./build/index.js",
     "build": "tsc",
     "dev": "nodemon",
-    "test": "tsc --noEmit"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
