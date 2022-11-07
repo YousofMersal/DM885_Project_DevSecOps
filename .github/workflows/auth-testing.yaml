@@ -28,7 +28,6 @@ jobs:
         key: npm-${{ hashFiles('package-lock.json') }}
         restore-keys: npm-
 
-    
       
       # Install Jest
     - name: Install Jest
@@ -36,15 +35,16 @@ jobs:
       working-directory: ./services/auth-service
       
       # Install the required dependencies
-    - name: Install babel-jest
-      run: npm install babel-jest
-      working-directory: ./services/auth-service
-      
-      # Install the required dependencies
+   # - name: Install babel-jest
+   #   run: npm install babel-jest
+   #   working-directory: ./services/auth-service
+
+
+    # Install the required dependencies
     - name: Install dependencies
       run: npm ci
       working-directory: ./services/auth-service
-      
+
     # Run the tests
     - name: Test
       run: npm test
