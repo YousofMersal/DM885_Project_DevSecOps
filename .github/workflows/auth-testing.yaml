@@ -33,10 +33,6 @@ jobs:
       run: npm ci
       working-directory: ./services/auth-service
 
-    - name: Build
-      run: npm build --if-present
-      working-directory: ./services/auth-service
-
     # Run the tests
     - name: Test
       run: npm test
