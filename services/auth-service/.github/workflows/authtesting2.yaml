@@ -1,0 +1,40 @@
+# the unit test file(s) should be placed inside a folder called test in the working directory specified
+name: auth-test
+on:
+  push:
+    branches: [ Stefan-Danni-auth-testing ]
+  pull_request:
+    branches: [ Stefan-Danni-auth-testing ]
+
+# only one job  thgat does the following
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+    # Retrieve the code from our repository
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Download Node.js version 17 for GitHub Actions to run
+    - name: Use Node 17.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: '17.x'
+    
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: npm-${{ hashFiles('package-lock.json') }}
+        restore-keys: npm-
+
+    # Install the required dependencies
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build
+      run: npm build --if-present
+
+    # Run the tests
+    - name: Test
+      run: npm test
