@@ -1,4 +1,4 @@
-import { Navigate } from "@tanstack/react-location";
+import { Link, Navigate } from "@tanstack/react-location";
 import React from "react";
 import { LoginButton } from "../components/LoginButton";
 import { useGlobalState } from "../utils/store";
@@ -15,14 +15,6 @@ export const Login: React.FC = () => {
 
     const form = new FormData(e.currentTarget);
 
-    const username = form.get("username");
-    const password = form.get("password");
-
-    if (!username || !password) {
-      // TODO: show error
-      return;
-    }
-
     try {
       await apiLogin(form);
     } catch (e) {
@@ -35,7 +27,7 @@ export const Login: React.FC = () => {
     <div className="Login">
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
-        <div className="form-container">
+        <div className="container">
           <div>
             <label htmlFor="username">Email</label>
             <input
@@ -57,7 +49,7 @@ export const Login: React.FC = () => {
           <LoginButton />
           <div>
             <p>Not yet a user?</p>
-            <button>Create profile</button>
+            <Link to="/sign-up">Create profile</Link>
           </div>
         </div>
       </form>

@@ -8,7 +8,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
+import { SignUpPage } from "./pages/SignUp";
 import { useGlobalState } from "./utils/store";
+import "./global.css";
 
 const location = new ReactLocation();
 
@@ -40,6 +42,10 @@ const Routes: React.FC = () => {
         {
           path: "/login",
           element: <Login />,
+        },
+        {
+          path: "/sign-up",
+          element: <SignUpPage />,
         },
       ]}
     >

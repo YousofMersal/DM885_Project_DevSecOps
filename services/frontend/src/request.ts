@@ -1,8 +1,17 @@
+import { AuthServiceForm } from "./types";
+
 const apiServiceUrl = "http://auth-service.project.127.0.0.1.sslip.io/api/v1"; // TODO: replace by production URL
 
-export const apiLogin = (formData: FormData) => {
+export const apiSignup = (input: AuthServiceForm) => {
   return request(apiServiceUrl + "/auth", {
-    body: formData,
+    body: JSON.stringify(input),
+    method: "POST",
+  });
+};
+
+export const apiLogin = (input: AuthServiceForm) => {
+  return request(apiServiceUrl + "/auth/login", {
+    body: JSON.stringify(input),
     method: "POST",
   });
 };
