@@ -2,9 +2,9 @@
 name: auth-test
 on:
   push:
-    branches: [ Stefan-Danni-auth-testing ]
+    branches: [ main ]
   pull_request:
-    branches: [ Stefan-Danni-auth-testing ]
+    branches: [ main ]
 
 # Only one job  that does the following
 jobs:
