@@ -1,0 +1,41 @@
+# The unit test file(s) should be placed inside a folder called test in the working directory specified
+name: auth-test
+on:
+  push:
+    branches: [ Stefan-Danni-auth-testing ]
+  pull_request:
+    branches: [ Stefan-Danni-auth-testing ]
+
+# Only one job  that does the following
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+    # Retrieve the code from our repository
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Download and set up Node.js version 17
+    - name: Set up Node 17.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: '17.x'
+    
+    
+    # Cache dependencies
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: npm-${{ hashFiles('package-lock.json') }}
+        restore-keys: npm-
+
+    # Clean install the required dependencies
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./services/auth-service
+
+    # Run the tests
+    - name: Test
+      run: npm test
+      working-directory: ./services/auth-service
