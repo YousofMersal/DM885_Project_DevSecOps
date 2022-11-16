@@ -97,3 +97,19 @@ async function startJob() {
 await startJob()
 
 console.log('Minizinc controller: running')
+
+registerGracefulExit()
+function registerGracefulExit() {
+  const exit = () => {
+    process.stdout.write(`shutting down gracefully...\n`)
+    process.exit()
+  }
+
+  process.on('exit', exit)
+  //catches ctrl+c event
+  process.on('SIGINT', exit)
+  process.on('SIGTERM', exit)
+  // catches 'kill pid' (for example: nodemon restart)
+  process.on('SIGUSR1', exit)
+  process.on('SIGUSR2', exit)
+}

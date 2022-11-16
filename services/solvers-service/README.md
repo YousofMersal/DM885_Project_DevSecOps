@@ -1,4 +1,22 @@
-# Minizinc solver controller service
+# Solvers service
+
+This micro service is responsible for handling the part of the REST API that handles the following:
+
+- Creating, deleting, updating MiniZinc models and datafiles (.mzn, .dzn files)
+- Starting, stopping, monitoring solver jobs
+- Getting results of completed solver jobs
+- Adding, removing solver images
+
+## General architecture
+
+This service consists of a web server that serves a REST API.
+It is connected to a database that stores info about jobs, models and solvers.
+It uses the Kubernetes API to start new `Jobs` inside Kubernetes which runs the actual solvers
+It receives Knative ApiServerSource events,[^1] when the `Jobs` status change and updates the database state accordingly.
+
+[^1]: https://knative.dev/docs/eventing/sources/apiserversource/
+
+# Further Documentation
 
 This service is responsible for starting the solver jobs and handling completion and failures
 
