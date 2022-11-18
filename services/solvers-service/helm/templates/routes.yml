@@ -13,7 +13,11 @@ spec:
   http:
   - match:
     - uri:
-        prefix: "/api/v1/auth"
+        prefix: "/api/v1/jobs"
+    - uri:
+        prefix: "/api/v1/models"
+    - uri:
+        prefix: "/api/v1/solvers"
     rewrite:
       # Rewrite the original host header to the host header of Search service
       # in order to redirect requests to Search service.

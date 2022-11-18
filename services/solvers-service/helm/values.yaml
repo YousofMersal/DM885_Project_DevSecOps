@@ -1,4 +1,5 @@
-
 image:
-  repository: mzn-controller
+  repository: dev.local/solvers-service
   tag: "latest"
+
+projectDomain: project.127.0.0.1.sslip.io

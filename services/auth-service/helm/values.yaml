@@ -1,4 +1,5 @@
-
 image:
   repository: dev.local/auth-service
   tag: "latest"
+
+projectDomain: project.127.0.0.1.sslip.io

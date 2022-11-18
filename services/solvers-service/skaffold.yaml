@@ -1,29 +1,18 @@
 apiVersion: skaffold/v3alpha1
 kind: Config
 metadata:
-  name: mzn-controller
+  name: solvers-service
 build:
   artifacts:
-  - image: mzn-controller
+  - image: dev.local/solvers-service
     docker:
       dockerfile: Dockerfile
-    sync:
-      manual:
-        - src: "src/**/*.ts"
-          dest: "."
 deploy:
   helm:
     releases:
-      - name: mzn-controller-release
+      - name: solvers-service-release
         chartPath: helm
         namespace: "project"
         createNamespace: true
-profiles:
-  - name: development
-    activation:
-      - command: dev
-    patches:
-      # Use Dockerfile.dev for development profile
-      - op: replace
-        path: /build/artifacts/0/docker/dockerfile
-        value: Dockerfile.dev
+        setValueTemplates:
+          projectDomain: "{{.PROJECT_DOMAIN}}"
