@@ -1,6 +1,9 @@
 import startRestAPI from './api/restApi.js'
+import { configureK8sClient } from './jobs/k8s-client.js'
 
-const server = startRestAPI()
+const k8sClient = await configureK8sClient()
+
+const server = startRestAPI(k8sClient)
 
 registerGracefulExit()
 function registerGracefulExit() {

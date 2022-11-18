@@ -6,7 +6,8 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: "{{ .Chart.Name }}-serviceaccount"
       containers:
-      - image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
-        ports:
-        - containerPort: 8080
+        - image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          ports:
+            - containerPort: 8080
