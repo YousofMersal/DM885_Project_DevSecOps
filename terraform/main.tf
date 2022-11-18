@@ -23,6 +23,13 @@ provider "kubectl" {
   config_path = "~/.kube/config"
 }
 
+resource "helm_release" "solvers-postgres" {
+  name       = "solvers-postgres"     
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "postgresql"
+
+}
+
 # istio service mesh used by knative
 resource "helm_release" "istio-base" {
   name       = "istio"
