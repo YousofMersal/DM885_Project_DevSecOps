@@ -59,10 +59,13 @@ resource "helm_release" "istio-ingressgateway" {
   create_namespace = true
 }
 
+# https://registry.terraform.io/providers/gavinbunney/kubectl/latest/docs/data-sources/kubectl_path_documents
+# enable ease of splitting multi-document yaml content, from a collection of matching files
 data "kubectl_path_documents" "knative-yamls" {
   pattern = "./knative/*.yaml"
 }
 
+# "kubectl_manifest" - Create a Kubernetes resource using raw YAML manifests.
 resource "kubectl_manifest" "knative-operator" {
   depends_on = [
     helm_release.istio-discovery,
@@ -71,4 +74,12 @@ resource "kubectl_manifest" "knative-operator" {
 
   for_each  = toset(data.kubectl_path_documents.knative-yamls.documents)
   yaml_body = each.value
+}
+
+resource "helm_release" "prometheus" {
+
+  name = "prometheus"
+  chart = "kube-prometheus-stack"
+  repository = "https://prometheus-community.github.io/helm-charts"
+
 }
