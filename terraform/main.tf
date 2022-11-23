@@ -27,7 +27,8 @@ resource "helm_release" "solvers-postgres" {
   name       = "solvers-postgres"     
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "postgresql"
-
+  namespace  = "project"
+  create_namespace = true
 }
 
 # istio service mesh used by knative
