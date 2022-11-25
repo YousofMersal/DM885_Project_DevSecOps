@@ -1,15 +1,24 @@
-name: Pipeline
+name: Skaffold
 on: [push]
 
 jobs:
-  pipeline:
-    name: Skaffold Docker build
-    runs-on: ubuntu-20.04
+  build:
+    name: Build
+    runs-on: ubuntu-latest
     steps:
-      - name: Build Docker images
-        uses: hiberbee/github-action-skaffold@1.20.0
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to container registry
+        uses: docker/login-action@v2
         with:
-          command: build
-          repository: ghcr.io/yousofmersal/dm885_project_devsecops
-          image: nodejs
-          tag: ${{ github.sha }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Skaffold
+        run: curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install /tmp/skaffold /usr/local/bin/
+
+      - name: Run Skaffold build
+        run: skaffold build -p production
+        working-directory: ./services/auth-service
