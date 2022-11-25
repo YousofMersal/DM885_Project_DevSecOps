@@ -23,6 +23,6 @@ jobs:
       - name: Install Skaffold
         run: curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install /tmp/skaffold /usr/local/bin/
 
-      - name: Run Skaffold build
+      - name: Run Skaffold build (production)
         run: skaffold build -p production
         working-directory: ./services/auth-service
