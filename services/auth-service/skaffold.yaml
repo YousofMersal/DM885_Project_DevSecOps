@@ -27,3 +27,10 @@ deploy:
 #       - op: replace
 #         path: /build/artifacts/0/docker/dockerfile
 #         value: Dockerfile.dev
+profiles:
+  - name: production
+    build:
+      tagPolicy:
+        gitCommit: {}
+      artifacts:
+      - image: ghcr.io/yousofmersal/dm885_auth-service
