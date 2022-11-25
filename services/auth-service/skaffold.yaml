@@ -16,3 +16,11 @@ deploy:
         createNamespace: true
         setValueTemplates:
           projectDomain: "{{.PROJECT_DOMAIN}}"
+
+profiles:
+  - name: production
+    build:
+      tagPolicy:
+        gitCommit: {}
+      artifacts:
+      - image: ghcr.io/yousofmersal/dm885_auth-service
