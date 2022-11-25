@@ -32,7 +32,7 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="form-container center">
+    <div className="center">
       <form onSubmit={handleSubmit}>
         <h1>Login</h1>
         <div className="container">

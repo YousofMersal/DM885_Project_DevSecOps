@@ -29,7 +29,7 @@ export const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="form-container center">
+    <div className="center">
       <h1>Sign up</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Email (username)</label>
