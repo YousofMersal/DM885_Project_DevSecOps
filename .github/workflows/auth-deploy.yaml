@@ -1,5 +1,9 @@
-name: Skaffold
-on: [push]
+name: auth-deployment
+on:
+  push:
+    paths:
+      - src/services/auth-service/**
+      - .github/workflows/auth-deployment.yml
 
 jobs:
   build:
