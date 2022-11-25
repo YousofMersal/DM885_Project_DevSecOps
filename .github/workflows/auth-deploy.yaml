@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - services/auth-service/**
-      - .github/workflows/auth-deploy.yml
+      - .github/workflows/auth-deploy.yaml
 
 jobs:
   build:
