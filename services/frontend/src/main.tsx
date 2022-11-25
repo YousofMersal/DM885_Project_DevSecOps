@@ -11,6 +11,9 @@ import { Login } from "./pages/Login";
 import { SignUpPage } from "./pages/SignUp";
 import { useGlobalState } from "./utils/store";
 import "./global.css";
+import { Layout } from "./components/Layout";
+import { Container } from "./components/Container";
+import { SolverConfiguration } from "./pages/SolverConfiguration";
 
 const location = new ReactLocation();
 
@@ -35,17 +38,37 @@ const Routes: React.FC = () => {
           path: "/",
           element: (
             <ProtectedRoute>
-              <Home />
+              <Layout>
+                <Home />
+              </Layout>
             </ProtectedRoute>
           ),
         },
         {
           path: "/login",
-          element: <Login />,
+          element: (
+            <Container>
+              <Login />
+            </Container>
+          ),
         },
         {
           path: "/sign-up",
-          element: <SignUpPage />,
+          element: (
+            <Container>
+              <SignUpPage />
+            </Container>
+          ),
+        },
+        {
+          path: "/solver-config",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <SolverConfiguration />
+              </Layout>
+            </ProtectedRoute>
+          ),
         },
       ]}
     >
