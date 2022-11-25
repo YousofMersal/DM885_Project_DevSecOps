@@ -4,10 +4,10 @@ on: [push]
 jobs:
   pipeline:
     name: Skaffold Docker build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Build Docker images
-        uses: hiberbee/github-action-skaffold@1.24.0
+        uses: hiberbee/github-action-skaffold@1.20.0
         with:
           command: build
           repository: ghcr.io/yousofmersal/dm885_project_devsecops
