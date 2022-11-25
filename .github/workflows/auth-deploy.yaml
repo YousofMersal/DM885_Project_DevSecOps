@@ -1,0 +1,15 @@
+name: Pipeline
+on: [push]
+
+jobs:
+  pipeline:
+    name: Skaffold Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Docker images
+        uses: hiberbee/github-action-skaffold@1.24.0
+        with:
+          command: build
+          repository: ghcr.io/yousofmersal/dm885_project_devsecops
+          image: nodejs
+          tag: ${{ github.sha }}
