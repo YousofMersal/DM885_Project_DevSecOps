@@ -1,0 +1,18 @@
+apiVersion: skaffold/v3alpha1
+kind: Config
+metadata:
+  name: solvers-service
+build:
+  artifacts:
+  - image: dev.local/solvers-service
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: solvers-service-release
+        chartPath: helm
+        namespace: "project"
+        createNamespace: true
+        setValueTemplates:
+          projectDomain: "{{.PROJECT_DOMAIN}}"

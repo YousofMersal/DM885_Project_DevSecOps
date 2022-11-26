@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: api-service-routes
+  name: "{{ .Chart.Name }}-routes"
   namespace: {{.Release.Namespace}}
 spec:
   # This is the gateway shared in knative service mesh.
@@ -9,7 +9,7 @@ spec:
   - knative-serving/knative-ingress-gateway
   # Set host to the domain name that you own.
   hosts:
-  - project.127.0.0.1.sslip.io
+  - {{ .Values.projectDomain }}
   http:
   - match:
     - uri:
@@ -17,7 +17,7 @@ spec:
     rewrite:
       # Rewrite the original host header to the host header of Search service
       # in order to redirect requests to Search service.
-      authority: auth-service.project.127.0.0.1.sslip.io
+      authority: "{{ .Chart.Name }}.{{ .Values.projectDomain }}"
     route:
       # Basically here we redirect the request to the cluster entry again with
       # updated header "search-service.default.example.com" so the request will
