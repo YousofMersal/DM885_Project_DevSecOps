@@ -5,8 +5,9 @@ import os from 'os'
 import jobsRoute from './jobsRoute.js'
 import solversRoute from './solversRoute.js'
 import modelsRoute from './modelsRoute.js'
+import type { Client } from 'pg'
 
-function startRestAPI(k8sClient: K8sClient) {
+function startRestAPI(k8sClient: K8sClient, db: Client) {
   const app = express()
   const port = process.env.PORT || 8080
 

@@ -7,23 +7,4 @@ spec:
   template:
     spec:
       containers:
-      - image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
-        env:
-        - name: PGHOST
-          value: "solvers-postgres-postgresql.project.svc.cluster.local"
-
-        - name: PGDATABASE
-          value: "postgres"
-
-        - name: PGUSER
-          value: "postgres"
-
-        - name: PGPASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: solvers-postgres-postgresql
-              key: postgres-password
-              optional: false
-
-        - name: PGPORT
-          value: "5432"
+        - image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
