@@ -15,6 +15,7 @@ import { Layout } from "./components/Layout";
 import { Container } from "./components/Container";
 import { SolverConfiguration } from "./pages/SolverConfiguration";
 import { Users } from "./pages/Users";
+import { ProblemPage } from "./pages/ProblemPage";
 
 const location = new ReactLocation();
 
@@ -46,6 +47,16 @@ const Routes: React.FC = () => {
             <ProtectedRoute>
               <Layout>
                 <Home />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/problems/:id",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <ProblemPage />
               </Layout>
             </ProtectedRoute>
           ),

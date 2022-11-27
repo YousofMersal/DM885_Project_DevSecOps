@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-location";
 import React, { useState } from "react";
 import { UploadProblemDialog } from "../components/UploadProblemDialog";
 
@@ -45,7 +46,7 @@ export const Home: React.FC = () => {
             width: "auto",
           }}
         >
-          Create new model
+          New optimization problem
         </button>
       </div>
       <table>
@@ -55,6 +56,7 @@ export const Home: React.FC = () => {
             <th>Name</th>
             <th>Model</th>
             <th>Data</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -72,6 +74,9 @@ export const Home: React.FC = () => {
                   background: problem.dzn ? "green" : undefined,
                 }}
               ></td>
+              <td>
+                <Link to={`/problems/${problem.id}`}>View</Link>
+              </td>
             </tr>
           ))}
         </tbody>
