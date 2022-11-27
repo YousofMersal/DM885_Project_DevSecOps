@@ -8,7 +8,7 @@ interface ILayoutProps {
 }
 
 export const Layout: React.FC<ILayoutProps> = ({ children }) => {
-  const { setLoggedInState } = useGlobalState();
+  const { logout, user } = useGlobalState();
 
   return (
     <div>
@@ -16,15 +16,11 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
         <span>Frontend</span>
         <div className="nav-items">
           <Link to="/">Home</Link>
-          <Link to="/solver-config">Configuration</Link>
+          {user?.role === "admin" && <Link to="/solver-config">Solvers</Link>}
+          {user?.role === "admin" && <Link to="/users">Users</Link>}
         </div>
         <div style={{ flex: 1 }} />
-        <Link
-          to="/login"
-          onClick={() => {
-            setLoggedInState(false);
-          }}
-        >
+        <Link to="/login" onClick={logout}>
           Log out
         </Link>
       </header>

@@ -14,16 +14,23 @@ import "./global.css";
 import { Layout } from "./components/Layout";
 import { Container } from "./components/Container";
 import { SolverConfiguration } from "./pages/SolverConfiguration";
+import { Users } from "./pages/Users";
+import { ProblemPage } from "./pages/ProblemPage";
 
 const location = new ReactLocation();
 
-const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
-  children,
-}) => {
-  const { isLoggedIn } = useGlobalState();
+const ProtectedRoute: React.FC<{
+  children: React.ReactElement;
+  isAdminRoute?: boolean;
+}> = ({ children, isAdminRoute }) => {
+  const { isLoggedIn, user } = useGlobalState();
 
   if (!isLoggedIn) {
     return <Navigate to={"/login "} />;
+  }
+
+  if (isAdminRoute && user?.role !== "admin") {
+    return <Navigate to="/" />;
   }
 
   return children;
@@ -40,6 +47,16 @@ const Routes: React.FC = () => {
             <ProtectedRoute>
               <Layout>
                 <Home />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/problems/:id",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <ProblemPage />
               </Layout>
             </ProtectedRoute>
           ),
@@ -63,9 +80,19 @@ const Routes: React.FC = () => {
         {
           path: "/solver-config",
           element: (
-            <ProtectedRoute>
+            <ProtectedRoute isAdminRoute={true}>
               <Layout>
                 <SolverConfiguration />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/users",
+          element: (
+            <ProtectedRoute isAdminRoute={true}>
+              <Layout>
+                <Users />
               </Layout>
             </ProtectedRoute>
           ),
