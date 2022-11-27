@@ -11,11 +11,19 @@ spec:
         env:
         - name: PGHOST
           value: "solvers-postgres-postgresql.project.svc.cluster.local"
+
         - name: PGDATABASE
-          value: "solver-db"
+          value: "postgres"
+
         - name: PGUSER
-          value: "user"
+          value: "postgres"
+
         - name: PGPASSWORD
-          value: "password"
+          valueFrom:
+            secretKeyRef:
+              name: solvers-postgres-postgresql
+              key: postgres-password
+              optional: false
+
         - name: PGPORT
           value: "5432"
