@@ -1,0 +1,14 @@
+.LoginButton {
+  background-color: blueviolet;
+  color: white;
+}
+
+.OutlinedButton {
+  background: transparent;
+  color: var(--primary);
+}
+
+.OutlinedButton:hover {
+  background-color: var(--primary-hover);
+  color: white;
+}

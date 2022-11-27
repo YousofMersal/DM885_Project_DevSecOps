@@ -1,29 +1,32 @@
 import React, { useState } from "react";
-import { CreateInstanceDialog } from "../components/CreateInstanceDialog";
+import { UploadProblemDialog } from "../components/UploadProblemDialog";
 
 type Instance = {
   id: number;
   name: string;
-  type: "mzn" | "dzn";
+  mzn: string;
+  dzn?: string;
 };
 
 export const Home: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [instances, setInstances] = useState<Instance[]>([
+  const [problems, setProblems] = useState<Instance[]>([
     {
       id: 1,
       name: "Cool",
-      type: "mzn",
+      mzn: "Cool",
+      dzn: "mzn",
     },
     {
       id: 2,
-      name: "Cool 2",
-      type: "dzn",
+      name: "Cool",
+      mzn: "Cool 2",
+      dzn: "dzn",
     },
     {
       id: 3,
-      name: "Cool test",
-      type: "mzn",
+      name: "Cool",
+      mzn: "Cool test",
     },
   ]);
 
@@ -42,7 +45,7 @@ export const Home: React.FC = () => {
             width: "auto",
           }}
         >
-          Create new instance
+          Create new model
         </button>
       </div>
       <table>
@@ -50,22 +53,30 @@ export const Home: React.FC = () => {
           <tr>
             <th>Id</th>
             <th>Name</th>
-            <th>Type</th>
-            <th></th>
+            <th>Model</th>
+            <th>Data</th>
           </tr>
         </thead>
         <tbody>
-          {instances.map((instance) => (
-            <tr key={instance.id}>
-              <td>{instance.id}</td>
-              <td>{instance.name}</td>
-              <td>{instance.type}</td>
-              <td></td>
+          {problems.map((problem) => (
+            <tr key={problem.id}>
+              <td>{problem.id}</td>
+              <td>{problem.name}</td>
+              <td
+                style={{
+                  background: problem.mzn ? "green" : undefined,
+                }}
+              ></td>
+              <td
+                style={{
+                  background: problem.dzn ? "green" : undefined,
+                }}
+              ></td>
             </tr>
           ))}
         </tbody>
       </table>
-      <CreateInstanceDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <UploadProblemDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
 };
