@@ -1,4 +1,5 @@
 import express from 'express'
+import {Client} from 'pg'
 
 const app = express()
 const port = process.env.PORT || 8080
@@ -6,6 +7,31 @@ const port = process.env.PORT || 8080
 app.get('/api/v1/auth', (req, res) => {
   res.send('This is the API service')
 })
+
+app.get('/api/v1/try', (req, res) => {
+  const client = new Client();
+
+  const createDatabase = async () => {
+    try {
+        await client.connect();                            // gets connection
+      //  await client.query('CREATE DATABASE solver-db');  // sends queries
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    } finally {
+        await client.end();                                // closes connection
+    }
+  };
+
+  createDatabase().then((result) => {
+    if (result) {
+        res.send('Database created')
+    }
+  });
+
+})
+
 
 const server = app.listen(port, () => {
   console.log(`Authentication service listening on port ${port}`)

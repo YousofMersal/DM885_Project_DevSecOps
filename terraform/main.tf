@@ -29,6 +29,21 @@ resource "helm_release" "solvers-postgres" {
   chart      = "postgresql"
   namespace  = "project"
   create_namespace = true
+
+  set {
+    name  = "global.postgresql.auth.username"
+    value = "user"
+  }
+
+  set {
+    name  = "global.postgresql.auth.password"
+    value = "password"
+  }
+
+  set {
+    name  = "global.postgresql.auth.database"
+    value = "solver-db"
+  }
 }
 
 # istio service mesh used by knative
