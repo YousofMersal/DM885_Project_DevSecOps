@@ -12,7 +12,7 @@ function startRestAPI(k8sClient: K8sClient, db: Client) {
   const port = process.env.PORT || 8080
 
   app.use('/api/v1/jobs', jobsRoute(k8sClient))
-  app.use('/api/v1/solvers', solversRoute())
+  app.use('/api/v1/solvers', solversRoute(db))
   app.use('/api/v1/models', modelsRoute())
 
   const server = app.listen(port, () => {
