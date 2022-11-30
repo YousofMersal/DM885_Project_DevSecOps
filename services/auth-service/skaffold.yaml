@@ -4,7 +4,7 @@ metadata:
   name: auth-service
 build:
   artifacts:
-  - image: dev.local/auth-service
+  - image: ghcr.io/yousofmersal/dm885_auth-service
     docker:
       dockerfile: Dockerfile
     # sync:

@@ -1,4 +1,4 @@
 
 image:
-  repository: dev.local/auth-service
+  repository: ghcr.io/yousofmersal/dm885_auth-service
   tag: "latest"
