@@ -1,10 +1,11 @@
 import express from 'express'
+import type { Client } from 'pg'
 
-export default () => {
+export default (db: Client) => {
   const jobs = express.Router()
 
-  jobs.get('*', (req, res) => {
-    res.send(`Solvers service /solvers: ${req.path}`)
+  jobs.get('/', async (req, res) => {
+    res.send('Solvers here')
   })
 
   return jobs
