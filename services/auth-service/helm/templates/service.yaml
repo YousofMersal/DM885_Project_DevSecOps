@@ -7,4 +7,4 @@ spec:
   template:
     spec:
       containers:
-      - image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+        - image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
