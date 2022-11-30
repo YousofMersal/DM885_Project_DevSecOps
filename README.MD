@@ -1,6 +1,6 @@
-# DM885 Term project
+# DM885 MiniZinc solver service DevOps
 
-## Current setup / idea
+## General project structure
 
 - Use Google's [Skaffold](https://skaffold.dev/) for development of local pods
 - Use Terraform to start all 3rd party services (Message queues, Databases, etc...)
@@ -20,6 +20,14 @@ Testing different tools for managing Kubernetes development.
   - run `terraform init`
   - run `terraform apply` to start 3rd party dependencies
   - wait for it to completeley finish without errors before proceeding.
+
+- Before starting the local services set the `PROJECT_DOMAIN` environment variable appropriateley.
+  For local development, this should be something like `project.127.0.0.1.sslip.io`, but with the external IP of the Istio Loadbalancer.
+
+  This can be configured with this one-liner:
+  ```
+  export PROJECT_DOMAIN=$(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath="project.{.status.loadBalancer.ingress[0].ip}.sslip.io")
+  ```
 
 - Run `skaffold dev` in the `./services/` directory, to build and start all micro services at once.
   When changes are made to any service, Skaffold will automatically rebuild them.

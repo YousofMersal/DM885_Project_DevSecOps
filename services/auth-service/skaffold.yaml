@@ -7,10 +7,6 @@ build:
   - image: ghcr.io/yousofmersal/dm885_auth-service
     docker:
       dockerfile: Dockerfile
-    # sync:
-    #   manual:
-    #     - src: "src/**/*.ts"
-    #       dest: "."
 deploy:
   helm:
     releases:
@@ -18,15 +14,9 @@ deploy:
         chartPath: helm
         namespace: "project"
         createNamespace: true
-# profiles:
-#   - name: development
-#     activation:
-#       - command: dev
-#     patches:
-#       # Use Dockerfile.dev for development profile
-#       - op: replace
-#         path: /build/artifacts/0/docker/dockerfile
-#         value: Dockerfile.dev
+        setValueTemplates:
+          projectDomain: "{{.PROJECT_DOMAIN}}"
+
 profiles:
   - name: production
     build:

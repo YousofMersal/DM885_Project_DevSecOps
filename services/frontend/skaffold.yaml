@@ -14,3 +14,5 @@ deploy:
         chartPath: helm
         namespace: "project"
         createNamespace: true
+        setValueTemplates:
+          projectDomain: "{{.PROJECT_DOMAIN}}"

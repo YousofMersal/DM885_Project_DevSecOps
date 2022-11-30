@@ -2,10 +2,10 @@ FROM node AS builder
 
 WORKDIR /app
 
-COPY ./package*.json .
+COPY ./package*.json ./
 RUN npm install
 
-COPY . .
+COPY . ./
 RUN npm run build
 
 # Serve static files from small container
@@ -13,5 +13,5 @@ FROM nginx
 
 WORKDIR /usr/share/nginx/html
 
-COPY --from=builder /app/dist .
+COPY --from=builder /app/dist ./
 
