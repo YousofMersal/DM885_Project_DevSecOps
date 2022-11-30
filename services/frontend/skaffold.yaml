@@ -4,7 +4,7 @@ metadata:
   name: frontend
 build:
   artifacts:
-  - image: ghcr.io/yousofmersal/dm885_frontend-service
+  - image: ghcr.io/yousofmersal/dm885_frontend
     docker:
       dockerfile: Dockerfile
 deploy:
@@ -16,3 +16,11 @@ deploy:
         createNamespace: true
         setValueTemplates:
           projectDomain: "{{.PROJECT_DOMAIN}}"
+
+profiles:
+  - name: production
+    build:
+      tagPolicy:
+        gitCommit: {}
+      artifacts:
+      - image: ghcr.io/yousofmersal/dm885_frontend
