@@ -1,4 +1,4 @@
 
 image:
-  repository: dev.local/frontend
+  repository: ghcr.io/yousofmersal/dm885_frontend-service
   tag: "latest"

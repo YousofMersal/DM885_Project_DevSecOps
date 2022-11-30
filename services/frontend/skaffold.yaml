@@ -4,7 +4,7 @@ metadata:
   name: frontend
 build:
   artifacts:
-  - image: dev.local/frontend
+  - image: ghcr.io/yousofmersal/dm885_frontend-service
     docker:
       dockerfile: Dockerfile
 deploy:
