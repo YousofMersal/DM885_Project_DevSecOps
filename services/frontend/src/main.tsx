@@ -11,16 +11,26 @@ import { Login } from "./pages/Login";
 import { SignUpPage } from "./pages/SignUp";
 import { useGlobalState } from "./utils/store";
 import "./global.css";
+import { Layout } from "./components/Layout";
+import { Container } from "./components/Container";
+import { SolverConfiguration } from "./pages/SolverConfiguration";
+import { Users } from "./pages/Users";
+import { ProblemPage } from "./pages/ProblemPage";
 
 const location = new ReactLocation();
 
-const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
-  children,
-}) => {
-  const { isLoggedIn } = useGlobalState();
+const ProtectedRoute: React.FC<{
+  children: React.ReactElement;
+  isAdminRoute?: boolean;
+}> = ({ children, isAdminRoute }) => {
+  const { isLoggedIn, user } = useGlobalState();
 
   if (!isLoggedIn) {
     return <Navigate to={"/login "} />;
+  }
+
+  if (isAdminRoute && user?.role !== "admin") {
+    return <Navigate to="/" />;
   }
 
   return children;
@@ -35,17 +45,57 @@ const Routes: React.FC = () => {
           path: "/",
           element: (
             <ProtectedRoute>
-              <Home />
+              <Layout>
+                <Home />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/problems/:id",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <ProblemPage />
+              </Layout>
             </ProtectedRoute>
           ),
         },
         {
           path: "/login",
-          element: <Login />,
+          element: (
+            <Container>
+              <Login />
+            </Container>
+          ),
         },
         {
           path: "/sign-up",
-          element: <SignUpPage />,
+          element: (
+            <Container>
+              <SignUpPage />
+            </Container>
+          ),
+        },
+        {
+          path: "/solver-config",
+          element: (
+            <ProtectedRoute isAdminRoute={true}>
+              <Layout>
+                <SolverConfiguration />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/users",
+          element: (
+            <ProtectedRoute isAdminRoute={true}>
+              <Layout>
+                <Users />
+              </Layout>
+            </ProtectedRoute>
+          ),
         },
       ]}
     >

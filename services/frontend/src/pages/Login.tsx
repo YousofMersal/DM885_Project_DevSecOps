@@ -4,29 +4,37 @@ import { LoginButton } from "../components/LoginButton";
 import { useGlobalState } from "../utils/store";
 import "./Login.css";
 import { apiLogin } from "../request";
+import { authServicePayload } from "../utils/common";
 
 export const Login: React.FC = () => {
-  const { isLoggedIn, setLoggedInState } = useGlobalState();
+  const { isLoggedIn, login } = useGlobalState();
 
-  const handleSubmit:
-    | React.FormEventHandler<HTMLFormElement>
-    | undefined = async (e) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     const form = new FormData(e.currentTarget);
 
+    const signUpPayload = authServicePayload.parse({
+      email: form.get("username"),
+      password: form.get("password"),
+    });
+
     try {
-      await apiLogin(form);
+      login();
+
+      await apiLogin({
+        email: signUpPayload.email,
+        password: signUpPayload.password,
+      });
     } catch (e) {
       console.log(e);
-      window.alert("handleSubmit failed");
     }
   };
 
   return (
-    <div className="Login">
-      <h1>Login</h1>
+    <div className="center">
       <form onSubmit={handleSubmit}>
+        <h1>Login</h1>
         <div className="container">
           <div>
             <label htmlFor="username">Email</label>
@@ -35,6 +43,7 @@ export const Login: React.FC = () => {
               name="username"
               id="username"
               required={true}
+              type="email"
             />
           </div>
           <div>
@@ -43,6 +52,7 @@ export const Login: React.FC = () => {
               minLength={1}
               name="password"
               id="password"
+              type="password"
               required={true}
             />
           </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import "./LoginButton.css";
+import "./buttons.css";
 
 export const LoginButton: React.FC = () => {
   return (
