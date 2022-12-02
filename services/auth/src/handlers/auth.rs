@@ -86,7 +86,7 @@ pub async fn auth(
         .await?;
 
     if is_valid {
-        let token = secret_service.generate_jwt(user.id).await?;
+        let token = secret_service.generate_jwt(user.id, user.role).await?;
         Ok(HttpResponse::Ok().json(Auth { token }))
     } else {
         debug!("Invalid password.");

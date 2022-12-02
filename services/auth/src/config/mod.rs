@@ -58,7 +58,7 @@ impl Config {
         //! Instantiates the DB_pool pool
         //! Relies on the DATABASE_URL environment variable
         //! # Panics if environment not set up correctly
-        info!("Create DB connection pool");
+        info!("Trying to create DB connection pool...");
 
         PgPoolOptions::new()
             .acquire_timeout(Duration::from_secs(15))

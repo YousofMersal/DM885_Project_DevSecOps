@@ -23,6 +23,7 @@ pub struct SecretService {
 pub struct Claims {
     pub sub: Uuid,
     pub exp: i64,
+    pub role: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -58,7 +59,7 @@ impl SecretService {
             .is_ok())
     }
 
-    pub async fn generate_jwt(&self, user_id: Uuid) -> Result<String> {
+    pub async fn generate_jwt(&self, user_id: Uuid, role: String) -> Result<String> {
         //! Generate a JWT given the Uuid of the user
         let jwt_key = self.jwt_secret.clone();
         block(move || {
@@ -66,8 +67,9 @@ impl SecretService {
             let encoding_key = EncodingKey::from_secret(jwt_key.as_bytes());
             let now = Utc::now() + chrono::Duration::days(1); // expiration time is 1 day
             let claims = Claims {
-                sub: user_id,
-                exp: now.timestamp(),
+                sub: user_id,         // user
+                exp: now.timestamp(), // when the token was made
+                role,                 // the role of the user
             };
             encode(&hdrs, &claims, &encoding_key)
         })
