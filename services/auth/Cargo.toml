@@ -18,6 +18,7 @@ sqlx = { version = "0.6.2", default-features = false, features = [
   "macros",
   "uuid",
   "chrono",
+  "offline",
 ] }
 uuid = { version = "1.2.2", features = ["serde"] }
 chrono = { version = "0.4.23", features = ["serde"] }
