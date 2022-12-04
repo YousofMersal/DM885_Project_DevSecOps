@@ -91,7 +91,7 @@ async function attachLogger(
   const logger = new k8s.Log(client.kc)
   const logStream = new stream.PassThrough()
   logStream.on('data', (chunk: string) => {
-    process.stdout.write('RECEIVED SOLVER LOG: ')
+    process.stdout.write(`SOLVER [${job.solver_id}]: `)
     process.stdout.write(chunk)
     const log: JobStatusLog = JSON.parse(chunk)
 

@@ -16,7 +16,7 @@ CREATE INDEX mzn_model_name_idx ON mzn_models(name);
 
 CREATE TABLE mzn_data (
   data_id SERIAL NOT NULL PRIMARY KEY,
-  model_id INT NOT NULL REFERENCES mzn_models(model_id),
+  model_id INT NOT NULL REFERENCES mzn_models(model_id) ON DELETE CASCADE,
   name VARCHAR(255) NOT NULL,
   content TEXT NOT NULL
 );
@@ -25,8 +25,8 @@ CREATE INDEX mzn_data_name_idx ON mzn_data(name);
 
 CREATE TABLE jobs (
   job_id VARCHAR(36) PRIMARY KEY,
-  model_id INT NOT NULL REFERENCES mzn_models(model_id),
-  data_id INT REFERENCES mzn_data(data_id) DEFAULT NULL,
+  model_id INT NOT NULL REFERENCES mzn_models(model_id) ON DELETE CASCADE,
+  data_id INT REFERENCES mzn_data(data_id) ON DELETE CASCADE DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   finished_at TIMESTAMP DEFAULT NULL,
   job_status VARCHAR(255) NOT NULL
@@ -35,14 +35,15 @@ CREATE TABLE jobs (
 CREATE INDEX job_status_idx ON jobs(job_status);
 
 CREATE TABLE job_solvers (
-  job_id VARCHAR(36) REFERENCES jobs(job_id),
-  solver_id SERIAL REFERENCES solvers(solver_id),
+  job_id VARCHAR(36) REFERENCES jobs(job_id) ON DELETE CASCADE,
+  solver_id SERIAL REFERENCES solvers(solver_id) ON DELETE CASCADE,
   PRIMARY KEY (job_id, solver_id)
 );
 
 CREATE TABLE job_solutions (
   sol_id SERIAL NOT NULL PRIMARY KEY,
-  job_id VARCHAR(36) NOT NULL REFERENCES jobs(job_id),
+  job_id VARCHAR(36) NOT NULL REFERENCES jobs(job_id) ON DELETE CASCADE,
+  solver_id SERIAL NOT NULL REFERENCES solvers(solver_id) ON DELETE CASCADE,
   found_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   sol_status VARCHAR(255) NOT NULL,
   data JSON NOT NULL

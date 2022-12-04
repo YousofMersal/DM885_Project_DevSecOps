@@ -104,6 +104,55 @@ export default (client: K8sClient, db: Client) => {
     res.send(jobs)
   })
 
+  jobs.get<{ job_id: string }>('/:job_id', async (req, res) => {
+    const job_id = req.params.job_id
+
+    const jobs = await (
+      await db.query('SELECT * FROM jobs WHERE job_id = $1', [job_id])
+    ).rows
+
+    if (jobs.length == 0) {
+      return res.status(404).send({ message: 'job not found' })
+    }
+
+    res.send(jobs[0])
+  })
+
+  jobs.delete<{ job_id: string }>('/:job_id', async (req, res) => {
+    const job_id = req.params.job_id
+
+    const jobs = await (
+      await db.query('DELETE FROM jobs WHERE job_id = $1 RETURNING *', [job_id])
+    ).rows
+
+    if (jobs.length == 0) {
+      return res.status(404).send({ message: 'job not found' })
+    }
+
+    res.send({
+      message: 'job deleted',
+      job: jobs[0],
+    })
+  })
+
+  jobs.get<{ job_id: string }>('/:job_id/result', async (req, res) => {
+    const job_id = req.params.job_id
+
+    const jobCount = await (
+      await db.query('SELECT * FROM jobs WHERE job_id = $1', [job_id])
+    ).rowCount
+
+    if (jobCount == 0) {
+      return res.status(404).send({ message: 'job not found' })
+    }
+
+    const solutions = (
+      await db.query('SELECT * FROM job_solutions WHERE job_id = $1', [job_id])
+    ).rows
+
+    res.send(solutions)
+  })
+
   jobs.use('*', (req, res) => {
     res.send({
       msg: `Solvers service /jobs: ${req.path} ${req.method}`,
