@@ -7,12 +7,18 @@ on:
       - services/auth-service/**
       - .github/workflows/auth-deploy.yaml
 
+env:
+  PROJECT_ID: steam-airfoil-367315
+  GKE_CLUSTER: steam-airfoil-367315-gke
+  GKE_ZONE: europe-west8-b
+  PROJECT_DOMAIN: dm885.qpqp.dk
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Check out repository code
         uses: actions/checkout@v3
 
       - name: Log in to container registry
@@ -25,6 +31,27 @@ jobs:
       - name: Install Skaffold
         run: curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install /tmp/skaffold /usr/local/bin/
 
-      - name: Run Skaffold build (production)
-        run: skaffold build -p production
+      - name: Run Skaffold build
+        run: skaffold build -p production --file-output=image.json
+        working-directory: ./services/auth-service
+
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+        with:
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      # Configure Docker to use the gcloud command-line tool as a credential helper for authentication
+      - run: |-
+          gcloud --quiet auth configure-docker
+
+      # Get GKE credentials
+      - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          credentials: ${{ secrets.GKE_SA_KEY }}
+
+      - name: Run Skaffold deploy
+        run: skaffold deploy -p production -a image.json
         working-directory: ./services/auth-service

@@ -7,7 +7,7 @@ import { apiLogin } from "../request";
 import { authServicePayload } from "../utils/common";
 
 export const Login: React.FC = () => {
-  const { isLoggedIn, setLoggedInState } = useGlobalState();
+  const { isLoggedIn, login } = useGlobalState();
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ export const Login: React.FC = () => {
     });
 
     try {
-      setLoggedInState(true);
+      login();
 
       await apiLogin({
         email: signUpPayload.email,

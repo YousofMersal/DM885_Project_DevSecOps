@@ -1,9 +1,15 @@
 import startRestAPI from './api/restApi.js'
+import { createDatabase } from './database.js'
 import { configureK8sClient } from './jobs/k8s-client.js'
+
+const db = await createDatabase()
+if (db === undefined) {
+  throw 'Failed to connect to database.'
+}
 
 const k8sClient = await configureK8sClient()
 
-const server = startRestAPI(k8sClient)
+const server = startRestAPI(k8sClient, db)
 
 registerGracefulExit()
 function registerGracefulExit() {

@@ -19,18 +19,9 @@ app.use((req, res, next) => {
     )
 })
 
-registerGracefulExit()
-function registerGracefulExit() {
-  const exit = () => {
-    process.stdout.write(`shutting down gracefully...\n`)
-    process.exit()
-  }
-
-  process.on('exit', exit)
-  //catches ctrl+c event
-  process.on('SIGINT', exit)
-  process.on('SIGTERM', exit)
-  // catches 'kill pid' (for example: nodemon restart)
-  process.on('SIGUSR1', exit)
-  process.on('SIGUSR2', exit)
-}
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server...')
+  server.close(() => {
+    console.log('HTTP server stopped')
+  })
+})
