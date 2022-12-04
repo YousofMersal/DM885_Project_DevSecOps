@@ -1,21 +1,49 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1.65.0 AS chef
-WORKDIR dm885_auth_service
+#stage 1
+FROM clux/muslrust:stable as chef
+USER root
+RUN cargo install cargo-chef
+WORKDIR /auth
 
 FROM chef AS planner
 COPY . .
-RUN rustup install nightly-2022-11-27
-RUN rustup default nightly-2022-11-27
 RUN cargo chef prepare --recipe-path recipe.json
 
-FROM chef AS builder 
-COPY --from=planner /dm885_auth_service/recipe.json recipe.json
-# Build dependencies - this is the caching Docker layer!
-RUN cargo chef cook --release --recipe-path recipe.json
-# Build application
+# state 2
+FROM chef as builder 
+COPY --from=planner /auth/recipe.json recipe.json
+RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
 COPY . .
-RUN cargo build --release --bin dm885_auth_service
+RUN cargo build --release --target x86_64-unknown-linux-musl --bin dm885_auth_service
 
-FROM debian:bullseye-slim AS runtime
-WORKDIR dm885_auth_service
-COPY --from=builder /dm885_auth_service/target/release/dm885_auth_service /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/dm885_auth_service"]
+
+FROM alpine as runtime 
+RUN addgroup -S auth && adduser -S auth -G auth
+COPY --from=builder /auth/target/x86_64-unknown-linux-musl/release/dm885_auth_service /usr/local/bin
+USER auth
+ENTRYPOINT [ "/usr/local/bin/dm885_auth_service" ]
+
+
+
+
+# FROM lukemathwalker/cargo-chef:latest-rust-1.65.0 AS chef
+# WORKDIR dm885_auth_service
+
+# FROM chef AS planner
+# COPY . .
+# RUN rustup install nightly-2022-11-27
+# RUN rustup default nightly-2022-11-27
+# RUN cargo chef prepare --recipe-path recipe.json
+
+# FROM chef AS builder 
+# COPY --from=planner /dm885_auth_service/recipe.json recipe.json
+# # Build dependencies - this is the caching Docker layer!
+# RUN cargo chef cook --release --recipe-path recipe.json
+# # Build application
+# COPY . .
+# RUN cargo build --release --bin dm885_auth_service
+
+# FROM scratch AS runtime
+# COPY --from=builder /dm885_auth_service/target/release/dm885_auth_service ./
+# # ENTRYPOINT ["/usr/local/bin/dm885_auth_service"]
+# ENTRYPOINT ["./dm885_auth_service/dm885_auth_service"]
+
