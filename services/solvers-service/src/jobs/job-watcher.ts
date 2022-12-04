@@ -1,3 +1,4 @@
+import { Client } from 'pg'
 import k8s from '@kubernetes/client-node'
 import { SolverJob } from './jobs-manager.js'
 import { K8sClient } from './k8s-client.js'
@@ -43,7 +44,8 @@ export type JobStatusLog =
         raw: string
         json: {
           // the variables and their assignments
-          [key: string]: number
+          [key: string]: any
+          _output?: string
         }
         sections: ['default', 'raw', 'json']
       }
@@ -54,7 +56,11 @@ export type JobStatusLog =
       status: JobStatusLogStatus
     }
 
-export async function registerJobWatch(client: K8sClient, job: SolverJob) {
+export async function registerJobWatch(
+  client: K8sClient,
+  db: Client,
+  job: SolverJob
+) {
   const jobName = job.job.metadata?.name
   if (jobName === undefined) throw 'Expected jobname to be defined'
 
@@ -72,16 +78,32 @@ export async function registerJobWatch(client: K8sClient, job: SolverJob) {
     return
   }
 
-  await attachLogger(client, jobPodName)
+  await attachLogger(client, db, jobPodName, job)
   // attachWatcher(client, job)
 }
 
-async function attachLogger(client: K8sClient, jobPodName: string) {
+async function attachLogger(
+  client: K8sClient,
+  db: Client,
+  jobPodName: string,
+  job: SolverJob
+) {
   const logger = new k8s.Log(client.kc)
   const logStream = new stream.PassThrough()
-  logStream.on('data', (chunk) => {
+  logStream.on('data', (chunk: string) => {
     process.stdout.write('RECEIVED SOLVER LOG: ')
     process.stdout.write(chunk)
+    const log: JobStatusLog = JSON.parse(chunk)
+
+    if (log.type == 'solution') {
+      const data = log.output.json
+      delete data._output
+
+      db.query(
+        'INSERT INTO job_solutions (job_id, sol_status, data) VALUES ($1, $2, $3)',
+        [job.job_id, 'solution', data]
+      )
+    }
   })
 
   const MAX_ATTEMPTS = 5
@@ -127,7 +149,7 @@ async function attachLogger(client: K8sClient, jobPodName: string) {
 // }
 
 async function jobFinished(job: SolverJob) {
-  console.log(`Job ${job.id} finished`)
+  console.log(`Job ${job.job_id} finished`)
 }
 
 function sleep(ms: number) {
