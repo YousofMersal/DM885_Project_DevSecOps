@@ -10,7 +10,7 @@ spec:
       containers:
         - image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
           ports:
-            - containerPort: 9090
+            - containerPort: 7070
           env:
             - name: PGHOST
               value: "auth-postgres-postgresql.project.svc.cluster.local"
