@@ -9,7 +9,6 @@ edition = "2021"
 #web and db crates
 actix-rt = "2.7.0"
 actix-web = "4.2.1"
-config = "0.13.2"
 dotenv = "0.15.0"
 serde = { version = "1.0.147", features = ["derive"] }
 sqlx = { version = "0.6.2", default-features = false, features = [

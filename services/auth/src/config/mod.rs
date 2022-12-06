@@ -44,10 +44,34 @@ impl Config {
 
         info!("Loading configuration");
 
-        let conf: Config = config::Config::builder()
-            .add_source(config::Environment::default())
-            .build()?
-            .try_deserialize()?;
+        let vars = vec!["PGHOST", "PGDATABASE", "PGUSER", "PGPASSWORD", "PGPORT"];
+
+        // check that all vars are set and panic if not then create database uri from them
+        let database_url_vals = vars
+            .iter()
+            .map(|var| {
+                std::env::var(var)
+                    .with_context(|| format!("{} is not set", var))
+                    .unwrap()
+            })
+            .collect::<Vec<String>>();
+
+        let database_url = format!(
+            "postgres://{}:{}@{}:{}/{}",
+            database_url_vals[2],
+            database_url_vals[3],
+            database_url_vals[0],
+            database_url_vals[4],
+            database_url_vals[1]
+        );
+
+        let conf: Config = Config {
+            host: std::env::var("HOST").context("HOST is not set")?,
+            port: std::env::var("PORT").context("PORT is not set")?.parse()?,
+            database_url,
+            secret_key: std::env::var("SECRET_KEY").context("SECRET_KEY is not set")?,
+            jwt_secret: std::env::var("JWT_SECRET").context("JWT_SECRET is not set")?,
+        };
 
         info!("Config serialized");
 
