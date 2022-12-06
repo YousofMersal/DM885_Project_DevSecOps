@@ -4,7 +4,7 @@ metadata:
   name: frontend
 build:
   artifacts:
-  - image: ghcr.io/yousofmersal/dm885_frontend
+  - image: dev.local/frontend
     docker:
       dockerfile: Dockerfile
 deploy:
@@ -24,3 +24,11 @@ profiles:
         gitCommit: {}
       artifacts:
       - image: ghcr.io/yousofmersal/dm885_frontend
+    deploy:
+      helm:
+        releases:
+          - name: frontend-release
+            chartPath: helm
+            setValueTemplates:
+              image:
+                repository: ghcr.io/yousofmersal/dm885_frontend
