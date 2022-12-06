@@ -11,4 +11,4 @@ build/
 
 # Skaffold
 .kpt-pipeline/
-./skaffold
+skaffold
