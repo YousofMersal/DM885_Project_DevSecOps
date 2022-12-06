@@ -31,17 +31,18 @@ spec:
                   optional: false
 
             - name: SECRET_KEY
+              value: test
               valueFrom:
                 secretKeyRef:
-                  name: auth-secret_key
-                  key: auth-secret
+                  name: auth-secrets
+                  key: secret
                   optional: false
 
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: auth-jwt_key
-                  key: auth-jwt-secret
+                  name: auth-secrets
+                  key: jwt-secret
                   optional: false
 
             - name: PGPORT
