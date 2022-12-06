@@ -10,7 +10,7 @@ build:
 deploy:
   helm:
     releases:
-      - name: auth
+      - name: auth-release
         chartPath: helm
         namespace: "project"
         createNamespace: true

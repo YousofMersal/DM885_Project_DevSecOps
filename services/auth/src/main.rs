@@ -31,17 +31,21 @@ async fn main() -> Result<()> {
 
     let secret_service = config.secret_service();
 
+    println!("Starting server at {}:{}", config.host, config.port);
+
     HttpServer::new(move || {
-        App::new()
-            .wrap(Logger::default()) // add loging to web framework
-            // add middleware
-            .app_data(Data::new(db_pool.clone())) // clone is cheap as its an RC under the hood
-            .app_data(Data::new(secret_service.clone())) // add second middleware
-            .configure(app_config)
+        App::new().service(
+            actix_web::web::scope("/api/v1/auth")
+                .wrap(Logger::default()) // add loging to web framework
+                // add middleware
+                .app_data(Data::new(db_pool.clone())) // clone is cheap as its an RC under the hood
+                .app_data(Data::new(secret_service.clone())) // add second middleware
+                .configure(app_config),
+        )
     })
     .workers(
         std::env::var("ACTIX_WORKERS")
-            .unwrap_or("1".to_string())
+            .unwrap_or(String::from("1"))
             .parse::<usize>()?,
     )
     .bind(format!("{}:{}", config.host, config.port))? // bind ports gotten from ENV
