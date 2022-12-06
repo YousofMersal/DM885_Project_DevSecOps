@@ -12,6 +12,9 @@ spec:
           ports:
             - containerPort: 7070
           env:
+            - name: HOST
+              value: "127.0.0.1"
+
             - name: PGHOST
               value: "auth-postgres-postgresql.project.svc.cluster.local"
 
@@ -26,6 +29,20 @@ spec:
                 secretKeyRef:
                   name: auth-postgres-postgresql
                   key: postgres-password
+                  optional: false
+
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret_key
+                  key: auth-secret
+                  optional: false
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: auth-jwt_key
+                  key: auth-jwt-secret
                   optional: false
 
             - name: PGPORT
