@@ -29,6 +29,6 @@ profiles:
         releases:
           - name: frontend-release
             chartPath: helm
-            setValueTemplates:
+            setValues:
               image:
                 repository: ghcr.io/yousofmersal/dm885_frontend

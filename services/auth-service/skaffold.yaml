@@ -27,8 +27,8 @@ profiles:
     deploy:
       helm:
         releases:
-          - name: frontend-release
+          - name: auth-service-release
             chartPath: helm
-            setValueTemplates:
+            setValues:
               image:
                 repository: ghcr.io/yousofmersal/dm885_auth-service
