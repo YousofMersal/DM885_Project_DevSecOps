@@ -77,4 +77,10 @@ resource "helm_release" "prometheus" {
   repository = "https://prometheus-community.github.io/helm-charts"
 }
 
-
+resource "helm_release" "solvers-postgres" {
+  name       = "solvers-postgres"     
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "postgresql"
+  namespace  = "project"
+  create_namespace = true
+}
