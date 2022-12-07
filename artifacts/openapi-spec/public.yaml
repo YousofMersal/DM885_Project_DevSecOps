@@ -517,39 +517,45 @@ components:
       properties:
         id:
           type: string
-        solverTypes:
+        solvers:
           type: array
           items:
-            type: string
-        modelId:
+            $ref: '#/components/schemas/Solver_info'
+        model_id:
           type: string
-        dataId:
+        data_id:
           type: string
         username:
           type: string
-        jobStatus:
+        job_status:
           type: string
           enum:
             - waiting
             - running
             - finished
+      required:
+        - id
+        - solvers
+        - model_id
+        - username
+        - job_status
     Job_create:
       title: Job_create
       x-stoplight:
         id: ov0zdtn4094u5
       type: object
       properties:
-        solverTypes:
+        solver_ids:
           type: array
           items:
             type: string
-        modelId:
+        model_id:
           type: string
-        dataId:
+        data_id:
           type: string
       required:
-        - solverTypes
-        - modelId
+        - model_id
+        - solver_ids
     Job_result:
       title: Job_result
       x-stoplight:
@@ -611,8 +617,10 @@ components:
         id: mo37kfa4f9lqq
       type: object
       properties:
+        solver_id:
+          type: string
         name:
           type: string
-        containerImage:
+        image:
           type: string
 

@@ -15,7 +15,8 @@
     "start": "node ./build/index.js",
     "build": "tsc",
     "dev": "nodemon",
-    "test": "tsc --noEmit"
+    "test": "tsc --noEmit",
+    "gen-api-schema": "npx openapi-typescript ../../artifacts/openapi-spec/public.yaml --output openapi-schema.d.ts"
   },
   "author": "",
   "license": "ISC",
