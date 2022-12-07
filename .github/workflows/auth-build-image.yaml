@@ -4,7 +4,7 @@ on:
     # branches:
     #   - main
     paths:
-      - services/auth-service/**
+      - services/auth/**
       - .github/workflows/auth-build-image.yaml
 
 jobs:
@@ -27,4 +27,4 @@ jobs:
 
       - name: Run Skaffold build (production)
         run: skaffold build -p production
-        working-directory: ./services/auth-service
+        working-directory: ./services/auth

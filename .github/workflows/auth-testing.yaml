@@ -33,9 +33,9 @@ jobs:
     # Clean install the required dependencies
     - name: Install dependencies
       run: npm ci
-      working-directory: ./services/auth-service
+      working-directory: ./services/auth
 
     # Run the tests
     - name: Test
       run: npm test
-      working-directory: ./services/auth-service
+      working-directory: ./services/auth
