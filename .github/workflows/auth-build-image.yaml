@@ -1,10 +1,13 @@
 name: auth-build-image
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - "yousof-auth"
     paths:
-      - services/auth-service/**
+      - services/auth/**
       - .github/workflows/auth-build-image.yaml
 
 jobs:
@@ -14,17 +17,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: set up docker buildx
+        uses: docker/setup-buildx-actions@v2
 
       - name: Log in to container registry
         uses: docker/login-action@v2
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Skaffold
-        run: curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install /tmp/skaffold /usr/local/bin/
-
-      - name: Run Skaffold build (production)
-        run: skaffold build -p production
-        working-directory: ./services/auth-service
+      - name: build and push
+        uses: docker/build-push-action@v3
+        with: 
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          
+        
