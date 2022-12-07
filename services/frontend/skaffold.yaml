@@ -29,6 +29,8 @@ profiles:
         releases:
           - name: frontend-release
             chartPath: helm
+            namespace: "project"
+            createNamespace: true
             setValues:
               image:
                 repository: ghcr.io/yousofmersal/dm885_frontend
