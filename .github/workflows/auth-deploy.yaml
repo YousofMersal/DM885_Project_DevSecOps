@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - services/auth-service/**
+      - services/auth/**
       - .github/workflows/auth-deploy.yaml
 
 env:
@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    name: Build
+    name: Build and deploy
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Skaffold build
         run: skaffold build -p production --file-output=image.json
-        working-directory: ./services/auth-service
+        working-directory: ./services/auth
 
       # Setup gcloud CLI
       - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
@@ -54,4 +54,4 @@ jobs:
 
       - name: Run Skaffold deploy
         run: skaffold deploy -p production -a image.json
-        working-directory: ./services/auth-service
+        working-directory: ./services/auth
