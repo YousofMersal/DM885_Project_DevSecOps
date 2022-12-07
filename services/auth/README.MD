@@ -28,7 +28,7 @@ Just run `skaffold dev` and skaffold will spin up a database and handle all the 
 
 As of right now these endpoints have been implemented with the following functionality
 
- - '/api/v1/auth/users'
+- '/api/v1/auth/users'
   - POST: Creates a new user
   - example: with curl 
   ```bash 
