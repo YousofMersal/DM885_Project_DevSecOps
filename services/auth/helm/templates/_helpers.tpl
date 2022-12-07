@@ -52,11 +52,30 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 {{/*
 Create the name of the service account to use
-*/}}
-{{- define "..serviceAccountName" -}}
+*/}} {{- define "..serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
 {{- default (include "..fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
+{{- end }}
+
+{{/*
+Create a jwt secret or get it if it already exists
+*/}}
+{{- define "..jwt-secret" }}
+  {{- $secretObj := (lookup "v1" "Secret" .Release.Namespace "jwt-secret") | default dict }}
+  {{- $secretData := (get $secretObj "data") | default dict }}
+  {{- $jwtSecret := (get $secretData "jwt-secret") | default (randAlphaNum 32 | b64enc) }}
+  jwt-secret: {{ $jwtSecret | b64enc | quote }}
+{{- end }}
+
+{{/*
+Create a secret or get it if it already exists
+*/}}
+{{- define "..secret" }}
+  {{- $supersecretObj := (lookup "v1" "Secret" .Release.Namespace "secret") | default dict }}
+  {{- $supersecretData := (get $supersecretObj "data") | default dict }}
+  {{- $superSecret := (get $supersecretData "secret") | default (randAlphaNum 32 | b64enc) }}
+  secret: {{ $superSecret | b64enc | quote }}
 {{- end }}

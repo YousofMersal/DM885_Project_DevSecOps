@@ -1,26 +1,18 @@
 apiVersion: skaffold/v3alpha1
 kind: Config
 metadata:
-  name: auth-service
+  name: auth
 build:
   artifacts:
-  - image: ghcr.io/yousofmersal/dm885_auth-service
+  - image: dev.local/auth
     docker:
       dockerfile: Dockerfile
 deploy:
   helm:
     releases:
-      - name: auth-service-release
+      - name: auth-release
         chartPath: helm
         namespace: "project"
         createNamespace: true
         setValueTemplates:
           projectDomain: "{{.PROJECT_DOMAIN}}"
-
-profiles:
-  - name: production
-    build:
-      tagPolicy:
-        gitCommit: {}
-      artifacts:
-      - image: ghcr.io/yousofmersal/dm885_auth-service

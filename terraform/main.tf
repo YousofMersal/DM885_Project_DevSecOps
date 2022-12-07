@@ -31,6 +31,14 @@ resource "helm_release" "solvers-postgres" {
   create_namespace = true
 }
 
+resource "helm_release" "auth-postgres" {
+  name       = "auth-postgres"     
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "postgresql"
+  namespace  = "project"
+  create_namespace = true
+}
+
 # istio service mesh used by knative
 resource "helm_release" "istio-base" {
   name       = "istio"

@@ -1,0 +1,48 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: {{.Chart.Name}}
+  namespace: {{.Release.Namespace | quote}}
+spec:
+  template:
+    spec:
+      containers:
+        - image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+          ports:
+            - containerPort: 7070
+          env:
+            - name: HOST
+              value: "127.0.0.1"
+
+            - name: PGHOST
+              value: "auth-postgres-postgresql.project.svc.cluster.local"
+
+            - name: PGDATABASE
+              value: "postgres"
+
+            - name: PGUSER
+              value: "postgres"
+
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-postgres-postgresql
+                  key: postgres-password
+                  optional: false
+
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secrets
+                  key: secret
+                  optional: false
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secrets
+                  key: jwt-secret
+                  optional: false
+
+            - name: PGPORT
+              value: "5432"

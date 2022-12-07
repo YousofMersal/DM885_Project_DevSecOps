@@ -1,5 +1,5 @@
 image:
-  repository: ghcr.io/yousofmersal/dm885_auth-service
+  repository: dev.local/auth
   tag: "latest"
 
 projectDomain: project.127.0.0.1.sslip.io
