@@ -6,11 +6,13 @@ use color_eyre::Result;
 use dotenv::dotenv;
 use eyre::Context;
 use serde::Deserialize;
-use sqlx::{postgres::PgPoolOptions, PgPool};
+use sqlx::{migrate::Migrator, postgres::PgPoolOptions, PgPool};
 use tracing::{info, instrument};
 use tracing_subscriber::EnvFilter;
 
 use self::secret::SecretService;
+
+static MIGRATOR: Migrator = sqlx::migrate!();
 
 #[derive(Debug, Deserialize)]
 /// Struct which holds all the server configuration
@@ -84,12 +86,22 @@ impl Config {
         //! # Panics if environment not set up correctly
         info!("Trying to create DB connection pool...");
 
-        PgPoolOptions::new()
-            .acquire_timeout(Duration::from_secs(15))
+        let pool = PgPoolOptions::new()
+            .acquire_timeout(Duration::from_secs(4))
             .max_connections(10)
             .connect(&self.database_url)
             .await
-            .context("Database connection creation")
+            .context("Database connection creation")?;
+
+        self.migrate_db(&pool).await?;
+
+        Ok(pool)
+    }
+
+    pub async fn migrate_db(&self, pool: &PgPool) -> Result<()> {
+        //! Migrates the database to the latest version
+        MIGRATOR.run(pool).await?;
+        Ok(())
     }
 
     pub fn secret_service(&self) -> SecretService {

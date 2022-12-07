@@ -31,7 +31,7 @@ async fn main() -> Result<()> {
 
     let secret_service = config.secret_service();
 
-    println!("Starting server at {}:{}", config.host, config.port);
+    println!("Starting auth server at {}:{}", config.host, config.port);
 
     HttpServer::new(move || {
         App::new().service(

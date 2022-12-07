@@ -15,6 +15,7 @@ sqlx = { version = "0.6.2", default-features = false, features = [
   "runtime-actix-native-tls",
   "postgres",
   "macros",
+  "migrate",
   "uuid",
   "chrono",
   "offline",
