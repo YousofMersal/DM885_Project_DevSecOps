@@ -84,3 +84,11 @@ resource "helm_release" "solvers-postgres" {
   namespace  = "project"
   create_namespace = true
 }
+
+resource "helm_release" "auth-postgres" {
+  name       = "auth-postgres"     
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "postgresql"
+  namespace  = "project"
+  create_namespace = true
+}
