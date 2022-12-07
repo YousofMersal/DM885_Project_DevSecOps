@@ -31,7 +31,6 @@ spec:
                   optional: false
 
             - name: SECRET_KEY
-              value: test
               valueFrom:
                 secretKeyRef:
                   name: auth-secrets
