@@ -23,3 +23,31 @@ or through feeding each variable to docker with `--env VAR=VAL`
 
 ### local development with kubernetes
 Just run `skaffold dev` and skaffold will spin up a database and handle all the ENV variables for you.
+
+## API
+
+As of right now these endpoints have been implemented with the following functionality
+
+ - '/api/v1/auth/users'
+  - POST: Creates a new user
+  - example: with curl 
+  ```bash 
+  curl --url "http://auth.$PROJECT_DOMAIN/api/v1/auth/users" \
+       --header 'content-type: application/json' \
+       --data '{
+          "username": "user1",
+          "email": "user1@users.com",
+          "password": "user1"
+        }'
+  ```
+- '/api/v1/auth/users/login'
+  - POST: Logs in a user and returns a JWT
+  - example: with curl 
+  ```bash
+  curl --url "http://auth.$PROJECT_DOMAIN/api/v1/auth/users/login" \
+       --header 'content-type: application/json' \
+       --data '{
+          "username": "user1",
+          "password": "user1"
+        }'
+  ```
