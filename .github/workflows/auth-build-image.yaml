@@ -5,7 +5,7 @@ env:
 on:
   push:
     branches:
-      - "yousof-auth"
+      - "main"
     paths:
       - services/auth/**
       - .github/workflows/auth-build-image.yaml
