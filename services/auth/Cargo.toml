@@ -1,0 +1,41 @@
+[package]
+name = "dm885_auth_service"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#web and db crates
+actix-rt = "2.7.0"
+actix-web = "4.2.1"
+dotenv = "0.15.0"
+serde = { version = "1.0.147", features = ["derive"] }
+sqlx = { version = "0.6.2", default-features = false, features = [
+  "runtime-actix-native-tls",
+  "postgres",
+  "macros",
+  "migrate",
+  "uuid",
+  "chrono",
+  "offline",
+] }
+uuid = { version = "1.2.2", features = ["serde"] }
+chrono = { version = "0.4.23", features = ["serde"] }
+jsonwebtoken = "8.1.1"
+argon2 = { version = "0.4.1", features = ["parallel"] }
+
+#error messaging
+color-eyre = "0.6.2"
+colored = "2.0.0"
+eyre = "0.6.8"
+
+# logging
+tracing = "0.1.37"
+tracing-futures = "0.2.5"
+tracing-log = { version = "0.1.3", features = ["env_logger"] }
+tracing-subscriber = { version = "0.3.16", features = ["fmt", "env-filter"] }
+regex = "1.7.0"
+actix-web-httpauth = "0.8.0"
+actix-utils = "3.0.1"
+futures-util = "0.3.25"
