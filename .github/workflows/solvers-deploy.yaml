@@ -1,8 +1,8 @@
 name: solvers-deploy
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
     paths:
       - services/solvers-service/**
       - .github/workflows/solvers-deploy.yaml

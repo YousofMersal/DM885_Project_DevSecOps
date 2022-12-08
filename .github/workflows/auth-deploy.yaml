@@ -1,8 +1,8 @@
 name: auth-deploy
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
     paths:
       - services/auth/**
       - .github/workflows/auth-deploy.yaml
