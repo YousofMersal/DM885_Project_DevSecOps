@@ -4,8 +4,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 on:
   push:
-    branches:
-      - "main"
+#    branches:
+#      - "main"
     paths:
       - services/auth/**
       - .github/workflows/auth-build-image.yaml
@@ -26,6 +26,8 @@ jobs:
 
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v2
+      
+      
 
       - name: Log in to container registry
         uses: docker/login-action@v2
@@ -41,5 +43,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           
         
