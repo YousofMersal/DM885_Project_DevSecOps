@@ -21,10 +21,8 @@ deploy:
 profiles:
   - name: production
     build:
-      tagPolicy:
-        gitCommit: {}
       artifacts:
-      - image: ghcr.io/yousofmersal/dm885_auth-service
+        - image: ghcr.io/yousofmersal/dm885_auth-service:latest
     deploy:
       helm:
         releases:
@@ -32,7 +30,7 @@ profiles:
             chartPath: helm
             setValues:
               image:
-                repository: ghcr.io/yousofmersal/dm885_auth
+                repository: ghcr.io/yousofmersal/dm885_auth-service:latest
             namespace: "project"
             createNamespace: true
             setValueTemplates:
