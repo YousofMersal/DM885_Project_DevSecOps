@@ -3,8 +3,14 @@ name: frontend-test
 on:
   push:
     branches: [ main ]
+    paths:
+    - services/frontend/**
+    - .github/workflows/frontend-testing.yaml
   pull_request:
     branches: [ main ]
+    paths:
+    - services/frontend/**
+    - .github/workflows/frontend-testing.yaml
 
 # Only one job  that does the following
 jobs:

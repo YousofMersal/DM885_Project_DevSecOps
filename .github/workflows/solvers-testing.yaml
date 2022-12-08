@@ -3,8 +3,14 @@ name: solvers-test
 on:
   push:
     branches: [ main ]
+    paths:
+    - services/solvers-service/**
+    - .github/workflows/solvers-testing.yaml
   pull_request:
     branches: [ main ]
+    paths:
+    - services/solvers-service/**
+    - .github/workflows/solvers-testing.yaml
 
 # Only one job  that does the following
 jobs:
