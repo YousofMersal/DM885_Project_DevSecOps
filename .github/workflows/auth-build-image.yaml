@@ -22,7 +22,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/dm885_auth-service
+          images: ${{ env.REGISTRY }}/yousofmersal/dm885_auth-service
 
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v2
