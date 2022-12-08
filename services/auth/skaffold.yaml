@@ -16,3 +16,25 @@ deploy:
         createNamespace: true
         setValueTemplates:
           projectDomain: "{{.PROJECT_DOMAIN}}"
+          publicDomain: "{{.PROJECT_DOMAIN}}"
+
+profiles:
+  - name: production
+    build:
+      tagPolicy:
+        gitCommit: {}
+      artifacts:
+      - image: ghcr.io/yousofmersal/dm885_auth-service
+    deploy:
+      helm:
+        releases:
+          - name: auth-release
+            chartPath: helm
+            setValues:
+              image:
+                repository: ghcr.io/yousofmersal/dm885_auth
+            namespace: "project"
+            createNamespace: true
+            setValueTemplates:
+              projectDomain: "{{.PROJECT_DOMAIN}}"
+              publicDomain: "{{.PUBLIC_DOMAIN}}"
