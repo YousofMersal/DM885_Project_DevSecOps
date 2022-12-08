@@ -1,16 +1,16 @@
 # The unit test file(s) should be placed inside a folder called test in the working directory specified
-name: solvers-test
+name: frontend-test
 on:
   push:
     branches: [ main ]
     paths:
-    - services/solvers-service/**
-    - .github/workflows/solvers-testing.yaml
+    - services/frontend/**
+    - .github/workflows/frontend-testing.yaml
   pull_request:
     branches: [ main ]
     paths:
-    - services/solvers-service/**
-    - .github/workflows/solvers-testing.yaml
+    - services/frontend/**
+    - .github/workflows/frontend-testing.yaml
 
 # Only one job  that does the following
 jobs:

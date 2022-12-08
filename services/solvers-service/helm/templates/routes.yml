@@ -9,7 +9,7 @@ spec:
   - knative-serving/knative-ingress-gateway
   # Set host to the domain name that you own.
   hosts:
-  - {{ .Values.projectDomain }}
+  - {{ .Values.publicDomain }}
   http:
   - match:
     - uri:
