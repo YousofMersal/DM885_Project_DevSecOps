@@ -1,0 +1,29 @@
+name: auth-build-image
+on:
+  push:
+    # branches:
+    #   - main
+    paths:
+      - services/auth/**
+      - .github/workflows/auth-build-image.yaml
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Skaffold pipeline as action
+        uses: hiberbee/github-action-skaffold@1.24.0 
+        with:
+          command: build -p production
+          working-directory: ./services/auth
