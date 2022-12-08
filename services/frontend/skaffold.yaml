@@ -16,6 +16,7 @@ deploy:
         createNamespace: true
         setValueTemplates:
           projectDomain: "{{.PROJECT_DOMAIN}}"
+          publicDomain: "{{.PUBLIC_DOMAIN}}"
 
 profiles:
   - name: production
