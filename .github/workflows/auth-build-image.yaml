@@ -26,3 +26,4 @@ jobs:
         uses: hiberbee/github-action-skaffold@1.19.0
         with:
           command: build -p production
+          working-directory: ./services/auth
