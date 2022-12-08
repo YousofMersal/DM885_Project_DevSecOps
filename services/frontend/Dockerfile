@@ -1,4 +1,4 @@
-FROM node AS builder
+FROM node:19 AS builder
 
 WORKDIR /app
 
@@ -10,6 +10,8 @@ RUN npm run build
 
 # Serve static files from small container
 FROM nginx
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /usr/share/nginx/html
 

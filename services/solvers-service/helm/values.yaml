@@ -2,4 +2,5 @@ image:
   repository: dev.local/solvers-service
   tag: "latest"
 
-projectDomain: project.127.0.0.1.sslip.io
+projectDomain: project.example.com
+publicDomain: example.com

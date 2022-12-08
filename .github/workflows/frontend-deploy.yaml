@@ -11,7 +11,8 @@ env:
   PROJECT_ID: steam-airfoil-367315
   GKE_CLUSTER: steam-airfoil-367315-gke
   GKE_ZONE: europe-west8-b
-  PROJECT_DOMAIN: dm885.qpqp.dk
+  PROJECT_DOMAIN: project.dm885.qpqp.dk
+  PUBLIC_DOMAIN: dm885.qpqp.dk
 
 jobs:
   build:

@@ -3,4 +3,5 @@ image:
   repository: dev.local/frontend
   tag: "latest"
 
-projectDomain: project.127.0.0.1.sslip.io
+projectDomain: project.example.com
+publicDomain: example.com
