@@ -207,7 +207,6 @@ export interface components {
     }
     /** Solver_create */
     Solver_create: {
-      solver_id?: string
       name?: string
       image?: string
     }
