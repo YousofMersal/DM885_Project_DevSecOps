@@ -16,7 +16,7 @@ deploy:
         createNamespace: true
         setValueTemplates:
           projectDomain: "{{.PROJECT_DOMAIN}}"
-          publicDomain: "{{.PUBLIC_DOMAIN}}"
+          publicDomain: "{{.PROJECT_DOMAIN}}"
 
 profiles:
   - name: production
@@ -30,6 +30,11 @@ profiles:
         releases:
           - name: frontend-release
             chartPath: helm
+            namespace: "project"
+            createNamespace: true
             setValues:
               image:
                 repository: ghcr.io/yousofmersal/dm885_frontend
+            setValueTemplates:
+              projectDomain: "{{.PROJECT_DOMAIN}}"
+              publicDomain: "{{.PUBLIC_DOMAIN}}"
