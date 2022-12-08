@@ -71,11 +71,11 @@ resource "kubectl_manifest" "knative-operator" {
   yaml_body = each.value
 }
 
-resource "helm_release" "prometheus" {
-  name = "prometheus"
-  chart = "kube-prometheus-stack"
-  repository = "https://prometheus-community.github.io/helm-charts"
-}
+# resource "helm_release" "prometheus" {
+#   name = "prometheus"
+#   chart = "kube-prometheus-stack"
+#   repository = "https://prometheus-community.github.io/helm-charts"
+# }
 
 resource "helm_release" "solvers-postgres" {
   name       = "solvers-postgres"     
