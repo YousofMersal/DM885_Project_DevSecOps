@@ -1,41 +1,3 @@
-variable "gke_username" {
-  default     = ""
-  description = "gke username"
-}
-
-variable "gke_password" {
-  default     = ""
-  description = "gke password"
-}
-
-variable "gke_num_nodes" {
-  default     = 2
-  description = "number of gke nodes"
-}
-
-variable "gke_node_machine_type" {
-  default     = "n2-standard-4"
-  description = "machine type for nodes"
-}
-
-# GKE cluster
-resource "google_container_cluster" "primary" {
-  name     = "${var.project_id}-gke"
-  location = var.zone
-  initial_node_count = var.gke_num_nodes
-
-  node_config {
-    machine_type = var.gke_node_machine_type
-
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/devstorage.read_only",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
-  }
-}
-
 provider "kubernetes" {
   config_path = "~/.kube/config"
 }
@@ -71,6 +33,11 @@ resource "helm_release" "istio-discovery" {
 
   namespace        = "istio-system"
   create_namespace = true
+
+  set {
+    name  = "grafana.enabled"
+    value = "true"
+  }
 }
 
 resource "helm_release" "istio-ingressgateway" {
@@ -107,4 +74,20 @@ resource "helm_release" "prometheus" {
   name = "prometheus"
   chart = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
+}
+
+resource "helm_release" "solvers-postgres" {
+  name       = "solvers-postgres"     
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "postgresql"
+  namespace  = "project"
+  create_namespace = true
+}
+
+resource "helm_release" "auth-postgres" {
+  name       = "auth-postgres"     
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "postgresql"
+  namespace  = "project"
+  create_namespace = true
 }
