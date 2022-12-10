@@ -34,7 +34,7 @@ profiles:
             createNamespace: true
             setValues:
               image:
-                repository: ghcr.io/yousofmersal/dm885_auth
+                repository: ghcr.io/yousofmersal/dm885_auth-service
             setValueTemplates:
               projectDomain: "{{.PROJECT_DOMAIN}}"
               publicDomain: "{{.PUBLIC_DOMAIN}}"
