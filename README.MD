@@ -16,7 +16,7 @@ Testing different tools for managing Kubernetes development.
 - Make sure Minikube is running `minikube start`.
   Then make sure the tunnel is running by running `minikube tunnel` in a separate terminal.
 
-- In the `./terraform/` directory:
+- In the `./terraform/development/` directory:
   - run `terraform init`
   - run `terraform apply` to start 3rd party dependencies
   - wait for it to completeley finish without errors before proceeding.
