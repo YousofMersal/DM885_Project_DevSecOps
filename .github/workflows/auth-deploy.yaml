@@ -65,4 +65,3 @@ jobs:
       - name: Run Skaffold deploy
         run: skaffold deploy -p production -a image.json
         working-directory: ./services/auth
-
