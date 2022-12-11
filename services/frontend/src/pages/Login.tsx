@@ -4,7 +4,7 @@ import { LoginButton } from "../components/LoginButton";
 import { useGlobalState } from "../utils/store";
 import "./Login.css";
 import { apiLogin } from "../request";
-import { authServicePayload } from "../utils/common";
+import { authServicePayload, handleError } from "../utils/common";
 import { ZodError } from "zod";
 
 export const Login: React.FC = () => {
@@ -30,13 +30,7 @@ export const Login: React.FC = () => {
 
       login(response.token);
     } catch (e) {
-      if (e instanceof ZodError) {
-        setError(e.errors?.[0].message);
-      } else if (e instanceof Error) {
-        setError(e.message);
-      } else {
-        setError("Unknown error");
-      }
+      setError(handleError(e));
     }
   };
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { apiSignup } from "../request";
 import { Link, useNavigate } from "@tanstack/react-location";
-import { authServicePayload } from "../utils/common";
+import { authServicePayload, handleError } from "../utils/common";
 import { ZodError } from "zod";
 
 export const SignUpPage: React.FC = () => {
@@ -26,13 +26,7 @@ export const SignUpPage: React.FC = () => {
         to: "/",
       });
     } catch (e: unknown) {
-      if (e instanceof ZodError) {
-        setError(e.errors?.[0].message);
-      } else if (e instanceof Error) {
-        setError(e.message);
-      } else {
-        setError("Unknown error");
-      }
+      setError(handleError(e));
     }
   };
 
