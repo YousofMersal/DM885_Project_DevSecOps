@@ -1,28 +1,23 @@
-# stage 1
-FROM rust as chef
-
-RUN rustup toolchain install nightly
-
+#stage 1
+FROM clux/muslrust:stable as chef
 USER root
-RUN cargo +nightly install -Z sparse-registry --debug cargo-chef
+RUN cargo install cargo-chef
 WORKDIR /auth
 
-# stage 2
 FROM chef AS planner
 COPY . .
-RUN cargo +nightly chef prepare --recipe-path recipe.json
+RUN cargo chef prepare --recipe-path recipe.json
 
-# stage 3
+# state 2
 FROM chef as builder 
 COPY --from=planner /auth/recipe.json recipe.json
-RUN cargo +nightly chef cook --release -Z sparse-registry --recipe-path recipe.json
+RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
 COPY . .
-RUN cargo +nightly build --release -Z sparse-registry --bin dm885_auth_service
-RUN ls /auth/target/release/dm885_auth_service
+RUN cargo build --release --target x86_64-unknown-linux-musl --bin dm885_auth_service
 
-# stage 4
-FROM debian:buster as runtime 
-COPY --from=builder /auth/target/release/dm885_auth_service /usr/bin
-RUN apt-get update
-RUN apt-get install libssl-dev -y
-ENTRYPOINT [ "dm885_auth_service" ]
+
+FROM alpine as runtime 
+RUN addgroup -S auth && adduser -S auth -G auth
+COPY --from=builder /auth/target/x86_64-unknown-linux-musl/release/dm885_auth_service /usr/local/bin
+USER auth
+ENTRYPOINT [ "/usr/local/bin/dm885_auth_service" ]
