@@ -36,10 +36,11 @@ jobs:
       - name: Cache
         uses: actions/cache@v3
         with:
-          path: "~/.skaffold/cache"
-          key: skaffold-${{ hashFiles('**/cache') }}
+          path: ~/.skaffold/
+          key: fixed-${{ github.sha }}
           restore-keys: |
-            skaffold-
+                    fixed-${{ github.sha }}
+                    fixed-
 
       - name: Run Skaffold build
         run: skaffold build -p production --file-output=image.json
