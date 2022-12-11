@@ -6,6 +6,7 @@ on:
     paths:
       - services/auth/**
       - .github/workflows/auth-deploy.yaml
+  workflow_dispatch:
 
 env:
   PROJECT_ID: steam-airfoil-367315
