@@ -34,6 +34,10 @@ jobs:
         run: curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install /tmp/skaffold /usr/local/bin/
 
       - name: Run Skaffold build
+        run: skaffold build -t ghcr.io/yousofmersal/dm885_frontend:latest
+        working-directory: ./services/frontend
+
+      - name: Run Skaffold build
         run: skaffold build -p production --file-output=image.json
         working-directory: ./services/frontend
 
