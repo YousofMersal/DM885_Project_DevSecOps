@@ -19,6 +19,12 @@ deploy:
           publicDomain: "{{.PROJECT_DOMAIN}}"
 
 profiles:
+  - name: latest
+    build:
+      tagPolicy:
+        sha256: {}
+      artifacts:
+      - image: ghcr.io/yousofmersal/dm885_frontend
   - name: production
     build:
       tagPolicy:
