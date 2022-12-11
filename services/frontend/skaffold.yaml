@@ -7,6 +7,8 @@ build:
   - image: dev.local/frontend
     docker:
       dockerfile: Dockerfile
+      cacheFrom:
+        - ghcr.io/yousofmersal/dm885_frontend:latest
 deploy:
   helm:
     releases:
