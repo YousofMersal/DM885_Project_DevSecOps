@@ -27,7 +27,7 @@ profiles:
       - image: ghcr.io/yousofmersal/dm885_frontend
         docker:
           cacheFrom:
-            - ghcr.io/yousofmersal/dm885_frontend:latest
+            - ghcr.io/yousofmersal/dm885_frontend
   - name: production
     build:
       tagPolicy:
