@@ -10,7 +10,7 @@ export default (db: Client) => {
   const models = express.Router()
 
   models.get('/', async (req, res) => {
-    const models = (await db.query('SELECT * FROM mzn_models')).rows
+    const models = (await db.query<DBMznModel>('SELECT * FROM mzn_models')).rows
 
     res.send(models)
   })
@@ -19,7 +19,7 @@ export default (db: Client) => {
     const model_id = req.params.model_id
 
     const models = await (
-      await db.query('SELECT * FROM mzn_models WHERE model_id = $1', [model_id])
+      await db.query<DBMznModel>('SELECT * FROM mzn_models WHERE model_id = $1', [model_id])
     ).rows
 
     if (models.length == 0) {
@@ -31,42 +31,48 @@ export default (db: Client) => {
 
   models.post('/', async (req, res) => {
     if (!req.body.name) {
-      throw 'missing `name`'
+      return res.status(500).send({ message: 'missing `name`' })
     }
 
     if (!req.body.content) {
-      throw 'missing `content`'
+      return res.status(500).send({ message: 'missing `content`' })
     }
    
-    let model = {} as DBMznModel
-    model = (
-      await db.query(
-        "INSERT INTO mzn_models (name, content) VALUES ($1, $2)",
-        [req.body.name, req.body.content]
-      )
-    ).rows[0]
+    try {
+      const model = (
+        await db.query(
+          "INSERT INTO mzn_models (name, content) VALUES ($1, $2) RETURNING *",
+          [req.body.name, req.body.content]
+        )
+      ).rows[0]  
 
-    res.status(201).send({
-      status: 'created',
-      model: model
-    })
+      res.status(201).send({
+        status: 'created',
+        entity: model
+      })
+    } catch (error) {
+      res.status(500)
+    }
   })
 
   models.put<{ model_id: string }>('/:model_id', async (req, res) => {
     const model_id = req.params.model_id
 
     if (!req.body.name) {
-      throw 'missing name'
+      return res.status(500).send({ message: 'missing `name`' })
     } else if (!req.body.content) {
-      throw 'missing content'
+      return res.status(500).send({ message: 'missing `content`' })
     }
 
-    await db.query(
-      'UPDATE mzn_models SET name = $1, content = $2 WHERE model_id = $3',
-      [req.body.name, req.body.content, model_id]
-    )
-
-    res.sendStatus(204)
+    try {
+      await db.query(
+        'UPDATE mzn_models SET name = $1, content = $2 WHERE model_id = $3',
+        [req.body.name, req.body.content, model_id]
+      )
+      res.sendStatus(204)  
+    } catch (error) {
+      res.status(500)
+    }
   })
 
   models.delete<{ model_id: string }>('/:model_id', async (req, res) => {
@@ -89,7 +95,7 @@ export default (db: Client) => {
   models.get<{ model_id: string }>('/:model_id/data', async (req, res) => {
     const model_id = req.params.model_id
 
-    const data = (await db.query('SELECT * FROM mzn_data WHERE model_id = $1', [model_id])).rows
+    const data = (await db.query<DBMznData>('SELECT * FROM mzn_data WHERE model_id = $1', [model_id])).rows
 
     res.send(data)
   })
@@ -99,7 +105,7 @@ export default (db: Client) => {
     const data_id = req.params.data_id
 
     const data = await (
-      await db.query('SELECT * FROM mzn_data WHERE model_id = $1 AND data_id = $2', [model_id, data_id])
+      await db.query<DBMznData>('SELECT * FROM mzn_data WHERE model_id = $1 AND data_id = $2', [model_id, data_id])
     ).rows
 
     if (data.length == 0) {
@@ -110,25 +116,31 @@ export default (db: Client) => {
   })
 
   models.post<{ model_id: string }>('/:model_id/data', async (req, res) => {
-    if (!req.body.name) {
-      throw 'missing `name`'
+    const body: components['schemas']['Data_create'] = req.body
+
+    if (!body.name) {
+      return res.status(500).send({ message: 'missing `name`' })
     }
 
-    if (!req.body.content) {
-      throw 'missing `content`'
+    if (!body.content) {
+      return res.status(500).send({ message: 'missing `content`' })
     }
    
-    const data = (
-      await db.query(
-        "INSERT INTO mzn_data (model_id, name, content) VALUES ($1, $2, $3)",
-        [req.params.model_id, req.body.name, req.body.content]
-      )
-    ).rows[0]
-
-    res.status(201).send({
-      status: 'created',
-      data: data
-    })
+    try {
+      const data = (
+        await db.query(
+          "INSERT INTO mzn_data (model_id, name, content) VALUES ($1, $2, $3) RETURNING *",
+          [req.params.model_id, body.name, body.content]
+        )
+      ).rows[0]
+  
+      res.status(201).send({
+        status: 'created',
+        entity: data
+      })  
+    } catch (error) {
+      res.status(500)
+    }
   })
 
   models.put<{ model_id: string, data_id: string }>('/:model_id/data/:data_id', async (req, res) => {
@@ -136,17 +148,20 @@ export default (db: Client) => {
     const data_id = req.params.data_id
 
     if (!req.body.name) {
-      throw 'missing name'
+      return res.status(500).send({ message: 'missing `name`' })
     } else if (!req.body.content) {
-      throw 'missing content'
+      return res.status(500).send({ message: 'missing `content`' })
     }
 
-    await db.query(
-      'UPDATE mzn_data SET name = $1, content = $2 WHERE model_id = $3 AND data_id = $4',
-      [req.body.name, req.body.content, model_id, data_id]
-    )
-
-    res.sendStatus(204)
+    try {
+      await db.query(
+        'UPDATE mzn_data SET name = $1, content = $2 WHERE model_id = $3 AND data_id = $4',
+        [req.body.name, req.body.content, model_id, data_id]
+      )  
+      res.sendStatus(204)
+    } catch (error) {
+      res.status(500)
+    }
   })
 
   models.delete<{ model_id: string, data_id: string }>('/:model_id/data/:data_id', async (req, res) => {
