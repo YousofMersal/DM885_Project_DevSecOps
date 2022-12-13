@@ -87,7 +87,7 @@ impl Config {
         info!("Trying to create DB connection pool...");
 
         let pool = PgPoolOptions::new()
-            .acquire_timeout(Duration::from_secs(4))
+            .acquire_timeout(Duration::from_secs(20))
             .max_connections(10)
             .connect(&self.database_url)
             .await
