@@ -77,7 +77,7 @@ pub async fn auth(
         .find_by_username(&loginfo.username)
         .await?
         .ok_or_else(|| {
-            debug!("USer dosn't exist.");
+            debug!("User dosn't exist.");
             AppError::INVALID_CREDENTIALS
         })?;
 

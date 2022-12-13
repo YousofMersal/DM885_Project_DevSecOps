@@ -5,7 +5,12 @@
 
 The configuration varaibles are in ´terraform.tfvars´.
 
-By default it uses ´n2-standard-4´ instances'. Beaware small GKE instances may not be able to run Istio.
+By default it uses ´n2-standard-4´ instances'. Beaware small instances may not be able to run Istio.
+
+
+## Static IP-address
+
+When the cluster is deployed then change the IP-address to static.
 
 
 ## Run

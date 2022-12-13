@@ -6,7 +6,8 @@ on:
     paths:
       - services/frontend/**
       - .github/workflows/frontend-deploy.yaml
-
+  workflow_dispatch:
+  
 env:
   PROJECT_ID: steam-airfoil-367315
   GKE_CLUSTER: steam-airfoil-367315-gke
@@ -31,6 +32,10 @@ jobs:
 
       - name: Install Skaffold
         run: curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install /tmp/skaffold /usr/local/bin/
+
+      - name: Run Skaffold build
+        run: skaffold build -p latest
+        working-directory: ./services/frontend
 
       - name: Run Skaffold build
         run: skaffold build -p production --file-output=image.json

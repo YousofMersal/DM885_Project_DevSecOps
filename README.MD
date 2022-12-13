@@ -16,7 +16,8 @@ Testing different tools for managing Kubernetes development.
 - Make sure Minikube is running `minikube start`.
   Then make sure the tunnel is running by running `minikube tunnel` in a separate terminal.
 
-- In the `./terraform/` directory:
+- In the `./terraform/development` directory:
+
   - run `terraform init`
   - run `terraform apply` to start 3rd party dependencies
   - wait for it to completeley finish without errors before proceeding.
@@ -25,6 +26,7 @@ Testing different tools for managing Kubernetes development.
   For local development, this should be something like `project.127.0.0.1.sslip.io`, but with the external IP of the Istio Loadbalancer.
 
   This can be configured with this one-liner:
+
   ```
   export PROJECT_DOMAIN=$(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath="project.{.status.loadBalancer.ingress[0].ip}.sslip.io")
   ```

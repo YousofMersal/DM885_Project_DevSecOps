@@ -30,11 +30,11 @@ profiles:
         releases:
           - name: auth-release
             chartPath: helm
+            namespace: "project"
+            createNamespace: true
             setValues:
               image:
                 repository: ghcr.io/yousofmersal/dm885_auth-service
-            namespace: "project"
-            createNamespace: true
             setValueTemplates:
               projectDomain: "{{.PROJECT_DOMAIN}}"
               publicDomain: "{{.PUBLIC_DOMAIN}}"

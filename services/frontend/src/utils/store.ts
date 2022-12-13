@@ -6,13 +6,13 @@ type GlobalState = {
     email: string;
     role: "admin" | "user";
   };
-  login: () => void;
+  login: (token: string) => void;
   logout: () => void;
 };
 
 export const useGlobalState = create<GlobalState>((set) => ({
   isLoggedIn: false,
-  login: () => {
+  login: (token: string) => {
     set({
       isLoggedIn: true,
       user: {
