@@ -5,9 +5,9 @@ import {
   AuthServiceForm,
 } from "./types";
 
-const apiServiceUrl = "http://auth.project.127.0.0.1.sslip.io/api/v1/auth"; // TODO: replace by production URL
+const apiServiceUrl = "/api/v1/auth";
 const solversServiceUrl =
-  "http://solvers-service.project.127.0.0.1.sslip.io/api/v1";
+  "/api/v1";
 
 export const apiSignup = (
   input: AuthServiceForm
