@@ -22,9 +22,9 @@ profiles:
   - name: production
     build:
       tagPolicy:
-        gitCommit: {}
+        sha256: {}
       artifacts:
-      - image: ghcr.io/yousofmersal/dm885_auth-service
+        - image: ghcr.io/yousofmersal/dm885_auth-service
     deploy:
       helm:
         releases:
