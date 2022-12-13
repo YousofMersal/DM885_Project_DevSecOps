@@ -1,30 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { apiSignup } from "../request";
-import { z, ZodError } from "zod";
-import { Link, useLocation, useNavigate } from "@tanstack/react-location";
-import { authServicePayload } from "../utils/common";
+import { Link, useNavigate } from "@tanstack/react-location";
+import { authServicePayload, handleError } from "../utils/common";
+import { ZodError } from "zod";
 
 export const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
+    setError("");
 
     const form = new FormData(e.currentTarget);
 
-    const signUpPayload = authServicePayload.parse({
-      email: form.get("email"),
-      password: form.get("password"),
-    });
-
     try {
+      const signUpPayload = authServicePayload.parse({
+        email: form.get("email"),
+        password: form.get("password"),
+      });
+
       await apiSignup(signUpPayload);
 
       navigate({
         to: "/",
       });
     } catch (e: unknown) {
-      console.log("handleSubmit failed", e);
+      setError(handleError(e));
     }
   };
 
@@ -42,9 +44,13 @@ export const SignUpPage: React.FC = () => {
           name="password"
           type="password"
         />
-        <p className="helper-text">
-          Your password should be 5 characters or more
-        </p>
+        {error ? (
+          <p style={{ color: "red" }}>{error}</p>
+        ) : (
+          <p className="helper-text">
+            Your password should be 5 characters or more
+          </p>
+        )}
         <button>Create profile</button>
       </form>
       <div>

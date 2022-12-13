@@ -64,16 +64,8 @@ export const Home: React.FC = () => {
             <tr key={problem.id}>
               <td>{problem.id}</td>
               <td>{problem.name}</td>
-              <td
-                style={{
-                  background: problem.mzn ? "green" : undefined,
-                }}
-              ></td>
-              <td
-                style={{
-                  background: problem.dzn ? "green" : undefined,
-                }}
-              ></td>
+              <td>{problem.mzn}</td>
+              <td>{problem.dzn}</td>
               <td>
                 <Link to={`/problems/${problem.id}`}>View</Link>
               </td>
