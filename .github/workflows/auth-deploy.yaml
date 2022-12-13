@@ -33,15 +33,6 @@ jobs:
       - name: Install Skaffold
         run: curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install /tmp/skaffold /usr/local/bin/
 
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.skaffold/
-          key: fixed-${{ github.sha }}
-          restore-keys: |
-                    fixed-${{ github.sha }}
-                    fixed-
-
       - name: Run Skaffold build
         run: skaffold build -p production --file-output=image.json
         working-directory: ./services/auth
