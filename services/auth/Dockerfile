@@ -1,7 +1,7 @@
 #stage 1
-FROM clux/muslrust:stable as chef
+FROM clux/muslrust:1.68.0-nightly-2022-12-12 as chef
 USER root
-RUN cargo install cargo-chef
+RUN cargo install -Z sparse-registry cargo-chef
 WORKDIR /auth
 
 FROM chef AS planner
@@ -11,9 +11,9 @@ RUN cargo chef prepare --recipe-path recipe.json
 # state 2
 FROM chef as builder 
 COPY --from=planner /auth/recipe.json recipe.json
-RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
+RUN cargo chef cook -Z sparse-registry --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
 COPY . .
-RUN cargo build --release --target x86_64-unknown-linux-musl --bin dm885_auth_service
+RUN cargo build --release -Z sparse-registry --target x86_64-unknown-linux-musl --bin dm885_auth_service
 
 
 FROM alpine as runtime 
