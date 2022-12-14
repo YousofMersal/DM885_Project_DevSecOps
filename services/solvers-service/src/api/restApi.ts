@@ -15,7 +15,7 @@ function startRestAPI(k8sClient: K8sClient, db: Client) {
 
   app.use('/api/v1/jobs', jobsRoute(k8sClient, db))
   app.use('/api/v1/solvers', solversRoute(db))
-  app.use('/api/v1/models', modelsRoute())
+  app.use('/api/v1/models', modelsRoute(db))
 
   const server = app.listen(port, () => {
     console.log(
