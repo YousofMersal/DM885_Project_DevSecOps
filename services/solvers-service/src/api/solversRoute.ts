@@ -17,15 +17,15 @@ export default (db: Client) => {
   jobs.get('/:name', async (req, res) => {
     const name = req.params.name
 
-    const jobs = (
+    const solver = (
       await db.query('SELECT * FROM solvers WHERE name = $1', [name])
     ).rows
 
-    if (jobs.length == 0) {
+    if (solver.length == 0) {
       return res.status(404).send({ message: 'solver not found' })
     }
 
-    res.send(jobs[0])
+    res.send(solver[0])
   })
 
 
@@ -48,18 +48,11 @@ export default (db: Client) => {
       return res.status(404).send({ message: 'solver not found' })
     }
 
-    try {
 
-      await db.query(
-        'UPDATE solvers SET name = $1, image = $2 WHERE name = $3',
-        [body.name, body.image, oldName]
-      )
-
-      await db.query('COMMIT')
-    } catch (e) {
-      await db.query('ROLLBACK')
-      throw e
-    }
+    await db.query(
+      'UPDATE solvers SET name = $1, image = $2 WHERE name = $3',
+      [body.name, body.image, oldName]
+    )
 
     res.sendStatus(204)
   })
@@ -75,16 +68,10 @@ export default (db: Client) => {
       throw 'missing image'
     }
 
-    try {
-      await db.query('INSERT INTO solvers (name, image) VALUES ($1, $2)', [
-        body.name,
-        body.image,
-      ])
-      await db.query('COMMIT')
-    } catch (e) {
-      await db.query('ROLLBACK')
-      throw e
-    }
+    await db.query('INSERT INTO solvers (name, image) VALUES ($1, $2)', [
+      body.name,
+      body.image,
+    ])
 
     res.sendStatus(201)
   })
@@ -96,8 +83,13 @@ export default (db: Client) => {
   jobs.delete('/:solver_id', async (req, res) => {
     const solver_id = req.params.solver_id
 
-    await db.query('DELETE FROM solvers WHERE solver_id = $1', [solver_id])
+    const solverCount = ((await db.query('SELECT * FROM solvers WHERE solver_id = $1', [solver_id])).rowCount)
 
+    if (solverCount == 0) {
+      return res.status(404).send({ message: 'solver not found' })
+    }
+
+    await db.query('DELETE FROM solvers WHERE solver_id = $1', [solver_id])
 
     res.sendStatus(204)
   })
