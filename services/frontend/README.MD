@@ -24,7 +24,7 @@ VITE_PROJECT_DOMAIN=project.127.0.0.1.sslip.io
 
 In order to interact with the other services, run `skaffold dev` in the services folder.
 
-There's also the option to run the frontend without specifying a `VITE_PROJECT_DOMAIN` in the .env file and just access the frontend from the url provided by `$PROJECT_DOMAIN` after running `skaffold dev`, but you'll some of the benefits from the local dev server.
+There's also the option to run the frontend without specifying a `VITE_PROJECT_DOMAIN` in the .env file and just access the frontend from the url provided by `$PROJECT_DOMAIN` after running `skaffold dev`, but you'll lose some of the benefits from the local dev server.
 
 ## Decisions
 
