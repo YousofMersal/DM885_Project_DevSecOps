@@ -4,6 +4,7 @@ import {
   DBMznData,
   DBJob,
   DBSolver,
+  runningJobs,
 } from './../jobs/jobs-manager.js'
 import { K8sClient } from './../jobs/k8s-client.js'
 import express from 'express'
@@ -121,7 +122,7 @@ export default (client: K8sClient, db: Client) => {
   jobs.delete<{ job_id: string }>('/:job_id', async (req, res) => {
     const job_id = req.params.job_id
 
-    const jobs = await (
+    const jobs = (
       await db.query('DELETE FROM jobs WHERE job_id = $1 RETURNING *', [job_id])
     ).rows
 
@@ -138,7 +139,7 @@ export default (client: K8sClient, db: Client) => {
   jobs.get<{ job_id: string }>('/:job_id/result', async (req, res) => {
     const job_id = req.params.job_id
 
-    const jobCount = await (
+    const jobCount = (
       await db.query('SELECT * FROM jobs WHERE job_id = $1', [job_id])
     ).rowCount
 
@@ -153,9 +154,29 @@ export default (client: K8sClient, db: Client) => {
     res.send(solutions)
   })
 
+  jobs.post<{ job_id: string }>('/:job_id/cancel', async (req, res) => {
+    const job_id = req.params.job_id
+    // const solvers = req.body as string[]
+
+    if (!(job_id in runningJobs)) {
+      return res.status(404).send({ message: 'job not found' })
+    }
+
+    const jobCtx = runningJobs[job_id]
+
+    const solvers = Object.keys(jobCtx.solvers)
+    Object.values(jobCtx.solvers).forEach((solver) => solver.cancelSolver())
+
+    res.send({
+      message: 'cancelled solvers',
+      solvers,
+      job_id: jobCtx.job_id,
+    })
+  })
+
   jobs.use('*', (req, res) => {
     res.send({
-      msg: `Solvers service /jobs: ${req.path} ${req.method}`,
+      message: `Solvers service /jobs: ${req.path} ${req.method}`,
       env: process.env.NODE_ENV,
       time: Date.now(),
     })
