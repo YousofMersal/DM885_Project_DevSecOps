@@ -7,9 +7,10 @@ import {
   AuthServiceForm,
 } from "./types";
 
-const apiServiceUrl = import.meta.env.DEV
-  ? "http://project.127.0.0.1.sslip.io/api/v1"
-  : "/api/v1";
+const apiServiceUrl =
+  import.meta.env.DEV && import.meta.env.VITE_PROJECT_DOMAIN
+    ? `http://${import.meta.env.VITE_PROJECT_DOMAIN}/api/v1`
+    : "/api/v1";
 
 export const apiSignup = (
   input: AuthServiceForm

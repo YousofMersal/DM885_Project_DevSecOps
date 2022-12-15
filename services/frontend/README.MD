@@ -16,7 +16,15 @@ Run the dev server:
 npm run dev
 ```
 
-In order to interact with the other services, run `skaffold dev` in the services folder. There's also the option to run the frontend from $PROJECT_DOMAIN but you'll not benefit from the benefits of live reloading etc. provided by the vite dev server.
+and create an `.env` file with the following content if you:
+
+```
+VITE_PROJECT_DOMAIN=project.127.0.0.1.sslip.io
+```
+
+In order to interact with the other services, run `skaffold dev` in the services folder.
+
+There's also the option to run the frontend without specifying a `PROJECT_DOMAIN` in the .env file and just access the frontend from `$PROJECT_DOMAIN` after running `skaffold dev` but you'll some of the benefits from the local dev server.
 
 ## Decisions
 

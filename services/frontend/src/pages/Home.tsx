@@ -4,13 +4,6 @@ import { UploadProblemDialog } from "../components/UploadProblemDialog";
 import { apiListModels } from "../request";
 import { ApiModel } from "../types";
 
-type Instance = {
-  id: number;
-  name: string;
-  mzn: string;
-  dzn?: string;
-};
-
 export const Home: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [problems, setProblems] = useState<ApiModel[]>([]);
