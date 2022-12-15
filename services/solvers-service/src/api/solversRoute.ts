@@ -59,6 +59,8 @@ export default (db: Client) => {
 
 
   // POST
+
+  // Add solver
   jobs.post('/', async (req, res) => {
     const body: components['schemas']['Solver_create'] = req.body
 
