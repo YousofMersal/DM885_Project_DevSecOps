@@ -5,14 +5,12 @@ import {
   AuthServiceForm,
 } from "./types";
 
-const apiServiceUrl = "http://auth.project.127.0.0.1.sslip.io/api/v1/auth"; // TODO: replace by production URL
-const solversServiceUrl =
-  "http://solvers-service.project.127.0.0.1.sslip.io/api/v1";
+const apiServiceUrl = "/api/v1";
 
 export const apiSignup = (
   input: AuthServiceForm
 ): Promise<ApiSignupResponse> => {
-  return request(apiServiceUrl + "/users", {
+  return request(apiServiceUrl + "/auth/users", {
     body: JSON.stringify({
       ...input,
       username: input.email,
@@ -22,7 +20,7 @@ export const apiSignup = (
 };
 
 export const apiLogin = (input: AuthServiceForm): Promise<ApiLoginResponse> => {
-  return request(apiServiceUrl + "/users/login", {
+  return request(apiServiceUrl + "/auth/users/login", {
     body: JSON.stringify({
       username: input.email,
       password: input.password,
@@ -32,7 +30,7 @@ export const apiLogin = (input: AuthServiceForm): Promise<ApiLoginResponse> => {
 };
 
 export const apiStartJob = () => {
-  return request(solversServiceUrl + "/jobs", {
+  return request(apiServiceUrl + "/jobs", {
     method: "POST",
     body: JSON.stringify({
       model_id: "1",
@@ -43,15 +41,15 @@ export const apiStartJob = () => {
 };
 
 export const apiListJobs = (): Promise<ApiJob[]> => {
-  return request(solversServiceUrl + "/jobs");
+  return request(apiServiceUrl + "/jobs");
 };
 
 export const apiGetJob = (): Promise<ApiJob> => {
-  return request(solversServiceUrl + "/jobs/1");
+  return request(apiServiceUrl + "/jobs/1");
 };
 
 export const apiDeleteJob = () => {
-  return request(solversServiceUrl + "/jobs/1", {
+  return request(apiServiceUrl + "/jobs/1", {
     method: "DELETE",
   });
 };
