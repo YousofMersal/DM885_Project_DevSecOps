@@ -1,30 +1,42 @@
 import React, { useEffect, useRef } from "react";
-import { createProblemPayload } from "../utils/common";
+import { apiSaveModel } from "../request";
+import { createProblemPayload, handleError } from "../utils/common";
 import { OutlinedButton } from "./OutlinedButton";
 
 interface IUploadProblemDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: () => void;
 }
 
 export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
   isOpen,
   onClose,
+  onSubmit,
 }) => {
   const ref = useRef<HTMLDialogElement>(null);
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     const fd = new FormData(e.currentTarget);
 
-    const fields = createProblemPayload.parse({
-      data: fd.get("mdn"),
-      model: fd.get("mzn"),
-      name: fd.get("name"),
-    });
+    try {
+      const fields = createProblemPayload.parse({
+        content: fd.get("content"),
+        name: fd.get("name"),
+      });
 
-    onClose();
+      await apiSaveModel({
+        content: await fields.content.text(),
+        name: fields.name,
+      });
+
+      onClose();
+      onSubmit();
+    } catch (e) {
+      handleError(e);
+    }
   };
 
   useEffect(() => {
@@ -42,11 +54,7 @@ export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
         <input type="text" required={true} name="name" />
         <div>
           <label>Model (.mzn file)</label>
-          <input type="file" name="mzn" required={true} accept=".mzn" />
-        </div>
-        <div>
-          <label>Data (.mdn file)</label>
-          <input type="file" name="mdn" accept=".mdn" />
+          <input type="file" name="content" required={true} accept=".mzn" />
         </div>
         <div></div>
         <button type="submit">Submit</button>

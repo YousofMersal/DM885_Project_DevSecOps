@@ -27,3 +27,15 @@ export type ApiJob = {
   finished_at: string;
   job_status: string;
 };
+
+export type ApiModel = {
+  content: string;
+  model_id: number;
+  name: string;
+};
+
+export type ApiSolver = {
+  image: string;
+  name: string;
+  solver_id: number;
+};

@@ -1,11 +1,16 @@
 import {
   ApiJob,
   ApiLoginResponse,
+  ApiModel,
   ApiSignupResponse,
+  ApiSolver,
   AuthServiceForm,
 } from "./types";
 
-const apiServiceUrl = "/api/v1";
+const apiServiceUrl =
+  import.meta.env.DEV && import.meta.env.VITE_PROJECT_DOMAIN
+    ? `http://${import.meta.env.VITE_PROJECT_DOMAIN}/api/v1`
+    : "/api/v1";
 
 export const apiSignup = (
   input: AuthServiceForm
@@ -40,12 +45,31 @@ export const apiStartJob = () => {
   });
 };
 
+export const apiListModels = (): Promise<ApiModel[]> => {
+  return request(apiServiceUrl + "/models");
+};
+
+export const apiListSolvers = (): Promise<ApiSolver[]> => {
+  return request(apiServiceUrl + "/solvers");
+};
+
+export const apiSaveModel = (body: { content: string; name: string }) => {
+  return request(apiServiceUrl + "/models", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+};
+
 export const apiListJobs = (): Promise<ApiJob[]> => {
   return request(apiServiceUrl + "/jobs");
 };
 
 export const apiGetJob = (): Promise<ApiJob> => {
   return request(apiServiceUrl + "/jobs/1");
+};
+
+export const apiGetModel = (id: string): Promise<ApiModel> => {
+  return request(`${apiServiceUrl}/models/${id}`);
 };
 
 export const apiDeleteJob = () => {
