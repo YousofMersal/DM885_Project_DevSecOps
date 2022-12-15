@@ -6,12 +6,14 @@ import jobsRoute from './jobsRoute.js'
 import solversRoute from './solversRoute.js'
 import modelsRoute from './modelsRoute.js'
 import type { Client } from 'pg'
+import cors from 'cors'
 
 function startRestAPI(k8sClient: K8sClient, db: Client) {
   const app = express()
   const port = process.env.PORT || 8080
 
   app.use(express.json())
+  app.use(cors())
 
   app.use('/api/v1/jobs', jobsRoute(k8sClient, db))
   app.use('/api/v1/solvers', solversRoute(db))

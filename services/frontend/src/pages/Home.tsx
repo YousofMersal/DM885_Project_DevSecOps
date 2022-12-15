@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-location";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UploadProblemDialog } from "../components/UploadProblemDialog";
+import { apiListModels } from "../request";
+import { ApiModel } from "../types";
 
 type Instance = {
   id: number;
@@ -11,25 +13,13 @@ type Instance = {
 
 export const Home: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [problems, setProblems] = useState<Instance[]>([
-    {
-      id: 1,
-      name: "Cool",
-      mzn: "Cool",
-      dzn: "mzn",
-    },
-    {
-      id: 2,
-      name: "Cool",
-      mzn: "Cool 2",
-      dzn: "dzn",
-    },
-    {
-      id: 3,
-      name: "Cool",
-      mzn: "Cool test",
-    },
-  ]);
+  const [problems, setProblems] = useState<ApiModel[]>([]);
+
+  const getModels = () => apiListModels().then((result) => setProblems(result));
+
+  useEffect(() => {
+    getModels();
+  }, []);
 
   return (
     <div>
@@ -46,7 +36,7 @@ export const Home: React.FC = () => {
             width: "auto",
           }}
         >
-          New optimization problem
+          New model
         </button>
       </div>
       <table>
@@ -54,26 +44,28 @@ export const Home: React.FC = () => {
           <tr>
             <th>Id</th>
             <th>Name</th>
-            <th>Model</th>
-            <th>Data</th>
+            <th>Content</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           {problems.map((problem) => (
-            <tr key={problem.id}>
-              <td>{problem.id}</td>
+            <tr key={problem.model_id}>
+              <td>{problem.model_id}</td>
               <td>{problem.name}</td>
-              <td>{problem.mzn}</td>
-              <td>{problem.dzn}</td>
+              <td>{problem.content}</td>
               <td>
-                <Link to={`/problems/${problem.id}`}>View</Link>
+                <Link to={`/problems/${problem.model_id}`}>View</Link>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <UploadProblemDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <UploadProblemDialog
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onSubmit={getModels}
+      />
     </div>
   );
 };

@@ -13,6 +13,7 @@ type GlobalState = {
 export const useGlobalState = create<GlobalState>((set) => ({
   isLoggedIn: false,
   login: (token: string) => {
+    localStorage.setItem("token", token);
     set({
       isLoggedIn: true,
       user: {
@@ -22,6 +23,7 @@ export const useGlobalState = create<GlobalState>((set) => ({
     });
   },
   logout: () => {
+    localStorage.removeItem("token");
     set({
       isLoggedIn: false,
       user: undefined,

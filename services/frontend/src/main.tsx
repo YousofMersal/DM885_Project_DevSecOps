@@ -4,7 +4,7 @@ import {
   ReactLocation,
   Router,
 } from "@tanstack/react-location";
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
@@ -37,6 +37,17 @@ const ProtectedRoute: React.FC<{
 };
 
 const Routes: React.FC = () => {
+  const { login } = useGlobalState();
+
+  // on start-up
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      login(token);
+    }
+  }, []);
+
   return (
     <Router
       location={location}
