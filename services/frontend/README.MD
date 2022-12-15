@@ -16,6 +16,8 @@ Run the dev server:
 npm run dev
 ```
 
+In order to interact with the other services, run `skaffold dev` in the services folder. There's also the option to run the frontend from $PROJECT_DOMAIN but you'll not benefit from the benefits of live reloading etc. provided by the vite dev server.
+
 ## Decisions
 
 Here I'll write a few notes on the decisions made so far to help new people understand what's going on in the codebase.
