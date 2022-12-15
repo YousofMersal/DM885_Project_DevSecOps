@@ -16,7 +16,7 @@ Run the dev server:
 npm run dev
 ```
 
-and create an `.env` file with the following content if you:
+and create an `.env` file with the following content:
 
 ```
 VITE_PROJECT_DOMAIN=project.127.0.0.1.sslip.io
