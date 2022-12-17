@@ -17,7 +17,7 @@ const apiServiceUrl =
 export const apiSignup = (
   input: AuthServiceForm
 ): Promise<ApiSignupResponse> => {
-  return request(apiServiceUrl + "/auth/users", {
+  return request("/auth/users", {
     body: JSON.stringify({
       ...input,
       username: input.email,
@@ -27,7 +27,7 @@ export const apiSignup = (
 };
 
 export const apiLogin = (input: AuthServiceForm): Promise<ApiLoginResponse> => {
-  return request(apiServiceUrl + "/auth/users/login", {
+  return request("/auth/users/login", {
     body: JSON.stringify({
       username: input.email,
       password: input.password,
@@ -50,47 +50,81 @@ export const apiStartJob = (
     //@ts-expect-error
     payload.dataId = dataId;
   }
-  return request(apiServiceUrl + "/jobs", {
+  return request("/jobs", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 };
 
-export const apiGetUsers = () => request(apiServiceUrl + "/auth/users");
+export const apiGetUsers = () => request("/auth/users");
 
 export const apiListModels = (): Promise<ApiModel[]> => {
-  return request(apiServiceUrl + "/models");
+  return request("/models");
 };
 
 export const apiListSolvers = (): Promise<ApiSolver[]> => {
-  return request(apiServiceUrl + "/solvers");
+  return request("/solvers");
 };
 
+export const apiDeleteSolver = (id: number) =>
+  request(`/solvers/${id}`, {
+    method: "DELETE",
+  });
+
+export const apiGetSolver = (id: string): Promise<ApiSolver> =>
+  request(`/solvers/${id}`);
+
+export const apiEditSolver = (name: string, image: string, id: string) =>
+  request(`/solvers/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      name,
+      image,
+    }),
+  });
+
+export const apiCreateSolver = (name: string, image: string) =>
+  request(`/solvers`, {
+    method: "POST",
+    body: JSON.stringify({ name, image }),
+  });
+
 export const apiSaveModel = (body: { content: string; name: string }) => {
-  return request(apiServiceUrl + "/models", {
+  return request("/models", {
     method: "POST",
     body: JSON.stringify(body),
   });
 };
 
+export const apiEditModel = (body: {
+  content: string;
+  name: string;
+  id: string;
+}) => {
+  return request(`/models/${body.id}`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+};
+
 export const apiListJobs = (): Promise<ApiJob[]> => {
-  return request(apiServiceUrl + "/jobs");
+  return request("/jobs");
 };
 
 export const apiGetJob = (jobId: string): Promise<ApiJob> => {
-  return request(`${apiServiceUrl}/jobs/${jobId}`);
+  return request(`/jobs/${jobId}`);
 };
 
 export const apiGetJobResult = (jobId: string): Promise<ApiJobResult[]> => {
-  return request(`${apiServiceUrl}/jobs/${jobId}/result`);
+  return request(`/jobs/${jobId}/result`);
 };
 
 export const apiGetModel = (id: string): Promise<ApiModel> => {
-  return request(`${apiServiceUrl}/models/${id}`);
+  return request(`/models/${id}`);
 };
 
 export const apiDeleteJob = () => {
-  return request(apiServiceUrl + "/jobs/1", {
+  return request("/jobs/1", {
     method: "DELETE",
   });
 };
@@ -100,7 +134,7 @@ export const apiSaveDataOnModel = (
   name: string,
   content: string
 ) => {
-  return request(`${apiServiceUrl}/models/${modelId}/data`, {
+  return request(`/models/${modelId}/data`, {
     method: "POST",
     body: JSON.stringify({
       name,
@@ -115,7 +149,7 @@ export const apiUpdateDataOnModel = (
   name: string,
   content: string
 ) => {
-  return request(`${apiServiceUrl}/models/${modelId}/data/${dataId}`, {
+  return request(`/models/${modelId}/data/${dataId}`, {
     method: "PUT",
     body: JSON.stringify({
       name,
@@ -128,23 +162,23 @@ export const apiGetModelData = (
   modelId: string,
   dataId: string
 ): Promise<ApiModelData> => {
-  return request(`${apiServiceUrl}/models/${modelId}/data/${dataId}`);
+  return request(`/models/${modelId}/data/${dataId}`);
 };
 
 export const apiListDataForModel = (
   modelId: string
 ): Promise<ApiModelData[]> => {
-  return request(`${apiServiceUrl}/models/${modelId}/data`);
+  return request(`/models/${modelId}/data`);
 };
 
 export const apiRemoveModelData = (modelId: number, dataId: number) => {
-  return request(`${apiServiceUrl}/models/${modelId}/data/${dataId}`, {
+  return request(`/models/${modelId}/data/${dataId}`, {
     method: "DELETE",
   });
 };
 
 export const apiRemoveModel = (modelId: string) =>
-  request(`${apiServiceUrl}/models/${modelId}`, {
+  request(`/models/${modelId}`, {
     method: "DELETE",
   });
 
@@ -165,7 +199,7 @@ const request = async (path: string, requestConfig?: RequestInit) => {
     defaultConfig.headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(path, defaultConfig);
+  const response = await fetch(`${apiServiceUrl}${path}`, defaultConfig);
 
   console.log("response", response);
 

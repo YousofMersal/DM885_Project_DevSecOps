@@ -51,6 +51,15 @@ export const ProblemPage: React.FC = () => {
           >
             Remove
           </button>
+          <button
+            onClick={() =>
+              navigate({
+                to: `/problems/${modelId}/edit`,
+              })
+            }
+          >
+            Edit
+          </button>
         </div>
       </div>
       <table>

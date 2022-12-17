@@ -20,6 +20,8 @@ import { ProblemDataPage } from "./pages/ProblemDataPage";
 import { ProblemDataEditPage } from "./pages/ProblemDataEditPage";
 import { JobPage } from "./pages/JobPage";
 import { JobResultPage } from "./pages/JobResultPage";
+import { EditProblemPage } from "./pages/EditProblemPage";
+import { SolverPage } from "./pages/SolverPage";
 
 const location = new ReactLocation();
 
@@ -87,6 +89,16 @@ const Routes: React.FC = () => {
           ),
         },
         {
+          path: "/problems/:id/edit",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <EditProblemPage />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
           path: "/problems/:id/data",
           element: (
             <ProtectedRoute>
@@ -123,6 +135,16 @@ const Routes: React.FC = () => {
           ),
         },
         {
+          path: "/solver-config/:id",
+          element: (
+            <ProtectedRoute isAdminRoute={true}>
+              <Layout>
+                <SolverPage />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
           path: "/solver-config",
           element: (
             <ProtectedRoute isAdminRoute={true}>
@@ -132,6 +154,7 @@ const Routes: React.FC = () => {
             </ProtectedRoute>
           ),
         },
+
         {
           path: "/users",
           element: (
