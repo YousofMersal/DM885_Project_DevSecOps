@@ -11,6 +11,11 @@ export const createProblemPayload = z.object({
   data: z.instanceof(File).optional(),
 });
 
+export const createModelData = z.object({
+  name: z.string(),
+  content: z.string(),
+});
+
 export const handleError = (e: unknown) => {
   if (e instanceof ZodError) {
     return e.errors?.[0].message;
