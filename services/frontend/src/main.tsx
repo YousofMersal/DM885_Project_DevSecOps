@@ -16,6 +16,12 @@ import { Container } from "./components/Container";
 import { SolverConfiguration } from "./pages/SolverConfiguration";
 import { Users } from "./pages/Users";
 import { ProblemPage } from "./pages/ProblemPage";
+import { ProblemDataPage } from "./pages/ProblemDataPage";
+import { ProblemDataEditPage } from "./pages/ProblemDataEditPage";
+import { JobPage } from "./pages/JobPage";
+import { JobResultPage } from "./pages/JobResultPage";
+import { EditProblemPage } from "./pages/EditProblemPage";
+import { SolverPage } from "./pages/SolverPage";
 
 const location = new ReactLocation();
 
@@ -63,6 +69,46 @@ const Routes: React.FC = () => {
           ),
         },
         {
+          path: "/problems/:id/data/:data_id/job",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <JobPage />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/problems/:id/data/:data_id",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <ProblemDataEditPage />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/problems/:id/edit",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <EditProblemPage />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/problems/:id/data",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <ProblemDataPage />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
           path: "/problems/:id",
           element: (
             <ProtectedRoute>
@@ -89,6 +135,16 @@ const Routes: React.FC = () => {
           ),
         },
         {
+          path: "/solver-config/:id",
+          element: (
+            <ProtectedRoute isAdminRoute={true}>
+              <Layout>
+                <SolverPage />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
           path: "/solver-config",
           element: (
             <ProtectedRoute isAdminRoute={true}>
@@ -98,12 +154,23 @@ const Routes: React.FC = () => {
             </ProtectedRoute>
           ),
         },
+
         {
           path: "/users",
           element: (
             <ProtectedRoute isAdminRoute={true}>
               <Layout>
                 <Users />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/jobs/:id",
+          element: (
+            <ProtectedRoute isAdminRoute={true}>
+              <Layout>
+                <JobResultPage />
               </Layout>
             </ProtectedRoute>
           ),

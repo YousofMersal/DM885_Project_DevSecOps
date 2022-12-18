@@ -1,9 +1,12 @@
 import {
   ApiJob,
+  ApiJobResult,
   ApiLoginResponse,
   ApiModel,
+  ApiModelData,
   ApiSignupResponse,
   ApiSolver,
+  ApiUser,
   AuthServiceForm,
 } from "./types";
 
@@ -15,7 +18,7 @@ const apiServiceUrl =
 export const apiSignup = (
   input: AuthServiceForm
 ): Promise<ApiSignupResponse> => {
-  return request(apiServiceUrl + "/auth/users", {
+  return request("/auth/users", {
     body: JSON.stringify({
       ...input,
       username: input.email,
@@ -25,7 +28,7 @@ export const apiSignup = (
 };
 
 export const apiLogin = (input: AuthServiceForm): Promise<ApiLoginResponse> => {
-  return request(apiServiceUrl + "/auth/users/login", {
+  return request("/auth/users/login", {
     body: JSON.stringify({
       username: input.email,
       password: input.password,
@@ -34,52 +37,156 @@ export const apiLogin = (input: AuthServiceForm): Promise<ApiLoginResponse> => {
   });
 };
 
-export const apiStartJob = () => {
-  return request(apiServiceUrl + "/jobs", {
+export const apiStartJob = (
+  modelId: number,
+  solverIds: number[],
+  dataId?: number
+): Promise<{ job_id: string; status: string }> => {
+  const payload = {
+    model_id: modelId,
+    solver_ids: solverIds,
+  };
+
+  if (dataId) {
+    //@ts-expect-error
+    payload.dataId = dataId;
+  }
+  return request("/jobs", {
     method: "POST",
-    body: JSON.stringify({
-      model_id: "1",
-      solver_ids: ["1", "2"],
-      data_id: "",
-    }),
+    body: JSON.stringify(payload),
   });
 };
 
+export const apiGetUsers = (): Promise<ApiUser[]> => request("/auth/users");
+
 export const apiListModels = (): Promise<ApiModel[]> => {
-  return request(apiServiceUrl + "/models");
+  return request("/models");
 };
 
 export const apiListSolvers = (): Promise<ApiSolver[]> => {
-  return request(apiServiceUrl + "/solvers");
+  return request("/solvers");
 };
 
+export const apiDeleteSolver = (id: number) =>
+  request(`/solvers/${id}`, {
+    method: "DELETE",
+  });
+
+export const apiGetSolver = (id: string): Promise<ApiSolver> =>
+  request(`/solvers/${id}`);
+
+export const apiEditSolver = (name: string, image: string, id: string) =>
+  request(`/solvers/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      name,
+      image,
+    }),
+  });
+
+export const apiCreateSolver = (name: string, image: string) =>
+  request(`/solvers`, {
+    method: "POST",
+    body: JSON.stringify({ name, image }),
+  });
+
 export const apiSaveModel = (body: { content: string; name: string }) => {
-  return request(apiServiceUrl + "/models", {
+  return request("/models", {
     method: "POST",
     body: JSON.stringify(body),
   });
 };
 
-export const apiListJobs = (): Promise<ApiJob[]> => {
-  return request(apiServiceUrl + "/jobs");
+export const apiEditModel = (body: {
+  content: string;
+  name: string;
+  id: string;
+}) => {
+  return request(`/models/${body.id}`, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
 };
 
-export const apiGetJob = (): Promise<ApiJob> => {
-  return request(apiServiceUrl + "/jobs/1");
+export const apiListJobs = (): Promise<ApiJob[]> => {
+  return request("/jobs");
+};
+
+export const apiGetJob = (jobId: string): Promise<ApiJob> => {
+  return request(`/jobs/${jobId}`);
+};
+
+export const apiGetJobResult = (jobId: string): Promise<ApiJobResult[]> => {
+  return request(`/jobs/${jobId}/result`);
 };
 
 export const apiGetModel = (id: string): Promise<ApiModel> => {
-  return request(`${apiServiceUrl}/models/${id}`);
+  return request(`/models/${id}`);
 };
 
 export const apiDeleteJob = () => {
-  return request(apiServiceUrl + "/jobs/1", {
+  return request("/jobs/1", {
     method: "DELETE",
   });
 };
 
+export const apiSaveDataOnModel = (
+  modelId: number,
+  name: string,
+  content: string
+) => {
+  return request(`/models/${modelId}/data`, {
+    method: "POST",
+    body: JSON.stringify({
+      name,
+      content,
+    }),
+  });
+};
+
+export const apiUpdateDataOnModel = (
+  dataId: string,
+  modelId: string,
+  name: string,
+  content: string
+) => {
+  return request(`/models/${modelId}/data/${dataId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      name,
+      content,
+    }),
+  });
+};
+
+export const apiGetModelData = (
+  modelId: string,
+  dataId: string
+): Promise<ApiModelData> => {
+  return request(`/models/${modelId}/data/${dataId}`);
+};
+
+export const apiListDataForModel = (
+  modelId: string
+): Promise<ApiModelData[]> => {
+  return request(`/models/${modelId}/data`);
+};
+
+export const apiRemoveModelData = (modelId: number, dataId: number) => {
+  return request(`/models/${modelId}/data/${dataId}`, {
+    method: "DELETE",
+  });
+};
+
+export const apiRemoveModel = (modelId: string) =>
+  request(`/models/${modelId}`, {
+    method: "DELETE",
+  });
+
 const request = async (path: string, requestConfig?: RequestInit) => {
   console.log("request", path);
+
+  const token = localStorage.getItem("token");
 
   const defaultConfig: RequestInit = {
     headers: {
@@ -88,7 +195,12 @@ const request = async (path: string, requestConfig?: RequestInit) => {
     ...requestConfig,
   };
 
-  const response = await fetch(path, defaultConfig);
+  if (token) {
+    //@ts-expect-error
+    defaultConfig.headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${apiServiceUrl}${path}`, defaultConfig);
 
   console.log("response", response);
 
