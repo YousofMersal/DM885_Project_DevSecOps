@@ -1,16 +1,12 @@
 import { useMatch, useNavigate } from "@tanstack/react-location";
 import React, { useEffect, useRef, useState } from "react";
 import { apiEditModel, apiGetModel } from "../request";
-import {
-  createModelData,
-  createProblemPayload,
-  handleError,
-} from "../utils/common";
+import { createModelData, handleError } from "../utils/common";
 
 interface IEditProblemPageProps {}
 
 export const EditProblemPage: React.FC<IEditProblemPageProps> = () => {
-  const refContent = useRef<HTMLInputElement>(null);
+  const refContent = useRef<HTMLTextAreaElement>(null);
   const refName = useRef<HTMLInputElement>(null);
 
   const navigate = useNavigate();
