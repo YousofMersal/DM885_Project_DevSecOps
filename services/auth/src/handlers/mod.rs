@@ -8,7 +8,10 @@ use actix_web::{
 
 use crate::error::AppError;
 
-use self::{auth::auth, user::create_user};
+use self::{
+    auth::auth,
+    user::{create_user, list_users},
+};
 
 // QOL shorthands
 type AppResult<T> = Result<T, AppError>;
@@ -18,9 +21,11 @@ pub fn app_config(config: &mut ServiceConfig) {
     //! This function is where all the middleware and the routes are registered.
     //! as of right now this is rather bare as this the API, we didn't really specify what this service is responsible for.
 
-    let signup = web::resource("/users").route(web::post().to(create_user));
+    let users = web::resource("/users")
+        .route(web::post().to(create_user))
+        .route(web::get().to(list_users));
 
     let auth = web::resource("/users/login").route(web::post().to(auth));
 
-    config.service(signup).service(auth);
+    config.service(users).service(auth);
 }

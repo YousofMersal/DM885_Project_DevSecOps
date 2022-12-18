@@ -1,5 +1,6 @@
 // use futures_util::future::{Future, Ready};
 use actix_utils::future::{ready, Ready};
+use eyre::{anyhow, bail, Context};
 use std::{
     // future::{ready, Ready},
     ops::Deref,
@@ -16,9 +17,10 @@ use uuid::Uuid;
 use crate::{
     config::secret::SecretService,
     error::AppError,
-    models::user::{NewUser, User},
+    models::user::{NewUser, SimpleUser, User},
 };
 
+#[derive(Debug)]
 pub struct UserRepo {
     pool: Arc<PgPool>,
 }
@@ -26,6 +28,12 @@ pub struct UserRepo {
 impl UserRepo {
     pub fn new(pool: Arc<PgPool>) -> Self {
         Self { pool }
+    }
+
+    pub async fn is_admin(&self, user_id: Uuid) -> Result<bool> {
+        let user = self.find_by_id(user_id).await?;
+        // Ok(user.map(|user| user.role == "admin").unwrap_or(false))
+        Ok(user.map(|user| user.role == "admin").unwrap_or(false))
     }
 
     #[instrument(skip(self, new_user, secret_service))] // only instrument what is actually going on inside the function
@@ -103,6 +111,22 @@ impl UserRepo {
             .await?;
 
         Ok(possible_user)
+    }
+
+    pub async fn get_all_users(&self, id: Uuid) -> Result<Option<Vec<SimpleUser>>> {
+        //! If the id provided is an admin, return all users, otherwise return not authorized error.
+
+        let is_admin = self.is_admin(id).await?;
+
+        if is_admin {
+            let users = query_as::<_, SimpleUser>("select id, username, email, role from users")
+                .fetch_all(&*self.pool)
+                .await?;
+
+            Ok(Some(users))
+        } else {
+            Ok(None)
+        }
     }
 }
 

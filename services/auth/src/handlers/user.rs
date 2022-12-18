@@ -1,17 +1,17 @@
 use actix_web::{
     web::{Data, Json},
-    HttpResponse,
+    HttpRequest, HttpResponse,
 };
 
 use regex::Regex;
 
-use tracing::debug;
+use tracing::{debug, instrument};
 
 use crate::{
     config::secret::SecretService, db::user::UserRepo, error::AppError, models::user::NewUser,
 };
 
-use super::AppResponse;
+use super::{auth::AuthenticatedUser, AppResponse};
 
 pub async fn create_user(
     user: Json<NewUser>,
@@ -60,4 +60,24 @@ pub async fn create_user(
             }
         }
     }
+}
+
+#[instrument[skip(user_repo)]]
+pub async fn list_self(user: AuthenticatedUser, user_repo: UserRepo) -> AppResponse {
+    let user = user_repo
+        .find_by_id(user.0)
+        .await?
+        .ok_or(AppError::INTERNAL_ERROR)?;
+
+    Ok(HttpResponse::Ok().json(user))
+}
+
+#[instrument[skip(user_repo)]]
+pub async fn list_users(user_repo: UserRepo, user: AuthenticatedUser) -> AppResponse {
+    let user = user_repo
+        .get_all_users(user.0)
+        .await?
+        .ok_or(AppError::NOT_AUTHORIZED)?;
+
+    Ok(HttpResponse::Ok().json(user))
 }
