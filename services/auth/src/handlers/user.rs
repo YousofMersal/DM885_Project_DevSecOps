@@ -72,11 +72,12 @@ pub async fn list_self(user: AuthenticatedUser, user_repo: UserRepo) -> AppRespo
     Ok(HttpResponse::Ok().json(user))
 }
 
-pub async fn list_users(user_repo: UserRepo) -> AppResponse {
+#[instrument[skip(user_repo)]]
+pub async fn list_users(user_repo: UserRepo, user: AuthenticatedUser) -> AppResponse {
     let user = user_repo
-        .get_all_users()
+        .get_all_users(user.0)
         .await?
-        .ok_or(AppError::INTERNAL_ERROR)?;
+        .ok_or(AppError::NOT_AUTHORIZED)?;
 
     Ok(HttpResponse::Ok().json(user))
 }
