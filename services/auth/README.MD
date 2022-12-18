@@ -32,7 +32,7 @@ As of right now these endpoints have been implemented with the following functio
   - POST: Creates a new user
   - example: with curl 
   ```bash 
-  curl --url "http://auth.$PROJECT_DOMAIN/api/v1/auth/users" \
+  curl --url "http://$PROJECT_DOMAIN/api/v1/auth/users" \
        --header 'content-type: application/json' \
        --data '{
           "username": "user1",
@@ -44,10 +44,18 @@ As of right now these endpoints have been implemented with the following functio
   - POST: Logs in a user and returns a JWT
   - example: with curl 
   ```bash
-  curl --url "http://auth.$PROJECT_DOMAIN/api/v1/auth/users/login" \
+  curl --url "http://$PROJECT_DOMAIN/api/v1/auth/users/login" \
        --header 'content-type: application/json' \
        --data '{
           "username": "user1",
           "password": "user1"
         }'
+  ```
+
+- '/api/v1/auth/users'
+  - GET: Returns a list of all users
+  - example: with curl 
+  ```bash
+  curl --request GET "http://$PROJECT_DOMAIN/api/v1/auth/users" \
+  --header "authorization: Bearer <$JWT_TOKEN>"
   ```
