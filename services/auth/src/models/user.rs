@@ -22,3 +22,11 @@ pub struct NewUser {
     pub password: String,
     pub email: String,
 }
+
+#[derive(Serialize, sqlx::FromRow, Debug, Deserialize)]
+/// Struct which represents information about a user that is safe to send to the client
+pub struct SimpleUser {
+    pub username: String,
+    pub role: String,
+    pub email: String,
+}

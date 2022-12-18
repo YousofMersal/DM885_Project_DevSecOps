@@ -16,9 +16,10 @@ use uuid::Uuid;
 use crate::{
     config::secret::SecretService,
     error::AppError,
-    models::user::{NewUser, User},
+    models::user::{NewUser, SimpleUser, User},
 };
 
+#[derive(Debug)]
 pub struct UserRepo {
     pool: Arc<PgPool>,
 }
@@ -103,6 +104,16 @@ impl UserRepo {
             .await?;
 
         Ok(possible_user)
+    }
+
+    pub async fn get_all_users(&self) -> Result<Option<Vec<SimpleUser>>> {
+        //! get all the users from the database and return them as a vector
+
+        let users = query_as::<_, SimpleUser>("select * from users")
+            .fetch_all(&*self.pool)
+            .await?;
+
+        Ok(Some(users))
     }
 }
 
