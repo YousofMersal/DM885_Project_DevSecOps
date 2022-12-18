@@ -6,6 +6,7 @@ import {
   ApiModelData,
   ApiSignupResponse,
   ApiSolver,
+  ApiUser,
   AuthServiceForm,
 } from "./types";
 
@@ -56,7 +57,7 @@ export const apiStartJob = (
   });
 };
 
-export const apiGetUsers = () => request("/auth/users");
+export const apiGetUsers = (): Promise<ApiUser[]> => request("/auth/users");
 
 export const apiListModels = (): Promise<ApiModel[]> => {
   return request("/models");

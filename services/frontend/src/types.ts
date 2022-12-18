@@ -55,3 +55,9 @@ export type ApiModelData = {
   name: string;
   content: string;
 };
+
+export type ApiUser = {
+  username: string;
+  role: string;
+  email: string;
+};
