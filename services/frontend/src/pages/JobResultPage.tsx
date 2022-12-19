@@ -29,7 +29,7 @@ export const JobResultPage: React.FC = () => {
   const match = useMatch();
   const jobId = match.params.id;
   const [job, setJob] = useState<ApiJob | undefined>(undefined);
-  const [result, setResult] = useState<ApiJobResult[]>([]);
+  const [result, setResult] = useState<ApiJobResult[] | undefined>(undefined);
   const [err, setErr] = useState("");
 
   const getJob = () =>
@@ -48,6 +48,27 @@ export const JobResultPage: React.FC = () => {
       apiGetJobResult(job.job_id).then((result_) => setResult(result_));
     }
   }, [job]);
+
+  let renderedResult = <p>No result yet...</p>;
+
+  if (Array.isArray(result) && result.length) {
+    renderedResult = (
+      <div>
+        <p>Result</p>
+        {result.map((r) => (
+          <ul>
+            {Object.keys(r.data).map((key) => (
+              <li>{`${key} : ${r.data[key]}`}</li>
+            ))}
+            <hr />
+            <li>Status: {r.sol_status}</li>
+          </ul>
+        ))}
+      </div>
+    );
+  } else if (Array.isArray(result)) {
+    renderedResult = <p>Solver ran but no result found</p>;
+  }
 
   return (
     <div>
@@ -68,20 +89,7 @@ export const JobResultPage: React.FC = () => {
         </button>
       ) : null}
       <p>{err}</p>
-      {result ? (
-        <div>
-          <p>Result</p>
-          {result.map((r) => (
-            <ul>
-              {Object.keys(r.data).map((key) => (
-                <li>{`${key} : ${r.data[key]}`}</li>
-              ))}
-              <hr />
-              <li>Status: {r.sol_status}</li>
-            </ul>
-          ))}
-        </div>
-      ) : null}
+      {renderedResult}
     </div>
   );
 };
