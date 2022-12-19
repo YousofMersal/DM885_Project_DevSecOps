@@ -29,7 +29,7 @@ export const JobResultPage: React.FC = () => {
   const match = useMatch();
   const jobId = match.params.id;
   const [job, setJob] = useState<ApiJob | undefined>(undefined);
-  const [result, setResult] = useState<ApiJobResult[]>([]);
+  const [result, setResult] = useState<ApiJobResult[] | undefined>(undefined);
   const [err, setErr] = useState("");
 
   const getJob = () =>
@@ -49,6 +49,27 @@ export const JobResultPage: React.FC = () => {
     }
   }, [job]);
 
+  let renderedResult = <p>No result yet...</p>;
+
+  if (Array.isArray(result) && result.length) {
+    renderedResult = (
+      <div>
+        <p>Result</p>
+        {result.map((r) => (
+          <ul>
+            {Object.keys(r.data).map((key) => (
+              <li>{`${key} : ${r.data[key]}`}</li>
+            ))}
+            <hr />
+            <li>Status: {r.sol_status}</li>
+          </ul>
+        ))}
+      </div>
+    );
+  } else if (Array.isArray(result)) {
+    renderedResult = <p>Solver ran but no result found</p>;
+  }
+
   return (
     <div>
       <p>{job?.job_status}</p>
@@ -56,29 +77,19 @@ export const JobResultPage: React.FC = () => {
       <p>{job?.finished_at}</p>
       {job?.job_status !== "finished" ? (
         <button
-          onClick={() =>
+          onClick={() => {
+            setErr("");
+
             apiCancelJob(jobId).catch((e) => {
               setErr(e instanceof Error ? e.message : "Unknown error");
-            })
-          }
+            });
+          }}
         >
           Cancel
         </button>
       ) : null}
-      {result ? (
-        <div>
-          <p>Result</p>
-          {result.map((r) => (
-            <ul>
-              {Object.keys(r.data).map((key) => (
-                <li>{`${key} : ${r.data[key]}`}</li>
-              ))}
-              <hr />
-              <li>Status: {r.sol_status}</li>
-            </ul>
-          ))}
-        </div>
-      ) : null}
+      <p>{err}</p>
+      {renderedResult}
     </div>
   );
 };
