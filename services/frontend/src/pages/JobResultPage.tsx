@@ -56,15 +56,18 @@ export const JobResultPage: React.FC = () => {
       <p>{job?.finished_at}</p>
       {job?.job_status !== "finished" ? (
         <button
-          onClick={() =>
+          onClick={() => {
+            setErr("");
+
             apiCancelJob(jobId).catch((e) => {
               setErr(e instanceof Error ? e.message : "Unknown error");
-            })
-          }
+            });
+          }}
         >
           Cancel
         </button>
       ) : null}
+      <p>{err}</p>
       {result ? (
         <div>
           <p>Result</p>
