@@ -6,97 +6,88 @@ import type { Client } from 'pg'
 export async function outerGetAll(db: any) {
   var q = "SELECT * FROM solvers"
 
-  if (db){
-    if(db.type == "IMemoryDb"){
-      result = await db.query(q).rows
-    }
+  var result = await db.query(q).rows
 
-    var result = await db.query(q).rows
-
-    return result
-  }
+  return await result
 }
 
-export async function outerGetByName(db: any, name: string){
+export async function outerGetByName(recievedFrom: Number, db: any, name: string){
   var q = `SELECT * FROM solvers WHERE name = \'${name}\'`
-  var result = "VOID"
+
   if (db){
-    if(db.type == "Client"){
-      result = await db.query(q).rows
+    if(recievedFrom == 1){
+      var result = await db.query(q).rows
     }
-    else{
-      result = await db.public.query(q).rows
+    else if(recievedFrom == 2){
+      var result = await db.public.query(q).rows
     }
-    if(result.length == 0){
-     return ""   
-    }
-  
-    return result
   }
+  if (result.length == 0){
+    return null
+  }
+  return await result
 }
 
-export async function outerChangeSolver(db: any, name: string, newName: string, newImage: string){
+export async function outerChangeSolver(recievedFrom: Number, db: any, name: string, newName: string, newImage: string){
   var q = `UPDATE solvers SET name = '${newName}', image = '${newImage}' WHERE name = '${name}';`
   var preQ = `SELECT * FROM solvers WHERE name = '${name}'`
-  var result = "VOID"
 
   if (db){
 
-    if(db.type == "Client"){
+    if(recievedFrom == 1){
       const solverCount = ((await db.query(preQ)).rowCount)
       if (solverCount == 0) {
         return null
       }
-      result = await db.query(q).rows
+      var result = await db.query(q).rows
     }
-    else{
+    else if (recievedFrom == 2){
       const solverCount = ((await db.public.query(preQ)).rowCount)
       if (solverCount == 0) {
         return null
       }
-      result = await db.public.query(q).rows
+      var result = await db.public.query(q).rows
     }
   
-    return result
+    return await result
   }
 }
 
-export async function outerAddSolver(db: any, name: string, image: string){
+export async function outerAddSolver(recievedFrom: Number, db: any, name: string, image: string){
   var q = `INSERT INTO solvers (name, image) VALUES ('${name}', '${image}')`
-  var result = "VOID"
+
   if (db){
-    if(db.type == "Client"){
-      result = await db.query(q)
+    if(recievedFrom == 1){
+      var result = await db.query(q)
     }
-    else{
-      result = await db.public.query(q)
+    else if(recievedFrom == 2){
+      var result = await db.public.query(q)
     }
   }
 }
 
-export async function outerDeleteSolver(db: any, id: string){
+export async function outerDeleteSolver(recievedFrom: Number, db: any, id: string){
   var q = `DELETE FROM solvers WHERE solver_id = '${id}';`
   var preQ = `SELECT * FROM solvers WHERE solver_id = '${id}'`
-  var result = "VOID"
 
   if (db){
     
-    if(db.type == "Client"){
+    if(recievedFrom == 1){
       const solverCount = ((await db.query(preQ)).rowCount)
       if (solverCount == 0) {
         return null
       }
-      result = await db.query(q).rows
+      var result = await db.query(q).rows
     }
     else{
       const solverCount = ((await db.public.query(preQ)).rowCount)
       if (solverCount == 0) {
         return null
       }
-      result = await db.public.query(q).rows
+      var result = await db.public.query(q).rows
     }
   
-    return result
+    return await result
   }
 }
 
@@ -108,15 +99,21 @@ export default (db: Client) => {
 
   // Gets all solvers
   jobs.get('/', async (req, res) => {
-    //var dbResult = outerGetAll(db)
-    res.send((await db.query("SELECT * FROM solvers")).rows)
+    var dbResult = await outerGetAll(db)
+    res.send(await dbResult)
   })
 
   // Gets solver by solver name
   jobs.get('/:name', async (req, res) => {
     const name = req.params.name
-    var dbResult = outerGetByName(db, name)
-    res.send(dbResult)
+    var dbResult = await outerGetByName(1, db, name)
+
+    if(await dbResult == undefined) {
+      res.send(404).send({"name": "Not found"})
+    }
+    else{
+      res.send(await dbResult)
+    }
   })
 
 
@@ -133,8 +130,8 @@ export default (db: Client) => {
       throw 'missing image'
     }
 
-    const dbResult = outerChangeSolver(db, name, body.name, body.image)
-    if(db != null && await dbResult != ""){
+    const dbResult = await outerChangeSolver(1, db, name, body.name, body.image)
+    if(db != null && await dbResult != null){
       res.sendStatus(204)
     }
     else{
@@ -154,7 +151,7 @@ export default (db: Client) => {
     } else if (!body.image) {
       throw 'Missing image'
     }
-    var dbResult = outerAddSolver(db, body.name, body.image)
+    await outerAddSolver(1, db, body.name, body.image)
 
     res.sendStatus(201)
   })
@@ -166,7 +163,7 @@ export default (db: Client) => {
   jobs.delete('/:solver_id', async (req, res) => {
     const solver_id = req.params.solver_id
 
-    const dbResult = outerDeleteSolver(db, solver_id)
+    await outerDeleteSolver(1, db, solver_id)
     if(db != null){
       res.sendStatus(204)
     }
