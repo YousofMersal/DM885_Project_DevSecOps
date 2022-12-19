@@ -73,9 +73,9 @@ export const JobResultPage: React.FC = () => {
 
   return (
     <div>
-      <p>{job?.job_status}</p>
-      <p>{job?.created_at}</p>
-      <p>{job?.finished_at}</p>
+      <p>Status: {job?.job_status}</p>
+      <p>Created at: {job?.created_at}</p>
+      <p>Finished at: {job?.finished_at}</p>
       {job?.job_status !== "finished" ? (
         <button
           onClick={() => {
