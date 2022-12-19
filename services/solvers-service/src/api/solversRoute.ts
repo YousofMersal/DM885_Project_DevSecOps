@@ -2,9 +2,10 @@ import { components } from './../../openapi-schema.d.js'
 import express from 'express'
 import type { Client } from 'pg'
 
+
 export async function outerGetAll(db: any) {
   var q = "SELECT * FROM solvers"
-  var result = "VOID"
+  var result = ""
   if (db){
     if(db.type == "Client"){
       result = await db.query(q).rows
@@ -25,6 +26,9 @@ export async function outerGetByName(db: any, name: string){
     }
     else{
       result = await db.public.query(q).rows
+    }
+    if(result.length == 0){
+     return ""   
     }
   
     return result
@@ -130,7 +134,7 @@ export default (db: Client) => {
     }
 
     const dbResult = outerChangeSolver(db, name, body.name, body.image)
-    if(db != null){
+    if(db != null && await dbResult != ""){
       res.sendStatus(204)
     }
     else{
@@ -170,7 +174,6 @@ export default (db: Client) => {
       res.sendStatus(404).send({ message: 'solver not found' })
     }
  })
-  
-  module.exports = jobs
+
   return jobs
 }
