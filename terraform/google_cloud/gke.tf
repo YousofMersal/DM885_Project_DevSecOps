@@ -31,6 +31,14 @@ resource "google_container_cluster" "primary" {
 
   network    = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.subnet.name
+
+  lifecycle {
+    ignore_changes = [
+      "node_config",
+      "node_pool",
+      "initial_node_count"
+    ]
+  }
 }
 
 # Separately Managed Node Pool
