@@ -169,11 +169,9 @@ const Routes: React.FC = () => {
         {
           path: "/jobs/:id",
           element: (
-            <ProtectedRoute isAdminRoute={true}>
-              <Layout>
-                <JobResultPage />
-              </Layout>
-            </ProtectedRoute>
+            <Layout>
+              <JobResultPage />
+            </Layout>
           ),
         },
         {
