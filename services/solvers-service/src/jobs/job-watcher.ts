@@ -1,6 +1,10 @@
 import { Client } from 'pg'
 import k8s from '@kubernetes/client-node'
-import { CancelSolverPromise, SolverJob } from './jobs-manager.js'
+import {
+  CancelSolverPromise,
+  SolverJob,
+  stopSolverJob,
+} from './jobs-manager.js'
 import { K8sClient } from './k8s-client.js'
 import stream from 'stream'
 
@@ -127,6 +131,7 @@ async function attachLogger(
         (await Promise.race([loggerPromise, cancelPromise])) == 'cancel_solver'
       ) {
         logStream.destroy()
+        await stopSolverJob(client, job.job_id)
       }
     } catch (err) {
       if (i == MAX_ATTEMPTS - 1) throw err
