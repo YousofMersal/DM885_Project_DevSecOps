@@ -9,7 +9,7 @@ import {
   ApiUser,
   AuthServiceForm,
 } from "./types";
-import { isApiServiceError } from "./utils/common";
+import { isApiServiceError, isSolverServiceError } from "./utils/common";
 
 const apiServiceUrl =
   import.meta.env.DEV && import.meta.env.VITE_PROJECT_DOMAIN
@@ -230,6 +230,9 @@ const request = async (path: string, requestConfig?: RequestInit) => {
     const errorJsonResponse = await response.json();
 
     if (isApiServiceError(errorJsonResponse)) {
+      throw new Error(errorJsonResponse.message);
+    }
+    if (isSolverServiceError(errorJsonResponse)) {
       throw new Error(errorJsonResponse.message);
     }
   } catch (e) {

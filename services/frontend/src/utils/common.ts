@@ -43,3 +43,10 @@ export const isApiServiceError = (e: unknown): e is ApiServiceError => {
 
   return false;
 };
+
+export const isSolverServiceError = (e: unknown): e is { message: string } => {
+  if (typeof e === "object" && e && "message" in e) {
+    return true;
+  }
+  return false;
+};

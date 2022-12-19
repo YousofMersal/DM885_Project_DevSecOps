@@ -30,6 +30,7 @@ export const JobResultPage: React.FC = () => {
   const jobId = match.params.id;
   const [job, setJob] = useState<ApiJob | undefined>(undefined);
   const [result, setResult] = useState<ApiJobResult[]>([]);
+  const [err, setErr] = useState("");
 
   const getJob = () =>
     apiGetJob(jobId).then((r) => {
@@ -53,7 +54,17 @@ export const JobResultPage: React.FC = () => {
       <p>{job?.job_status}</p>
       <p>{job?.created_at}</p>
       <p>{job?.finished_at}</p>
-      <button onClick={() => apiCancelJob(jobId)}>Cancel</button>
+      {job?.job_status !== "finished" ? (
+        <button
+          onClick={() =>
+            apiCancelJob(jobId).catch((e) => {
+              setErr(e instanceof Error ? e.message : "Unknown error");
+            })
+          }
+        >
+          Cancel
+        </button>
+      ) : null}
       {result ? (
         <div>
           <p>Result</p>
