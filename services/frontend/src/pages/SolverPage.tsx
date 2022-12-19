@@ -23,8 +23,8 @@ export const SolverPage: React.FC<ISolverPageProps> = () => {
   useEffect(() => {
     if (solverId !== "undefined") {
       apiGetSolver(solverId).then((r) => {
-        refImage.current!.value = r.name;
-        refName.current!.value = r.image;
+        refName.current!.value = r.name;
+        refImage.current!.value = r.image;
       });
     }
   }, [solverId]);
