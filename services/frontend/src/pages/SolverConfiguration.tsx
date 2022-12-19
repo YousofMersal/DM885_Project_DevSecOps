@@ -1,19 +1,33 @@
-import { Link } from "@tanstack/react-location";
+import { Link, useNavigate } from "@tanstack/react-location";
 import React, { useEffect, useState } from "react";
-import { apiListSolvers } from "../request";
+import { apiDeleteSolver, apiListSolvers } from "../request";
 import { ApiSolver } from "../types";
 
 interface ISolverConfigurationProps {}
 
 export const SolverConfiguration: React.FC<ISolverConfigurationProps> = () => {
   const [solvers, setSolvers] = useState<ApiSolver[]>([]);
+  const navigate = useNavigate();
+
+  const getSolvers = () =>
+    apiListSolvers().then((result) => setSolvers(result));
 
   useEffect(() => {
-    apiListSolvers().then((result) => setSolvers(result));
+    getSolvers();
   }, []);
 
   return (
     <div>
+      <div
+        style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}
+      >
+        <button
+          onClick={() => navigate({ to: "/solver-config/undefined" })}
+          style={{ width: "auto" }}
+        >
+          New solver
+        </button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -29,7 +43,22 @@ export const SolverConfiguration: React.FC<ISolverConfigurationProps> = () => {
               <td>{solver.solver_id}</td>
               <td>{solver.name}</td>
               <td>{solver.image}</td>
-              <td></td>
+              <td>
+                <button
+                  onClick={() =>
+                    navigate({ to: "/solver-config/" + solver.solver_id })
+                  }
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() =>
+                    apiDeleteSolver(solver.solver_id).then(() => getSolvers())
+                  }
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
