@@ -27,7 +27,7 @@ export async function outerGetByName(
   if (result.length == 0) {
     return null
   }
-  return await result
+  return result
 }
 
 export async function outerChangeSolver(
@@ -107,7 +107,7 @@ export async function outerDeleteSolver(
       var result = (await db.public.query(q)).rows
     }
 
-    return await result
+    return result
   }
 }
 
@@ -130,7 +130,7 @@ export default (db: Client) => {
     if (dbResult == undefined) {
       res.send(404).send({ name: 'Not found' })
     } else {
-      res.send(await dbResult)
+      res.send(dbResult)
     }
   })
 
