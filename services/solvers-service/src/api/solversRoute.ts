@@ -5,7 +5,7 @@ import type { Client } from 'pg'
 
 export async function outerGetAll(db: any) {
   var q = "SELECT * FROM solvers"
-  var result = null
+  var result = ""
   if (db){
     if(db.type == "Client"){
       result = await db.query(q).rows
@@ -134,7 +134,7 @@ export default (db: Client) => {
     }
 
     const dbResult = outerChangeSolver(db, name, body.name, body.image)
-    if(db != null){
+    if(db != null && await dbResult != ""){
       res.sendStatus(204)
     }
     else{
