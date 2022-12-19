@@ -134,16 +134,20 @@ mod tests {
     //     assert_eq!(res.status(), http::StatusCode::OK);
     // }
 
-    #[sqlx::test(migrator = "config::MIGRATOR")]
-    async fn basic_db_test(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
+    // #[sqlx::test(migrator = "config::MIGRATOR")]
+    // async fn basic_db_test(pool: PgPool) -> sqlx::Result<()> {
+    //     let mut conn = pool.acquire().await?;
 
-        let db_res = sqlx::query("SELECT username FROM users where email = 'admin@admin.com'")
-            .fetch_one(&mut conn)
-            .await?;
+    //     let db_res = sqlx::query("SELECT username FROM users where email = 'admin@admin.com'")
+    //         .fetch_one(&mut conn)
+    //         .await?;
 
-        assert_eq!(db_res.get::<String, _>("username"), "admin@admin.com");
+    //     assert_eq!(db_res.get::<String, _>("username"), "admin@admin.com");
 
-        Ok(())
+    //     Ok(())
+    // }
+
+    fn basic_test() {
+        assert_eq!(2 + 2, 4);
     }
 }
