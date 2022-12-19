@@ -76,8 +76,8 @@ export const apiDeleteSolver = (id: number) =>
 export const apiGetSolver = (id: string): Promise<ApiSolver> =>
   request(`/solvers/${id}`);
 
-export const apiEditSolver = (name: string, image: string, id: string) =>
-  request(`/solvers/${id}`, {
+export const apiEditSolver = (name: string, image: string) =>
+  request(`/solvers/${name}`, {
     method: "PUT",
     body: JSON.stringify({
       name,
@@ -236,7 +236,10 @@ const request = async (path: string, requestConfig?: RequestInit) => {
       throw new Error(errorJsonResponse.message);
     }
   } catch (e) {
-    throw new Error("Unknown error. Backend returned invalid json");
+    if (e instanceof SyntaxError) {
+      throw new Error("Unknown error. Backend returned invalid json");
+    }
+    throw e;
   }
 
   throw new Error("Oops something wrong happened");

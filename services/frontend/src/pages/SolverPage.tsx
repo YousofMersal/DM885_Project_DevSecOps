@@ -44,7 +44,7 @@ export const SolverPage: React.FC<ISolverPageProps> = () => {
       if (solverId === "undefined") {
         await apiCreateSolver(fields.name, fields.image);
       } else {
-        await apiEditSolver(fields.name, fields.image, solverId);
+        await apiEditSolver(fields.name, fields.image);
       }
 
       navigate({
