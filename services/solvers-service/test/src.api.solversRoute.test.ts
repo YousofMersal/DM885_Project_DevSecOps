@@ -19,9 +19,14 @@ describe("Solver service unit test", () => {
     
   })
 
-  test('Inserting item into database"', async () => {
+  test('Inserting item into database', async () => {
 
-    await outerAddSolver(2, db, "newEntry", "linkminizinc")
+    expect(await outerAddSolver(2, db, "newEntry", "linkminizinc")).toBe(undefined)
+  });
+
+  test('Inserting same item into database, expecting \'null\' returned', async () => {
+
+    expect(await outerAddSolver(2, db, "newEntry", "linkminizinc")).toBe(null)
   });
 
   test('Getting newly inserted item from database"', async () => {

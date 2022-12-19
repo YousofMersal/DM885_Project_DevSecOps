@@ -55,13 +55,23 @@ export async function outerChangeSolver(recievedFrom: Number, db: any, name: str
 
 export async function outerAddSolver(recievedFrom: Number, db: any, name: string, image: string){
   var q = `INSERT INTO solvers (name, image) VALUES ('${name}', '${image}')`
-
+  var preQ = `SELECT * FROM solvers WHERE name = '${name}'`
   if (db){
     if(recievedFrom == 1){
-      var result = await db.query(q)
+      if(await db.query(preQ).rowCount > 0){
+        return null
+      }
+      else {
+        await db.query(q)
+      }
     }
     else if(recievedFrom == 2){
-      var result = await db.public.query(q)
+      if(await db.public.query(preQ).rowCount > 0){
+        return null
+      }
+      else {
+        await db.public.query(q)
+      }
     }
   }
 }
@@ -151,9 +161,13 @@ export default (db: Client) => {
     } else if (!body.image) {
       throw 'Missing image'
     }
-    await outerAddSolver(1, db, body.name, body.image)
-
+    const dbResult = await outerAddSolver(1, db, body.name, body.image)
+    if(dbResult == null){
+      res.sendStatus(409).send({"name": "Already exists"})
+    }
+    else{
     res.sendStatus(201)
+    }
   })
 
 
