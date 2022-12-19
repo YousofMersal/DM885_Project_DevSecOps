@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-location";
 import React, { useEffect, useState } from "react";
 import { apiListJobs } from "../request";
 import { ApiJob } from "../types";
@@ -6,6 +7,7 @@ interface IJobListProps {}
 
 export const JobList: React.FC<IJobListProps> = () => {
   const [jobs, setJobs] = useState<ApiJob[]>([]);
+  const navigate = useNavigate();
 
   const getJobs = () => apiListJobs().then((result) => setJobs(result));
 
@@ -21,9 +23,10 @@ export const JobList: React.FC<IJobListProps> = () => {
             <th>Id</th>
             <th>Status</th>
             <th>Created at</th>
-            <th>Finsihed at</th>
+            <th>Finished at</th>
             <th>Model id</th>
             <th>Data id</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -35,6 +38,17 @@ export const JobList: React.FC<IJobListProps> = () => {
               <td>{job.finished_at}</td>
               <td>{job.model_id}</td>
               <td>{job.data_id}</td>
+              <td>
+                <button
+                  onClick={() => {
+                    navigate({
+                      to: `/jobs/${job.job_id}`,
+                    });
+                  }}
+                >
+                  View
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
