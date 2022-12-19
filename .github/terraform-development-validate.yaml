@@ -1,4 +1,4 @@
-name: 'Terraform development'
+name: terraform-development
 
 on:
   push:
