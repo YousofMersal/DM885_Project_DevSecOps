@@ -31,12 +31,16 @@ export const JobResultPage: React.FC = () => {
   const [job, setJob] = useState<ApiJob | undefined>(undefined);
   const [result, setResult] = useState<ApiJobResult[]>([]);
 
-  const doJob = () =>
+  const getJob = () =>
     apiGetJob(jobId).then((r) => {
       setJob(r);
     });
 
-  useInterval(doJob, job?.job_status !== "finished" ? 10000 : null);
+  useEffect(() => {
+    getJob();
+  }, []);
+
+  useInterval(getJob, job?.job_status !== "finished" ? 5000 : null);
 
   useEffect(() => {
     if (job?.job_status === "finished") {
