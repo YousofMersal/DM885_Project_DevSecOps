@@ -30,3 +30,16 @@ export const handleError = (e: unknown) => {
     return "Unknown error";
   }
 };
+
+type ApiServiceError = {
+  code: number;
+  message: string;
+};
+
+export const isApiServiceError = (e: unknown): e is ApiServiceError => {
+  if (typeof e === "object" && e && "code" in e && "message" in e) {
+    return true;
+  }
+
+  return false;
+};
