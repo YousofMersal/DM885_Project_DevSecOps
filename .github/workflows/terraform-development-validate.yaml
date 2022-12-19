@@ -3,9 +3,9 @@ name: terraform-development
 on:
   push:
 
-# defaults:
-#   run:
-#     working-directory: ./terraform/development
+defaults:
+  run:
+    working-directory: ./terraform/development
 
 jobs:
   unittest:
