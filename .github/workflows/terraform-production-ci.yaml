@@ -2,6 +2,8 @@ name: terraform-production-ci
 
 on:
   push:
+    paths:
+      - terraform/production/**
 
 defaults:
   run:
