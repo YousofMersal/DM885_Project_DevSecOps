@@ -19,43 +19,48 @@ describe("Solver service unit test", () => {
     
   })
 
-  test('Inserting into DB"', async () => {
+  test('Inserting item into database', async () => {
 
-    await outerAddSolver(db, "newEntry", "linkminizinc")
+    expect(await outerAddSolver(2, db, "newEntry", "linkminizinc")).toBe(undefined)
   });
 
-  test('Getting newly inserted item from DB"', async () => {
+  test('Inserting same item into database, expecting \'null\' returned', async () => {
 
-    const dbResult = await outerGetByName(db, "newEntry")
+    expect(await outerAddSolver(2, db, "newEntry", "linkminizinc")).toBe(null)
+  });
+
+  test('Getting newly inserted item from database"', async () => {
+
+    const dbResult = await outerGetByName(2, db, "newEntry")
     expect(JSON.stringify(dbResult?.at(0))).toMatch(new RegExp('{\"name\":\"newEntry\",\"image\":\"linkminizinc\",\"solver_id\":[0-9]+}'))
   });
 
-  test('Changing values for newly inserted item in DB', async () => {
+  test('Changing values for newly inserted item in database', async () => {
 
-    await outerChangeSolver(db, "newEntry", "NewNameHere", "NewImageHere")
+    await outerChangeSolver(2, db, "newEntry", "NewNameHere", "NewImageHere")
   });
 
-  test('Getting newly changed item from DB', async () => {
+  test('Getting newly changed item from database', async () => {
 
-    const dbResult = await outerGetByName(db, "NewNameHere")
+    const dbResult = await outerGetByName(2, db, "NewNameHere")
     expect(JSON.stringify(dbResult?.at(0))).toMatch(new RegExp('{\"name\":\"NewNameHere\",\"image\":\"NewImageHere\",\"solver_id\":[0-9]+}'))
   });
 
-  test('Showing that old item does not exist', async () => {
+  test('Testing that old item does not exist in database', async () => {
 
-    const dbResult = await outerGetByName(db, "newEntry")
-    expect(dbResult?.length).toBe(0)
+    const dbResult = await outerGetByName(2, db, "newEntry")
+    expect(dbResult).toBe(null)
   });
 
-  test('Deleting item from DB',async () => {
+  test('Deleting item from database',async () => {
     
-    const dbResult = await outerDeleteSolver(db, "5")
+    const dbResult = await outerDeleteSolver(2, db, "5")
   })
 
-  test('Showing that deleted item does not exist', async () => {
+  test('Testing that deleted item does not exist in database', async () => {
 
-    const dbResult = await outerGetByName(db, "5")
-    expect(dbResult?.length).toBe(0)
+    const dbResult = await outerGetByName(2, db, "5")
+    expect(dbResult).toBe(null)
   });
 
   
