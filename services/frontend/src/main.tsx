@@ -22,6 +22,7 @@ import { JobPage } from "./pages/JobPage";
 import { JobResultPage } from "./pages/JobResultPage";
 import { EditProblemPage } from "./pages/EditProblemPage";
 import { SolverPage } from "./pages/SolverPage";
+import { JobList } from "./pages/JobList";
 
 const location = new ReactLocation();
 
@@ -168,9 +169,17 @@ const Routes: React.FC = () => {
         {
           path: "/jobs/:id",
           element: (
-            <ProtectedRoute isAdminRoute={true}>
+            <Layout>
+              <JobResultPage />
+            </Layout>
+          ),
+        },
+        {
+          path: "/jobs",
+          element: (
+            <ProtectedRoute>
               <Layout>
-                <JobResultPage />
+                <JobList />
               </Layout>
             </ProtectedRoute>
           ),

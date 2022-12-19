@@ -5,7 +5,6 @@ import { useGlobalState } from "../utils/store";
 import "./Login.css";
 import { apiLogin } from "../request";
 import { authServicePayload, handleError } from "../utils/common";
-import { ZodError } from "zod";
 
 export const Login: React.FC = () => {
   const { isLoggedIn, login } = useGlobalState();
@@ -36,7 +35,7 @@ export const Login: React.FC = () => {
 
   return (
     <div className="center">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ width: 500 }}>
         <h1>Login</h1>
         <div>
           <label htmlFor="username">Email</label>
