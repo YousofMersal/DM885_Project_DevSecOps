@@ -108,8 +108,8 @@ export default (db: Client) => {
 
   // Gets all solvers
   jobs.get('/', async (req, res) => {
-    var dbResult = outerGetAll(db)
-    res.send(dbResult)
+    //var dbResult = outerGetAll(db)
+    res.send((await db.query("SELECT * FROM solvers")).rows)
   })
 
   // Gets solver by solver name
