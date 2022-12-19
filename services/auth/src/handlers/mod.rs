@@ -1,5 +1,5 @@
 pub mod auth;
-mod user;
+pub mod user;
 
 use actix_web::{
     web::{self, ServiceConfig},
