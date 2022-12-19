@@ -12,7 +12,7 @@ use tracing_subscriber::EnvFilter;
 
 use self::secret::SecretService;
 
-static MIGRATOR: Migrator = sqlx::migrate!();
+pub static MIGRATOR: Migrator = sqlx::migrate!();
 
 #[derive(Debug, Deserialize)]
 /// Struct which holds all the server configuration
@@ -100,6 +100,7 @@ impl Config {
 
     pub async fn migrate_db(&self, pool: &PgPool) -> Result<()> {
         //! Migrates the database to the latest version
+        MIGRATOR.undo(pool, 1).await;
         MIGRATOR.run(pool).await?;
         Ok(())
     }
