@@ -61,6 +61,7 @@ export const JobResultPage: React.FC = () => {
               <li>{`${key} : ${r.data[key]}`}</li>
             ))}
             <hr />
+            <li>Solver Id: {r.solver_id}</li>
             <li>Status: {r.sol_status}</li>
           </ul>
         ))}
