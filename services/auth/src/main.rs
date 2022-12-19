@@ -122,7 +122,7 @@ pub async fn create_admin(secret_service: SecretService, pool: PgPool) -> Result
     .bind("admin@admin.com")
     .bind("admin@admin.com")
     .bind(pass_hash)
-    .bind("user")
+    .bind("admin")
     .bind(salt.to_string())
     .fetch_one(&pool)
     .await?;
