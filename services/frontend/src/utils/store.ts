@@ -18,20 +18,15 @@ export const useGlobalState = create<GlobalState>((set) => ({
   login: (token: string) => {
     localStorage.setItem("token", token);
 
-    const decodedToken = jwt_decode(token);
+    const decodedToken: { role: Role } | undefined = jwt_decode(token);
 
-    const role =
-      typeof decodedToken === "object" &&
-      decodedToken !== null &&
-      "role" in decodedToken
-        ? (decodedToken.role as Role)
-        : "user";
+    const role = decodedToken?.role;
 
     set({
       isLoggedIn: true,
       user: {
         email: "",
-        role,
+        role: role ?? "user",
       },
     });
   },
