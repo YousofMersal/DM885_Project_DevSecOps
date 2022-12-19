@@ -13,7 +13,7 @@ provider "kubectl" {
 }
 
 # istio service mesh used by knative
-resou-rce "helm_release" "istio-base" {
+resource "helm_release" "istio-base" {
   name       = "istio"
   repository = "https://istio-release.storage.googleapis.com/charts"
   chart      = "base"

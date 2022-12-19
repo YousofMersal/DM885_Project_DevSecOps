@@ -19,7 +19,7 @@ variable "gke_node_machine_type" {
 }
 
 # GKE cluster
-reso-urce "google_container_cluster" "primary" {
+resource "google_container_cluster" "primary" {
   name     = "${var.project_id}-gke"
   location = var.region
 
