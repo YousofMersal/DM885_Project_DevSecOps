@@ -2,7 +2,9 @@ name: terraform-development-ci
 
 on:
   push:
-
+    paths:
+      - ./terraform/development/**
+      
 defaults:
   run:
     working-directory: ./terraform/development
