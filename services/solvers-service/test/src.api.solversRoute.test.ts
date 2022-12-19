@@ -9,10 +9,14 @@ import { readdir } from 'node:fs/promises';
 describe("Solver service unit test", () => {
   var db: IMemoryDb
   beforeAll(async () => {
-    const str = await readdir("migrations");
-    const dbText = fs.readFileSync('migrations/'+str[str.length-1]).toString();
+    const migs = await readdir("migrations");
+    
     db = newDb()
-    db.public.many(dbText);
+    migs.forEach((item) => {
+      const dbText = fs.readFileSync('migrations/'+item).toString();
+      db.public.many(dbText);
+    })
+    
   })
 
   test('Inserting into DB"', async () => {
