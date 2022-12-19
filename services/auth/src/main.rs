@@ -7,8 +7,13 @@ mod models;
 use crate::{config::*, handlers::app_config};
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
+use argon2::password_hash::{rand_core::OsRng, SaltString};
 use color_eyre::Result;
 use colored::Colorize;
+use config::secret::SecretService;
+use eyre::bail;
+use models::user::User;
+use sqlx::{query_as, PgPool};
 use tracing::info;
 
 #[actix_rt::main]
@@ -28,14 +33,23 @@ async fn main() -> Result<()> {
         .await
         .expect("Could not create db connection");
 
+    let db_pool_cl = db_pool.clone();
+
     info!("DB Pool created");
 
     let secret_service = config.secret_service();
 
+    let secret_service_cl = secret_service.clone();
+
+    match set_admin_if_not_exists(secret_service_cl, db_pool_cl) {
+        Ok(_) => info!("Admin user created"),
+        Err(e) => bail!("Admin user already exists: {}", e),
+    };
+
     println!("Starting auth server at {}:{}", &config.host, &config.port);
 
     HttpServer::new(move || {
-        App::new()
+        let app = App::new()
             .wrap(
                 Cors::permissive(), // Cors::default()
                                     //     .allowed_origin(format!("http://127.0.0.1:{}", &config.port).as_str())
@@ -57,7 +71,9 @@ async fn main() -> Result<()> {
                     .app_data(Data::new(db_pool.clone())) // clone is cheap as its an RC under the hood
                     .app_data(Data::new(secret_service.clone())) // add second middleware
                     .configure(app_config),
-            )
+            );
+
+        app
     })
     .workers(
         std::env::var("ACTIX_WORKERS")
@@ -69,6 +85,49 @@ async fn main() -> Result<()> {
     .await?;
 
     Ok(())
+}
+
+fn set_admin_if_not_exists(secret_service: SecretService, db_pool: PgPool) -> Result<()> {
+    actix_web::rt::spawn(async move {
+        let admin = query_as::<_, User>("SELECT * FROM users WHERE username = 'admin@admin.com'")
+            .fetch_one(&db_pool)
+            .await;
+
+        if let Err(_) = admin {
+            let default_admin = create_admin(secret_service, db_pool).await;
+            match default_admin {
+                Ok(_) => info!("Admin user created"),
+                Err(e) => panic!("Could not create admin user: {}", e),
+            }
+        };
+    });
+    Ok(())
+}
+
+pub async fn create_admin(secret_service: SecretService, pool: PgPool) -> Result<User> {
+    //! create admin user if not exists
+    //! *IMPORTANT*: This function should be called only once
+    //! and the admin user should change their password after the first login
+    //! it is the users responsibility to change their password
+
+    let salt = SaltString::generate(&mut OsRng);
+
+    let pass_hash = secret_service
+        .hash_password("admin".to_string(), salt.as_str())
+        .await?;
+
+    let user = query_as::<_, User>(
+        "insert into users (username, email, password_hash, role, salt) values ($1, $2, $3, $4, $5) returning *",
+    )
+    .bind("admin@admin.com")
+    .bind("admin@admin.com")
+    .bind(pass_hash)
+    .bind("user")
+    .bind(salt.to_string())
+    .fetch_one(&pool)
+    .await?;
+
+    Ok(user)
 }
 
 #[cfg(test)]
@@ -147,7 +206,8 @@ mod tests {
     //     Ok(())
     // }
 
-    fn basic_test() {
+    #[test]
+    async fn basic_test() {
         assert_eq!(2 + 2, 4);
     }
 }

@@ -100,6 +100,7 @@ impl Config {
 
     pub async fn migrate_db(&self, pool: &PgPool) -> Result<()> {
         //! Migrates the database to the latest version
+        MIGRATOR.undo(pool, 0).await?;
         MIGRATOR.run(pool).await?;
         Ok(())
     }
