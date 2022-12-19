@@ -1,5 +1,8 @@
 name: 'Terraform development'
 
+on:
+  push:
+
 defaults:
   run:
     working-directory: ./terraform/development
