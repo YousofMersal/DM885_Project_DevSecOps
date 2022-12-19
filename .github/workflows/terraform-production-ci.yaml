@@ -1,11 +1,11 @@
-name: terraform-development
+name: terraform-production-ci
 
 on:
   push:
 
 defaults:
   run:
-    working-directory: ./terraform/development
+    working-directory: ./terraform/production
 
 jobs:
   test:
