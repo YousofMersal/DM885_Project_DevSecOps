@@ -1,4 +1,4 @@
-terraform {
+t-erraform {
   required_version = ">= 0.13"
 
   required_providers {
