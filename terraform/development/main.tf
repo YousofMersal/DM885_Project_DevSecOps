@@ -1,4 +1,4 @@
-terr-aform {
+terr--aform {
   required_version = ">= 0.13"
 
   required_providers {
