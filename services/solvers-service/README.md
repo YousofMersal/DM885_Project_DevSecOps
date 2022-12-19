@@ -12,64 +12,78 @@ This micro service is responsible for handling the part of the REST API that han
 This service consists of a web server that serves a REST API.
 It is connected to a database that stores info about jobs, models and solvers.
 It uses the Kubernetes API to start new `Jobs` inside Kubernetes which runs the actual solvers
-It receives Knative ApiServerSource events,[^1] when the `Jobs` status change and updates the database state accordingly.
+It uses the Kubernetes API to read logs from the running solvers and saves the results to the database.
 
-[^1]: https://knative.dev/docs/eventing/sources/apiserversource/
+## API Examples
 
-# Further Documentation
+Request:
 
-This service is responsible for starting the solver jobs and handling completion and failures
+```http
+POST /api/v1/jobs/ HTTP/1.1
+Content-Type: application/json
+Host: project.127.0.0.1.sslip.io
 
-## Testing
+{"model_id":"1","solver_ids":["1","2"],"data_id":""}
+```
 
-Run `skaffold dev` in from _this_ directory `./services/mzn-controller/`.
+Response:
 
-To rerun delete the dummy job with `kubectl delete job solver-job-test`, and re-save the `src/index.ts` file.
+```http
+HTTP/1.1 201 Created
 
-Expected output:
+{"status":"starting job","job_id":"8265ed3e-8f52-4d08-86da-4ea571197869"}
+```
 
-```sh
-$ skaffold dev
-[ ... ]
-[mzn-controller] Minizinc controller: running
-[mzn-controller] JOBS CHANGED MODIFIED solver-job-test {
-[mzn-controller]   startTime: '2022-10-21T21:01:51Z',
-[mzn-controller]   active: 1,
-[mzn-controller]   uncountedTerminatedPods: {},
-[mzn-controller]   ready: 0
-[mzn-controller] }
-[mzn-controller] JOBS CHANGED MODIFIED solver-job-test {
-[mzn-controller]   startTime: '2022-10-21T21:01:51Z',
-[mzn-controller]   active: 1,
-[mzn-controller]   uncountedTerminatedPods: {},
-[mzn-controller]   ready: 1
-[mzn-controller] }
-[mzn-controller] JOBS CHANGED MODIFIED solver-job-test {
-[mzn-controller]   startTime: '2022-10-21T21:01:51Z',
-[mzn-controller]   active: 1,
-[mzn-controller]   uncountedTerminatedPods: {},
-[mzn-controller]   ready: 0
-[mzn-controller] }
-[mzn-controller] JOBS CHANGED MODIFIED solver-job-test {
-[mzn-controller]   startTime: '2022-10-21T21:01:51Z',
-[mzn-controller]   uncountedTerminatedPods: { succeeded: [ '8cc707bc-b0d3-42fe-909e-247d5b4c8bc8' ] },
-[mzn-controller]   ready: 0
-[mzn-controller] }
-[mzn-controller] JOBS CHANGED MODIFIED solver-job-test {
-[mzn-controller]   conditions: [
-[mzn-controller]     {
-[mzn-controller]       type: 'Complete',
-[mzn-controller]       status: 'True',
-[mzn-controller]       lastProbeTime: '2022-10-21T21:01:59Z',
-[mzn-controller]       lastTransitionTime: '2022-10-21T21:01:59Z'
-[mzn-controller]     }
-[mzn-controller]   ],
-[mzn-controller]   startTime: '2022-10-21T21:01:51Z',
-[mzn-controller]   completionTime: '2022-10-21T21:01:59Z',
-[mzn-controller]   succeeded: 1,
-[mzn-controller]   uncountedTerminatedPods: {},
-[mzn-controller]   ready: 0
-[mzn-controller] }
-[mzn-controller] JOB FINISHED solver-job-test
-[mzn-controller] JOB result: 3.141592653589793
+### Jobs kan listes
+
+Request:
+
+```http
+GET /api/v1/jobs/ HTTP/1.1
+Host: project.127.0.0.1.sslip.io
+```
+
+Response:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+[{"job_id":"8265ed3e-8f52-4d08-86da-4ea571197869","model_id":1,"data_id":null,"created_at":"2022-12-04T13:07:45.121Z","finished_at":"2022-12-04T13:07:52.256Z","job_status":"finished"},{"job_id":"04637593-d799-4c8d-97da-289579f890c3","model_id":1,"data_id":null,"created_at":"2022-12-04T13:15:31.190Z","finished_at":null,"job_status":"running"},{"job_id":"8cbd1d99-bffb-46ba-8791-902dbc32715c","model_id":1,"data_id":null,"created_at":"2022-12-04T13:15:32.414Z","finished_at":null,"job_status":"running"}]
+```
+
+### Hent specifikt job
+
+Request:
+
+```http
+GET /api/v1/jobs/8cbd1d99-bffb-46ba-8791-902dbc32715c HTTP/1.1
+Host: project.127.0.0.1.sslip.io
+```
+
+Response:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{"job_id":"8cbd1d99-bffb-46ba-8791-902dbc32715c","model_id":1,"data_id":null,"created_at":"2022-12-04T13:15:32.414Z","finished_at":null,"job_status":"running"}
+```
+
+### Slet job
+
+Request:
+
+```http
+DELETE /api/v1/jobs/8cbd1d99-bffb-46ba-8791-902dbc32715c HTTP/1.1
+Host: project.127.0.0.1.sslip.io
+```
+
+Response:
+
+```http
+HTTP/1.1 200 OK
+content-type: application/json; charset=utf-8
+
+{"message":"job deleted","job":{"job_id":"387975a7-a4ae-4a1d-88e6-8fba65b1c757","model_id":1,"data_id":null,"created_at":"2022-12-04T13:05:12.166Z","finished_at":null,"job_status":"running"}}
 ```

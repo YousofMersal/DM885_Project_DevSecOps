@@ -1,6 +1,6 @@
 import { Client } from 'pg'
 import k8s from '@kubernetes/client-node'
-import { SolverJob } from './jobs-manager.js'
+import { CancelSolverPromise, SolverJob } from './jobs-manager.js'
 import { K8sClient } from './k8s-client.js'
 import stream from 'stream'
 
@@ -59,7 +59,8 @@ export type JobStatusLog =
 export async function registerJobWatch(
   client: K8sClient,
   db: Client,
-  job: SolverJob
+  job: SolverJob,
+  cancelPromise: CancelSolverPromise
 ) {
   const jobName = job.job.metadata?.name
   if (jobName === undefined) throw 'Expected jobname to be defined'
@@ -78,7 +79,7 @@ export async function registerJobWatch(
     return
   }
 
-  await attachLogger(client, db, jobPodName, job)
+  await attachLogger(client, db, jobPodName, job, cancelPromise)
   // attachWatcher(client, job)
 }
 
@@ -86,7 +87,8 @@ async function attachLogger(
   client: K8sClient,
   db: Client,
   jobPodName: string,
-  job: SolverJob
+  job: SolverJob,
+  cancelPromise: CancelSolverPromise
 ) {
   const logger = new k8s.Log(client.kc)
   const logStream = new stream.PassThrough()
@@ -109,49 +111,35 @@ async function attachLogger(
   const MAX_ATTEMPTS = 5
   for (let i = 0; i < MAX_ATTEMPTS; i++) {
     try {
-      await logger.log(client.ns, jobPodName, 'minizinc-solver', logStream, {
-        follow: true,
-        pretty: false,
-        timestamps: false,
-      })
+      const loggerPromise = logger.log(
+        client.ns,
+        jobPodName,
+        'minizinc-solver',
+        logStream,
+        {
+          follow: true,
+          pretty: false,
+          timestamps: false,
+        }
+      )
+
+      if (
+        (await Promise.race([loggerPromise, cancelPromise])) == 'cancel_solver'
+      ) {
+        logStream.destroy()
+      }
     } catch (err) {
       if (i == MAX_ATTEMPTS - 1) throw err
 
       console.log(`Job pod not ready, waiting ${2 ** i} seconds before retry`)
-      await sleep(2 ** i * 1000)
+      const result = await Promise.race([sleep(2 ** i * 1000), cancelPromise])
+      if (result == 'cancel_solver') return
     }
   }
 
   console.log('Logger finished')
 }
 
-// async function attachWatcher(client: K8sClient, job: SolverJob) {
-//   // setup watcher for job events, calls callback everytime jobs are created/deleted/modified
-//   const watch = new k8s.Watch(client.kc)
-//   watch.watch(
-//     `/apis/batch/v1/namespaces/${client.ns}/jobs`,
-//     {
-//       labelSelector: `job-name=minizinc-job-${job.id}`,
-//     },
-//     async (type, apiObj: k8s.V1Job, _watchObj) => {
-//       const jobName = apiObj.metadata!.name!
-//       console.log('WATCH EVENT', type, jobName)
-//       console.log(apiObj)
-
-//       // const jobFinished = (apiObj.status?.succeeded ?? 0) > 0
-//       // const jobFailed = (apiObj.status?.failed ?? 0) > 0
-
-//     },
-//     (err) => {
-//       console.error('Watch stream closed:', err)
-//     }
-//   )
-// }
-
-async function jobFinished(job: SolverJob) {
-  console.log(`Job ${job.job_id} finished`)
-}
-
 function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise<undefined>((resolve) => setTimeout(resolve, ms))
 }
