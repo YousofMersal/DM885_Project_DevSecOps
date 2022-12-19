@@ -2,104 +2,100 @@ import { components } from './../../openapi-schema.d.js'
 import express from 'express'
 import type { Client } from 'pg'
 
-
 export async function outerGetAll(db: any) {
-  var q = "SELECT * FROM solvers"
-  var result = ""
-  if (db){
-    if(db.type == "Client"){
+  var q = 'SELECT * FROM solvers'
+  var result = ''
+  if (db) {
+    if (db.type == 'Client') {
       result = await db.query(q).rows
-    }
-    else{
+    } else {
       result = await db.public.query(q).rows
     }
     return result
   }
 }
 
-export async function outerGetByName(db: any, name: string){
+export async function outerGetByName(db: any, name: string) {
   var q = `SELECT * FROM solvers WHERE name = \'${name}\'`
-  var result = "VOID"
-  if (db){
-    if(db.type == "Client"){
-      result = await db.query(q).rows
+  var result = 'VOID'
+  if (db) {
+    if (db.type == 'Client') {
+      result = (await db.query(q)).rows
+    } else {
+      result = (await db.public.query(q)).rows
     }
-    else{
-      result = await db.public.query(q).rows
+    if (result.length == 0) {
+      return ''
     }
-    if(result.length == 0){
-     return ""   
-    }
-  
+
     return result
   }
 }
 
-export async function outerChangeSolver(db: any, name: string, newName: string, newImage: string){
+export async function outerChangeSolver(
+  db: any,
+  name: string,
+  newName: string,
+  newImage: string
+) {
   var q = `UPDATE solvers SET name = '${newName}', image = '${newImage}' WHERE name = '${name}';`
   var preQ = `SELECT * FROM solvers WHERE name = '${name}'`
-  var result = "VOID"
+  var result = 'VOID'
 
-  if (db){
-
-    if(db.type == "Client"){
-      const solverCount = ((await db.query(preQ)).rowCount)
+  if (db) {
+    if (db.type == 'Client') {
+      const solverCount = (await db.query(preQ)).rowCount
       if (solverCount == 0) {
         return null
       }
       result = await db.query(q).rows
-    }
-    else{
-      const solverCount = ((await db.public.query(preQ)).rowCount)
+    } else {
+      const solverCount = (await db.public.query(preQ)).rowCount
       if (solverCount == 0) {
         return null
       }
       result = await db.public.query(q).rows
     }
-  
+
     return result
   }
 }
 
-export async function outerAddSolver(db: any, name: string, image: string){
+export async function outerAddSolver(db: any, name: string, image: string) {
   var q = `INSERT INTO solvers (name, image) VALUES ('${name}', '${image}')`
-  var result = "VOID"
-  if (db){
-    if(db.type == "Client"){
+  var result = 'VOID'
+  if (db) {
+    if (db.type == 'Client') {
       result = await db.query(q)
-    }
-    else{
+    } else {
       result = await db.public.query(q)
     }
   }
 }
 
-export async function outerDeleteSolver(db: any, id: string){
+export async function outerDeleteSolver(db: any, id: string) {
   var q = `DELETE FROM solvers WHERE solver_id = '${id}';`
   var preQ = `SELECT * FROM solvers WHERE solver_id = '${id}'`
-  var result = "VOID"
+  var result = 'VOID'
 
-  if (db){
-    
-    if(db.type == "Client"){
-      const solverCount = ((await db.query(preQ)).rowCount)
+  if (db) {
+    if (db.type == 'Client') {
+      const solverCount = (await db.query(preQ)).rowCount
       if (solverCount == 0) {
         return null
       }
       result = await db.query(q).rows
-    }
-    else{
-      const solverCount = ((await db.public.query(preQ)).rowCount)
+    } else {
+      const solverCount = (await db.public.query(preQ)).rowCount
       if (solverCount == 0) {
         return null
       }
       result = await db.public.query(q).rows
     }
-  
+
     return result
   }
 }
-
 
 export default (db: Client) => {
   const jobs = express.Router()
@@ -119,7 +115,6 @@ export default (db: Client) => {
     res.send(dbResult)
   })
 
-
   // PUT
 
   // Changes solver
@@ -134,14 +129,12 @@ export default (db: Client) => {
     }
 
     const dbResult = outerChangeSolver(db, name, body.name, body.image)
-    if(db != null && await dbResult != ""){
+    if (db != null && (await dbResult) != '') {
       res.sendStatus(204)
-    }
-    else{
+    } else {
       res.sendStatus(404).send({ message: 'solver not found' })
     }
   })
-
 
   // POST
 
@@ -159,7 +152,6 @@ export default (db: Client) => {
     res.sendStatus(201)
   })
 
-
   // DELETE
 
   // Delete solver by solver ID
@@ -167,13 +159,12 @@ export default (db: Client) => {
     const solver_id = req.params.solver_id
 
     const dbResult = outerDeleteSolver(db, solver_id)
-    if(db != null){
+    if (db != null) {
       res.sendStatus(204)
-    }
-    else{
+    } else {
       res.sendStatus(404).send({ message: 'solver not found' })
     }
- })
+  })
 
   return jobs
 }
