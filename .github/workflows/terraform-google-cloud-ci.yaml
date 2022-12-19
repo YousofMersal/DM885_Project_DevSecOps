@@ -4,13 +4,14 @@ on:
   push:
     paths:
       - terraform/google_cloud/**
+      - .github/workflows/terraform-google-cloud-ci.yaml
 
 defaults:
   run:
     working-directory: ./terraform/google_cloud
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

@@ -4,13 +4,14 @@ on:
   push:
     paths:
       - terraform/development/**
-      
+      - .github/workflows/terraform-development-ci.yaml
+
 defaults:
   run:
     working-directory: ./terraform/development
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
