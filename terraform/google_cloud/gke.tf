@@ -14,7 +14,7 @@ variable "gke_num_nodes" {
 }
 
 variable "gke_node_machine_type" {
-  default     = "n2-standard-4"
+  default     = "e2-standard-4"
   description = "machine type for nodes"
 }
 
@@ -39,6 +39,17 @@ resource "google_container_node_pool" "primary_nodes" {
   location   = var.zone
   cluster    = google_container_cluster.primary.name
   node_count = var.gke_num_nodes
+
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 5
+  }
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+    ]
+  }
 
   node_config {
     oauth_scopes = [
