@@ -159,7 +159,9 @@ export default (client: K8sClient, db: Client) => {
     // const solvers = req.body as string[]
 
     if (!(job_id in runningJobs)) {
-      return res.status(404).send({ message: 'job not found' })
+      return res
+        .status(404)
+        .send({ message: 'job was either not found or not running' })
     }
 
     const jobCtx = runningJobs[job_id]

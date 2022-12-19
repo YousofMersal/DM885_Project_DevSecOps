@@ -179,7 +179,6 @@ async function startSolverJob(
     commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
   }
 
-  const jobName = `minizinc-job-${job_desc.job_id}-solver-${solver.solver_id}`
   const configMapName = config_map.metadata!.name!
   if (!configMapName) {
     throw {
@@ -193,7 +192,7 @@ async function startSolverJob(
   job.apiVersion = 'batch/v1'
   job.kind = 'Job'
   job.metadata = {
-    name: jobName,
+    name: jobName(job_desc.job_id, solver.solver_id),
   }
   job.spec = {
     backoffLimit: 0,
@@ -251,4 +250,20 @@ async function startSolverJob(
     job,
     config_map,
   }
+}
+
+export async function stopSolverJob(client: K8sClient, job_id: string) {
+  if (!(job_id in runningJobs)) {
+    return
+  }
+
+  const promises = Object.keys(runningJobs[job_id].solvers).map((solver_id) => {
+    client.batch.deleteNamespacedJob(jobName(job_id, solver_id), client.ns)
+  })
+
+  await Promise.all(promises)
+}
+
+function jobName(job_id: string, solver_id: string): string {
+  return `minizinc-job-${job_id}-solver-${solver_id}`
 }
