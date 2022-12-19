@@ -19,9 +19,9 @@ export async function outerGetByName(
 
   if (db) {
     if (recievedFrom == 1) {
-      var result = (await db.query(q)).rows
+      var result = (await db.query(q)).rows[0]
     } else if (recievedFrom == 2) {
-      var result = (await db.public.query(q)).rows
+      var result = (await db.public.query(q)).rows[0]
     }
   }
   if (result.length == 0) {
@@ -127,7 +127,7 @@ export default (db: Client) => {
     const name = req.params.name
     var dbResult = await outerGetByName(1, db, name)
 
-    if (dbResult == undefined) {
+    if (!dbResult) {
       res.send(404).send({ name: 'Not found' })
     } else {
       res.send(dbResult)
