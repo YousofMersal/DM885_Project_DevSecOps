@@ -10,7 +10,7 @@ use crate::error::AppError;
 
 use self::{
     auth::auth,
-    user::{create_user, list_users},
+    user::{create_user, delete_user, list_users},
 };
 
 // QOL shorthands
@@ -25,7 +25,9 @@ pub fn app_config(config: &mut ServiceConfig) {
         .route(web::post().to(create_user))
         .route(web::get().to(list_users));
 
+    let delete_user = web::resource("/users/{id}").route(web::delete().to(delete_user));
+
     let auth = web::resource("/users/login").route(web::post().to(auth));
 
-    config.service(users).service(auth);
+    config.service(users).service(auth).service(delete_user);
 }
