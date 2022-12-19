@@ -15,7 +15,8 @@ export const Layout: React.FC<ILayoutProps> = ({ children }) => {
       <header>
         <span>Frontend</span>
         <div className="nav-items">
-          <Link to="/">Home</Link>
+          <Link to="/">Models</Link>
+          <Link to="/jobs">Jobs</Link>
           {user?.role === "admin" && <Link to="/solver-config">Solvers</Link>}
           {user?.role === "admin" && <Link to="/users">Users</Link>}
         </div>

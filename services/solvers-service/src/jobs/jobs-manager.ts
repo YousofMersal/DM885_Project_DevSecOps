@@ -4,14 +4,14 @@ import { registerJobWatch } from './job-watcher.js'
 import { K8sClient } from './k8s-client.js'
 
 export interface JobDesc {
-  job_id: string
+  job_id: JobID
   model: DBMznModel
   data?: DBMznData
   solvers: DBSolver[]
 }
 
 export interface DBJob {
-  job_id: string
+  job_id: JobID
   model_id: string
   data_id?: string
   created_at: Date
@@ -32,16 +32,50 @@ export interface DBMznData {
 }
 
 export interface DBSolver {
-  solver_id: string
+  solver_id: SolverID
   name: string
   image: string
 }
 
+export type CancelSolverPromise = Promise<'cancel_solver'>
+type JobID = string
+type SolverID = string
+
 export interface SolverJob {
-  job_id: string
-  solver_id: string
+  job_id: JobID
+  solver_id: SolverID
   job: k8s.V1Job
   config_map: k8s.V1ConfigMap
+}
+
+type JobContextSolvers = {
+  [key: SolverID]: {
+    cancelSolver: () => void
+  }
+}
+
+export interface JobContext {
+  job_id: JobID
+  solvers: JobContextSolvers
+}
+
+export const runningJobs: { [key: JobID]: JobContext } = {}
+
+function createSolverCancelPromise(): {
+  promise: CancelSolverPromise
+  cancelFn(): void
+} {
+  let cancelFn = null as unknown as () => void
+  const promise = new Promise<'cancel_solver'>((resolve) => {
+    cancelFn = () => {
+      resolve('cancel_solver')
+    }
+  })
+
+  return {
+    promise,
+    cancelFn,
+  }
 }
 
 export async function startJob(
@@ -67,19 +101,44 @@ export async function startJob(
   const watchers = job_desc.solvers.map(async (solver) => {
     const jobResult = await startSolverJob(client, job_desc, solver, map)
 
+    const { cancelFn, promise: cancelPromise } = createSolverCancelPromise()
+
     return {
-      watcher: registerJobWatch(client, db, jobResult).catch((err) => {
-        console.warn('WARN: failed to watch job', err)
-      }),
+      watcher: registerJobWatch(client, db, jobResult, cancelPromise).catch(
+        (err) => {
+          console.warn('WARN: failed to watch job', err)
+        }
+      ),
       jobResult,
+      cancelFn,
+      solver_id: solver.solver_id,
     }
   })
 
   const watcherResults = await Promise.all(watchers)
 
+  const jobContextSolvers = watcherResults.reduce<JobContextSolvers>(
+    (acc, x) => {
+      acc[x.solver_id] = { cancelSolver: x.cancelFn }
+      return acc
+    },
+    {}
+  )
+
+  if (job_desc.job_id in runningJobs) {
+    throw 'runningJobs should not already contain the new job'
+  }
+
+  runningJobs[job_desc.job_id] = {
+    job_id: job_desc.job_id,
+    solvers: jobContextSolvers,
+  }
+
   Promise.all(watcherResults.map((x) => x.watcher)).finally(async () => {
     console.log(`Cleaning up config map for job: ${job_desc.job_id}`)
     client.core.deleteNamespacedConfigMap(configMapName, client.ns)
+
+    delete runningJobs[job_desc.job_id]
 
     await db.query(
       "UPDATE jobs SET job_status = 'finished', finished_at = CURRENT_TIMESTAMP WHERE job_id = $1",
@@ -112,13 +171,14 @@ async function startSolverJob(
     '--output-output-item',
     '--solver',
     solver.name,
+    '--time-limit',
+    String(1000 * 60 * 10), // timeout after 10 minutes. TODO: make this customizable
   ]
 
   if (job_desc.data?.data_id != null) {
     commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
   }
 
-  const jobName = `minizinc-job-${job_desc.job_id}-solver-${solver.solver_id}`
   const configMapName = config_map.metadata!.name!
   if (!configMapName) {
     throw {
@@ -132,7 +192,7 @@ async function startSolverJob(
   job.apiVersion = 'batch/v1'
   job.kind = 'Job'
   job.metadata = {
-    name: jobName,
+    name: jobName(job_desc.job_id, solver.solver_id),
   }
   job.spec = {
     backoffLimit: 0,
@@ -190,4 +250,20 @@ async function startSolverJob(
     job,
     config_map,
   }
+}
+
+export async function stopSolverJob(client: K8sClient, job_id: string) {
+  if (!(job_id in runningJobs)) {
+    return
+  }
+
+  const promises = Object.keys(runningJobs[job_id].solvers).map((solver_id) => {
+    client.batch.deleteNamespacedJob(jobName(job_id, solver_id), client.ns)
+  })
+
+  await Promise.all(promises)
+}
+
+function jobName(job_id: string, solver_id: string): string {
+  return `minizinc-job-${job_id}-solver-${solver_id}`
 }

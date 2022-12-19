@@ -5,7 +5,7 @@ use actix_web::{
 };
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 use serde::Deserialize;
-use tracing::debug;
+use tracing::{debug, instrument};
 use uuid::Uuid;
 
 use crate::{
@@ -65,6 +65,7 @@ impl FromRequest for AuthenticatedUser {
     }
 }
 
+#[instrument(skip(loginfo, repo, secret_service))]
 pub async fn auth(
     loginfo: Json<Loginfo>,
     repo: UserRepo,

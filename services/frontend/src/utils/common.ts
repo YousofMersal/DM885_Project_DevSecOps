@@ -7,8 +7,18 @@ export const authServicePayload = z.object({
 
 export const createProblemPayload = z.object({
   name: z.string(),
-  model: z.instanceof(File),
+  content: z.instanceof(File),
   data: z.instanceof(File).optional(),
+});
+
+export const createModelData = z.object({
+  name: z.string(),
+  content: z.string(),
+});
+
+export const createSolverData = z.object({
+  name: z.string(),
+  image: z.string(),
 });
 
 export const handleError = (e: unknown) => {
@@ -19,4 +29,17 @@ export const handleError = (e: unknown) => {
   } else {
     return "Unknown error";
   }
+};
+
+type ApiServiceError = {
+  code: number;
+  message: string;
+};
+
+export const isApiServiceError = (e: unknown): e is ApiServiceError => {
+  if (typeof e === "object" && e && "code" in e && "message" in e) {
+    return true;
+  }
+
+  return false;
 };

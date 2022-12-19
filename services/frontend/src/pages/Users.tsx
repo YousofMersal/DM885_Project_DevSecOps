@@ -1,7 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { apiGetUsers, apiRemoveUser } from "../request";
+import { ApiUser } from "../types";
 
-interface IUsersProps {}
+export const Users: React.FC = () => {
+  const [users, setUsers] = useState<ApiUser[]>([]);
 
-export const Users: React.FC<IUsersProps> = () => {
-  return <div></div>;
+  const getUsers = () => apiGetUsers().then((r) => setUsers(r));
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user, i) => (
+            <tr key={i}>
+              <td>{user.username}</td>
+              <td>{user.role}</td>
+              <td>
+                <button
+                  onClick={() =>
+                    apiRemoveUser(user.username).then(() => getUsers())
+                  }
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };

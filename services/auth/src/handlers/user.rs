@@ -1,17 +1,17 @@
 use actix_web::{
-    web::{Data, Json},
+    web::{Data, Json, Path},
     HttpResponse,
 };
 
 use regex::Regex;
 
-use tracing::debug;
+use tracing::{debug, instrument};
 
 use crate::{
     config::secret::SecretService, db::user::UserRepo, error::AppError, models::user::NewUser,
 };
 
-use super::AppResponse;
+use super::{auth::AuthenticatedUser, AppResponse};
 
 pub async fn create_user(
     user: Json<NewUser>,
@@ -59,5 +59,45 @@ pub async fn create_user(
                 _ => Err(AppError::INTERNAL_ERROR.into()),
             }
         }
+    }
+}
+
+#[instrument[skip(user_repo)]]
+pub async fn list_self(user: AuthenticatedUser, user_repo: UserRepo) -> AppResponse {
+    let user = user_repo
+        .find_by_id(user.0)
+        .await?
+        .ok_or(AppError::INTERNAL_ERROR)?;
+
+    Ok(HttpResponse::Ok().json(user))
+}
+
+#[instrument[skip(user_repo)]]
+pub async fn list_users(user_repo: UserRepo, user: AuthenticatedUser) -> AppResponse {
+    let user = user_repo
+        .get_all_users(user.0)
+        .await?
+        .ok_or(AppError::NOT_AUTHORIZED)?;
+
+    Ok(HttpResponse::Ok().json(user))
+}
+
+pub async fn delete_user(
+    destroy_user: Path<String>,
+    user_repo: UserRepo,
+    user: AuthenticatedUser,
+) -> AppResponse {
+    let destroy_user = destroy_user.into_inner();
+
+    let db_res = user_repo
+        .delete_user_by_username(&destroy_user, user.0)
+        .await;
+
+    match db_res {
+        Ok(res) => match res {
+            Some(user) => Ok(HttpResponse::Ok().json(user)),
+            None => Err(AppError::NOT_FOUND.into()),
+        },
+        Err(_) => Err(AppError::NOT_AUTHORIZED.into()),
     }
 }

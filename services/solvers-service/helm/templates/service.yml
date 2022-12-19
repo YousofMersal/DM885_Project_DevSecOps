@@ -5,6 +5,12 @@ metadata:
   namespace: {{.Release.Namespace | quote}}
 spec:
   template:
+    metadata:
+      annotations:
+        # disable scaling for the solver service to make sure running jobs are handled properly
+        # this could be improved by splitting this service into two, on for handling requests which could be scaled
+        autoscaling.knative.dev/min-scale: "1"
+        autoscaling.knative.dev/max-scale: "1"
     spec:
       serviceAccountName: "{{ .Chart.Name }}-serviceaccount"
       containers:

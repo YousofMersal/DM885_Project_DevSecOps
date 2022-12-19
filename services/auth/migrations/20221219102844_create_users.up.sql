@@ -9,3 +9,6 @@ create table users (
   salt varchar not null,
   role varchar not null
 );
+
+INSERT INTO users (username, email, password_hash, salt, role)
+VALUES ('admin@admin.com', 'admin@admin.com', '$argon2id$v=19$m=4096,t=3,p=1$CZT9E3MpG/ldAnCAZbGfcA$HaSjHsbndq5VOzY6eZjfGCx33MXcxEfWnlu204umbKQ', 'CZT9E3MpG/ldAnCAZbGfcA', 'admin');
