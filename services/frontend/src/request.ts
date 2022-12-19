@@ -189,6 +189,12 @@ export const apiRemoveUser = (userName: string) =>
     method: "DELETE",
   });
 
+export const apiCancelJob = (jobId: string): Promise<ApiJob> => {
+  return request(`/jobs/${jobId}/cancel`, {
+    method: "POST",
+  });
+};
+
 const request = async (path: string, requestConfig?: RequestInit) => {
   const token = localStorage.getItem("token");
 

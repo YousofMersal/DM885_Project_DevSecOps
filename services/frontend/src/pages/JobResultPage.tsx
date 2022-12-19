@@ -1,6 +1,6 @@
 import { useMatch } from "@tanstack/react-location";
 import React, { useEffect, useRef, useState } from "react";
-import { apiGetJob, apiGetJobResult } from "../request";
+import { apiCancelJob, apiGetJob, apiGetJobResult } from "../request";
 import { ApiJob, ApiJobResult } from "../types";
 
 function useInterval(callback: any, delay: number | null) {
@@ -49,16 +49,21 @@ export const JobResultPage: React.FC = () => {
       <p>{job?.job_status}</p>
       <p>{job?.created_at}</p>
       <p>{job?.finished_at}</p>
-      <p>Result</p>
-      {result.map((r) => (
-        <ul>
-          {Object.keys(r.data).map((key) => (
-            <li>{`${key} : ${r.data[key]}`}</li>
+      <button onClick={() => apiCancelJob(jobId)}>Cancel</button>
+      {result ? (
+        <div>
+          <p>Result</p>
+          {result.map((r) => (
+            <ul>
+              {Object.keys(r.data).map((key) => (
+                <li>{`${key} : ${r.data[key]}`}</li>
+              ))}
+              <hr />
+              <li>Status: {r.sol_status}</li>
+            </ul>
           ))}
-          <hr />
-          <li>Status: {r.sol_status}</li>
-        </ul>
-      ))}
+        </div>
+      ) : null}
     </div>
   );
 };
