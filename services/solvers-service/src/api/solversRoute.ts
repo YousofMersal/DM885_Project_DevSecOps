@@ -5,14 +5,14 @@ import type { Client } from 'pg'
 
 export async function outerGetAll(db: any) {
   var q = "SELECT * FROM solvers"
-  var result = ""
+
   if (db){
-    if(db.type == "Client"){
+    if(db.type == "IMemoryDb"){
       result = await db.query(q).rows
     }
-    else{
-      result = await db.public.query(q).rows
-    }
+
+    var result = await db.query(q).rows
+
     return result
   }
 }
