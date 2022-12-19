@@ -9,6 +9,7 @@ import {
   ApiUser,
   AuthServiceForm,
 } from "./types";
+import { isApiServiceError } from "./utils/common";
 
 const apiServiceUrl =
   import.meta.env.DEV && import.meta.env.VITE_PROJECT_DOMAIN
@@ -183,48 +184,51 @@ export const apiRemoveModel = (modelId: string) =>
     method: "DELETE",
   });
 
-const request = async (path: string, requestConfig?: RequestInit) => {
-  console.log("request", path);
+export const apiRemoveUser = (userName: string) =>
+  request(`/auth/users/${userName}`, {
+    method: "DELETE",
+  });
 
+const request = async (path: string, requestConfig?: RequestInit) => {
   const token = localStorage.getItem("token");
 
+  const headers = new Headers({
+    "Content-Type": "application/json",
+  });
+
   const defaultConfig: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     ...requestConfig,
   };
 
   if (token) {
-    //@ts-expect-error
-    defaultConfig.headers["Authorization"] = `Bearer ${token}`;
+    headers.append("Authorization", `Bearer ${token}`);
   }
 
   const response = await fetch(`${apiServiceUrl}${path}`, defaultConfig);
-
-  console.log("response", response);
 
   if (response.ok) {
     // look for json response
     if (response.headers.get("Content-Type")?.includes("json")) {
       const data = await response.json();
-      console.log("json data", data);
+
       return data;
     }
 
     const txt = await response.text();
 
-    console.log("txt data", txt);
-
     return txt;
   }
 
-  // for now if we get a 401, we'll throw an error saying wrong username/password until we get better responses
-  if (response.status === 401) {
-    throw new Error("Wrong username/password combination");
+  try {
+    const errorJsonResponse = await response.json();
+
+    if (isApiServiceError(errorJsonResponse)) {
+      throw new Error(errorJsonResponse.message);
+    }
+  } catch (e) {
+    throw new Error("Unknown error. Backend returned invalid json");
   }
 
   throw new Error("Oops something wrong happened");
 };
-
-// TODO: remove log statements once development over

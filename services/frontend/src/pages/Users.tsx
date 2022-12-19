@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { apiGetUsers } from "../request";
+import { apiGetUsers, apiRemoveUser } from "../request";
 import { ApiUser } from "../types";
 
-interface IUsersProps {}
-
-export const Users: React.FC<IUsersProps> = () => {
+export const Users: React.FC = () => {
   const [users, setUsers] = useState<ApiUser[]>([]);
 
+  const getUsers = () => apiGetUsers().then((r) => setUsers(r));
+
   useEffect(() => {
-    apiGetUsers().then((r) => setUsers(r));
+    getUsers();
   }, []);
 
   return (
@@ -28,7 +28,15 @@ export const Users: React.FC<IUsersProps> = () => {
               <td>{user.username}</td>
               <td>{user.email}</td>
               <td>{user.role}</td>
-              <td></td>
+              <td>
+                <button
+                  onClick={() =>
+                    apiRemoveUser(user.username).then(() => getUsers())
+                  }
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
