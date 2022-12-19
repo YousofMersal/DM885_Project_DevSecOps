@@ -15,6 +15,11 @@ export type ApiSignupResponse = {
 
 export type ApiLoginResponse = {
   token: string;
+  user?: {
+    // backwards comp
+    role: string;
+    username: string;
+  };
 };
 
 // api solver

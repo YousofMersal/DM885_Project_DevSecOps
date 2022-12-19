@@ -1,10 +1,13 @@
 import create from "zustand";
+import jwt_decode from "jwt-decode";
+
+type Role = "admin" | "user";
 
 type GlobalState = {
   isLoggedIn: boolean;
   user?: {
     email: string;
-    role: "admin" | "user";
+    role: Role;
   };
   login: (token: string) => void;
   logout: () => void;
@@ -14,11 +17,21 @@ export const useGlobalState = create<GlobalState>((set) => ({
   isLoggedIn: false,
   login: (token: string) => {
     localStorage.setItem("token", token);
+
+    const decodedToken = jwt_decode(token);
+
+    const role =
+      typeof decodedToken === "object" &&
+      decodedToken !== null &&
+      "role" in decodedToken
+        ? (decodedToken.role as Role)
+        : "user";
+
     set({
       isLoggedIn: true,
       user: {
-        email: "test-user@gmail.com",
-        role: "admin",
+        email: "",
+        role,
       },
     });
   },

@@ -16,9 +16,8 @@ export const Users: React.FC = () => {
       <table>
         <thead>
           <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Content</th>
+            <th>Username</th>
+            <th>Role</th>
             <th></th>
           </tr>
         </thead>
@@ -26,7 +25,6 @@ export const Users: React.FC = () => {
           {users.map((user, i) => (
             <tr key={i}>
               <td>{user.username}</td>
-              <td>{user.email}</td>
               <td>{user.role}</td>
               <td>
                 <button

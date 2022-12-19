@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { apiSignup } from "../request";
 import { Link, useNavigate } from "@tanstack/react-location";
 import { authServicePayload, handleError } from "../utils/common";
-import { ZodError } from "zod";
 
 export const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,8 +31,8 @@ export const SignUpPage: React.FC = () => {
 
   return (
     <div className="center">
-      <h1>Sign up</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ width: 500 }}>
+        <h1>Sign up</h1>
         <label htmlFor="email">Email (username)</label>
         <input required id="email" name="email" type="email" />
         <label htmlFor="password">Password</label>
