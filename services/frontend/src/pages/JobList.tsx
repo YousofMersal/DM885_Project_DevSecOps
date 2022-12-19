@@ -23,7 +23,7 @@ export const JobList: React.FC<IJobListProps> = () => {
             <th>Id</th>
             <th>Status</th>
             <th>Created at</th>
-            <th>Finsihed at</th>
+            <th>Finished at</th>
             <th>Model id</th>
             <th>Data id</th>
             <th></th>
