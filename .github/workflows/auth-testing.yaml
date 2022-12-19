@@ -2,9 +2,13 @@
 name: auth-test
 on:
   push:
-    branches: [ main ]
+    paths:
+    - services/auth/**
+    - .github/workflows/auth-testing.yaml
   pull_request:
-    branches: [ main ]
+    paths:
+    - services/auth/**
+    - .github/workflows/auth-testing.yaml
 
 # Only one job  that does the following
 jobs:
