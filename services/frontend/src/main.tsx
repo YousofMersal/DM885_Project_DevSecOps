@@ -167,21 +167,21 @@ const Routes: React.FC = () => {
           ),
         },
         {
-          path: "/jobs",
-          element: (
-            <ProtectedRoute>
-              <Layout>
-                <JobList />
-              </Layout>
-            </ProtectedRoute>
-          ),
-        },
-        {
           path: "/jobs/:id",
           element: (
             <ProtectedRoute isAdminRoute={true}>
               <Layout>
                 <JobResultPage />
+              </Layout>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/jobs",
+          element: (
+            <ProtectedRoute>
+              <Layout>
+                <JobList />
               </Layout>
             </ProtectedRoute>
           ),
