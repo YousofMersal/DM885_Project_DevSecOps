@@ -71,23 +71,23 @@ resource "kubectl_manifest" "knative-operator" {
 }
 
 resource "helm_release" "prometheus" {
-  name = "prometheus"
-  chart = "kube-prometheus-stack"
+  name       = "prometheus"
+  chart      = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
 }
 
 resource "helm_release" "solvers-postgres" {
-  name       = "solvers-postgres"     
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "postgresql"
-  namespace  = "project"
+  name             = "solvers-postgres"
+  repository       = "https://charts.bitnami.com/bitnami"
+  chart            = "postgresql"
+  namespace        = "project"
   create_namespace = true
 }
 
 resource "helm_release" "auth-postgres" {
-  name       = "auth-postgres"     
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "postgresql"
-  namespace  = "project"
+  name             = "auth-postgres"
+  repository       = "https://charts.bitnami.com/bitnami"
+  chart            = "postgresql"
+  namespace        = "project"
   create_namespace = true
 }

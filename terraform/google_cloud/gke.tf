@@ -53,7 +53,7 @@ resource "google_container_node_pool" "primary_nodes" {
     }
 
     machine_type = var.gke_node_machine_type
-    disk_type = "pd-ssd"
+    disk_type    = "pd-ssd"
     tags         = ["gke-node", "${var.project_id}-gke"]
     metadata = {
       disable-legacy-endpoints = "true"
