@@ -6,7 +6,7 @@ mod models;
 
 use crate::{config::*, handlers::app_config};
 use actix_cors::Cors;
-use actix_web::{http::header, middleware::Logger, web::Data, App, HttpServer};
+use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use color_eyre::Result;
 use colored::Colorize;
 use tracing::info;

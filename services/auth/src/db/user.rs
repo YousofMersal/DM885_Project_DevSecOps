@@ -1,6 +1,6 @@
 // use futures_util::future::{Future, Ready};
 use actix_utils::future::{ready, Ready};
-use eyre::{anyhow, bail, Context};
+use eyre::bail;
 use std::{
     // future::{ready, Ready},
     ops::Deref,
@@ -103,9 +103,30 @@ impl UserRepo {
         Ok(possible_user)
     }
 
+    pub async fn delete_user_by_username(
+        &self,
+        username: &str,
+        id: Uuid,
+    ) -> Result<Option<SimpleUser>> {
+        //! Delete a user given a username if the id given is an admin
+        let is_admin = self.is_admin(id).await?;
+
+        if is_admin {
+            let possible_user =
+                query_as::<_, SimpleUser>("DELETE FROM users WHERE username = $1 RETURNING *")
+                    .bind(username)
+                    .fetch_optional(&*self.pool)
+                    .await?;
+
+            Ok(possible_user)
+        } else {
+            bail!("User is not an admin")
+        }
+    }
+
     pub async fn find_by_id(&self, id: Uuid) -> Result<Option<User>> {
         //! Return `Option` of `User` given a Uuid
-        let possible_user = query_as::<_, User>("select * from users where id = $1")
+        let possible_user = query_as::<_, User>("SELECT * FROM users WHERE id = $1")
             .bind(id)
             .fetch_optional(&*self.pool)
             .await?;
@@ -119,7 +140,7 @@ impl UserRepo {
         let is_admin = self.is_admin(id).await?;
 
         if is_admin {
-            let users = query_as::<_, SimpleUser>("select id, username, email, role from users")
+            let users = query_as::<_, SimpleUser>("SELECT id, username, email, role FROM users")
                 .fetch_all(&*self.pool)
                 .await?;
 

@@ -1,6 +1,6 @@
 use actix_web::{
-    web::{Data, Json},
-    HttpRequest, HttpResponse,
+    web::{Data, Json, Path},
+    HttpResponse,
 };
 
 use regex::Regex;
@@ -80,4 +80,24 @@ pub async fn list_users(user_repo: UserRepo, user: AuthenticatedUser) -> AppResp
         .ok_or(AppError::NOT_AUTHORIZED)?;
 
     Ok(HttpResponse::Ok().json(user))
+}
+
+pub async fn delete_user(
+    destroy_user: Path<String>,
+    user_repo: UserRepo,
+    user: AuthenticatedUser,
+) -> AppResponse {
+    let destroy_user = destroy_user.into_inner();
+
+    let db_res = user_repo
+        .delete_user_by_username(&destroy_user, user.0)
+        .await;
+
+    match db_res {
+        Ok(res) => match res {
+            Some(user) => Ok(HttpResponse::Ok().json(user)),
+            None => Err(AppError::NOT_FOUND.into()),
+        },
+        Err(_) => Err(AppError::NOT_AUTHORIZED.into()),
+    }
 }

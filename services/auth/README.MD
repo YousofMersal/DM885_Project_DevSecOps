@@ -59,3 +59,11 @@ As of right now these endpoints have been implemented with the following functio
   curl --request GET "http://$PROJECT_DOMAIN/api/v1/auth/users" \
   --header "authorization: Bearer <$JWT_TOKEN>"
   ```
+
+- '/api/v1/auth/users/{id}'
+  - DELETE: Deletes a user
+  - example: with curl 
+  ```bash
+  curl --request DELETE "http//$PROJECT_DOMAIN/api/v1/auth/users/<username>" \ 
+  --header "authorization: Bearer <$JWT_TOKEN>"
+  ```
