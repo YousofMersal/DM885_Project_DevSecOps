@@ -54,15 +54,13 @@ export const Users: React.FC = () => {
     },
     {
       title: "",
-      dataIndex: "username",
-      key: "username",
-      render: (key) => {
+      render: (key: ApiUser) => {
         return (
           <Space>
-            <Button>Edit</Button>
+            <Button onClick={() => setSelectedUser(key)}>Edit</Button>
             <Button
               danger
-              onClick={() => apiRemoveUser(key).then(() => getUsers())}
+              onClick={() => apiRemoveUser(key.username).then(() => getUsers())}
             >
               Delete
             </Button>
