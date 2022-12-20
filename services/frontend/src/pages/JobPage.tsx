@@ -37,18 +37,13 @@ export const JobPage: React.FC<IJobPageProps> = () => {
   const columns: ColumnsType<ApiSolver> = [
     {
       title: "Id",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "solver_id",
+      key: "solver_id",
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-    },
-    {
-      title: "Content",
-      dataIndex: "content",
-      key: "content",
     },
     {
       title: "",
@@ -77,13 +72,16 @@ export const JobPage: React.FC<IJobPageProps> = () => {
   return (
     <div>
       <Table columns={columns} dataSource={solvers} />
-      <Button
-        disabled={!selectedSolvers.length}
-        type="primary"
-        onClick={handleStart}
-      >
-        Start job
-      </Button>
+      <div style={{ justifyContent: "flex-end", display: "flex" }}>
+        <Button
+          disabled={!selectedSolvers.length}
+          type="primary"
+          size="large"
+          onClick={handleStart}
+        >
+          Start job
+        </Button>
+      </div>
     </div>
   );
 };

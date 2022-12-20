@@ -19,8 +19,8 @@ export const Home: React.FC = () => {
   const columns: ColumnsType<ApiModel> = [
     {
       title: "Id",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "model_id",
+      key: "model_id",
     },
     {
       title: "Name",

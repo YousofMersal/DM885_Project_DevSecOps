@@ -61,8 +61,8 @@ export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
   }, [isOpen]);
 
   return (
-    <Modal open={isOpen} footer={[]}>
-      <form onSubmit={handleSubmit}>
+    <Modal title="Upload model" open={isOpen} footer={[]} onCancel={onClose}>
+      <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
         <Form.Item label="Name">
           <Input type="text" required={true} name="name" />
         </Form.Item>
