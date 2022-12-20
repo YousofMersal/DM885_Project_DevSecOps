@@ -1,3 +1,4 @@
+import { DBUser } from './../api/usersRoute.js'
 import { Client } from 'pg'
 import k8s from '@kubernetes/client-node'
 import { registerJobWatch } from './job-watcher.js'
@@ -8,6 +9,8 @@ export interface JobDesc {
   model: DBMznModel
   data?: DBMznData
   solvers: DBSolver[]
+  user: DBUser
+  time_limit?: number
 }
 
 export interface DBJob {
@@ -171,9 +174,14 @@ async function startSolverJob(
     '--output-output-item',
     '--solver',
     solver.name,
-    '--time-limit',
-    String(1000 * 60 * 10), // timeout after 10 minutes. TODO: make this customizable
   ]
+
+  if (job_desc.time_limit) {
+    commandArgs.push(
+      '--time-limit',
+      String(job_desc.time_limit) // timeout after 10 minutes. TODO: make this customizable)
+    )
+  }
 
   if (job_desc.data?.data_id != null) {
     commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
@@ -205,6 +213,12 @@ async function startSolverJob(
             name: 'minizinc-solver',
             image: solver.image,
             command: commandArgs,
+            resources: {
+              limits: {
+                cpu: String(job_desc.user.cpu_limit),
+                memory: String(job_desc.user.mem_limit),
+              },
+            },
             volumeMounts: [
               {
                 name: 'mzn-model',
