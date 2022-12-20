@@ -31,13 +31,22 @@ export default (client: K8sClient, db: Client) => {
     const user_id = req.auth?.sub
     if (!user_id) throw 'user_id not found'
 
-    const user = (
+    let user = (
       await db.query<DBUser>(
         'INSERT INTO user_data (user_id) VALUES ($1) ON CONFLICT DO NOTHING RETURNING *',
         [user_id]
       )
     ).rows[0]
 
+    if (!user) {
+      user = (
+        await db.query<DBUser>(
+          'SELECT * FROM user_data WHERE user_id = $1',
+          [user_id]
+        )
+      ).rows[0]
+    }
+    
     const body: components['schemas']['Job_create'] = req.body
 
     if (!body.solver_ids) {
@@ -65,7 +74,6 @@ export default (client: K8sClient, db: Client) => {
     let solvers: DBSolver[] = []
     try {
       await db.query('BEGIN')
-
       job = (
         await db.query(
           "INSERT INTO jobs (job_id, user_id, model_id, data_id, job_status) VALUES ($1, $2, $3, $4, 'running')",

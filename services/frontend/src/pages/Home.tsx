@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-location";
+import { Button, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { UploadProblemDialog } from "../components/UploadProblemDialog";
 import { apiListModels } from "../request";
 import { ApiModel } from "../types";
+import type { ColumnsType } from "antd/es/table";
 
 export const Home: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +16,33 @@ export const Home: React.FC = () => {
     getModels();
   }, []);
 
+  const columns: ColumnsType<ApiModel> = [
+    {
+      title: "Id",
+      dataIndex: "model_id",
+      key: "model_id",
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Content",
+      dataIndex: "content",
+      key: "content",
+    },
+    {
+      title: "",
+      dataIndex: "model_id",
+      render: (key) => (
+        <Link to={`/problems/${key}`}>
+          <Button>View</Button>
+        </Link>
+      ),
+    },
+  ];
+
   return (
     <div>
       <div
@@ -21,39 +50,14 @@ export const Home: React.FC = () => {
           display: "flex",
           justifyContent: "flex-end",
           marginTop: 20,
+          marginBottom: 20,
         }}
       >
-        <button
-          onClick={() => setIsOpen(true)}
-          style={{
-            width: "auto",
-          }}
-        >
+        <Button type="primary" onClick={() => setIsOpen(true)}>
           New model
-        </button>
+        </Button>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Content</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {problems.map((problem) => (
-            <tr key={problem.model_id}>
-              <td>{problem.model_id}</td>
-              <td>{problem.name}</td>
-              <td>{problem.content}</td>
-              <td>
-                <Link to={`/problems/${problem.model_id}`}>View</Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table columns={columns} dataSource={problems} />
       <UploadProblemDialog
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}

@@ -31,7 +31,7 @@ function startRestAPI(k8sClient: K8sClient, db: Client) {
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error('Internal server error: ', err)
-    res.status(((err as any).status as number) ?? 500).send(err)
+    res.status(500).send(err)
   })
 
   return server

@@ -1,7 +1,9 @@
 import { useMatch } from "@tanstack/react-location";
+import { Alert, Button, Divider, Spin, Typography } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { apiCancelJob, apiGetJob, apiGetJobResult } from "../request";
 import { ApiJob, ApiJobResult } from "../types";
+import { differenceInMinutes, differenceInSeconds, isValid } from "date-fns";
 
 function useInterval(callback: any, delay: number | null) {
   const savedCallback = useRef<any>();
@@ -41,7 +43,9 @@ export const JobResultPage: React.FC = () => {
     getJob();
   }, []);
 
-  useInterval(getJob, job?.job_status !== "finished" ? 5000 : null);
+  const isRunning = job?.job_status !== "finished";
+
+  useInterval(getJob, isRunning ? 5000 : null);
 
   useEffect(() => {
     if (job?.job_status === "finished") {
@@ -54,7 +58,7 @@ export const JobResultPage: React.FC = () => {
   if (Array.isArray(result) && result.length) {
     renderedResult = (
       <div>
-        <p>Result</p>
+        <Typography.Paragraph>Result:</Typography.Paragraph>
         {result.map((r) => (
           <ul>
             <li>Solver Id: {r.solver_id}</li>
@@ -71,13 +75,44 @@ export const JobResultPage: React.FC = () => {
     renderedResult = <p>Solver ran but no result found</p>;
   }
 
+  let type: "success" | "info" | "warning" | "error" | undefined = undefined;
+
+  if (job?.job_status === "running") {
+    type = "info";
+  } else if (job?.job_status === "finished") {
+    type = "success";
+  }
+
+  const diff =
+    job &&
+    isValid(new Date(job.created_at)) &&
+    job.finished_at &&
+    isValid(new Date(job.finished_at))
+      ? differenceInSeconds(new Date(job.finished_at), new Date(job.created_at))
+      : "";
+
   return (
     <div>
-      <p>Status: {job?.job_status}</p>
-      <p>Created at: {job?.created_at}</p>
-      <p>Finished at: {job?.finished_at}</p>
+      <div style={{ marginBottom: 10 }}>{isRunning ? <Spin /> : null}</div>
+      <Alert
+        message={`Job status: ${job?.job_status}. ${
+          diff ? `Time estimated: ${diff} seconds` : ""
+        }`}
+        type={type}
+        showIcon
+      />
+      <div style={{ marginTop: 20 }}>
+        <Typography.Paragraph>Status: {job?.job_status}</Typography.Paragraph>
+        <Typography.Paragraph>
+          Created at: {job?.created_at}
+        </Typography.Paragraph>
+        <Typography.Paragraph>
+          Finished at: {job?.finished_at}
+        </Typography.Paragraph>
+      </div>
       {job?.job_status !== "finished" ? (
-        <button
+        <Button
+          danger
           onClick={() => {
             setErr("");
 
@@ -87,9 +122,10 @@ export const JobResultPage: React.FC = () => {
           }}
         >
           Cancel
-        </button>
+        </Button>
       ) : null}
       <p>{err}</p>
+      <Divider />
       {renderedResult}
     </div>
   );

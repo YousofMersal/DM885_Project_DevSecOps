@@ -30,3 +30,13 @@ pub struct SimpleUser {
     pub role: String,
     pub email: String,
 }
+
+impl From<User> for SimpleUser {
+    fn from(user: User) -> Self {
+        Self {
+            username: user.username,
+            role: user.role,
+            email: user.email,
+        }
+    }
+}

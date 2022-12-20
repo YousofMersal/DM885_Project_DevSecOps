@@ -90,7 +90,7 @@ pub async fn delete_user(
     let destroy_user = destroy_user.into_inner();
 
     let db_res = user_repo
-        .delete_user_by_username(&destroy_user, user.0)
+        .delete_user_by_username(&destroy_user, user.0, &user.1)
         .await;
 
     match db_res {

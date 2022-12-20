@@ -14,6 +14,9 @@ spec:
             - name: HOST
               value: "127.0.0.1"
 
+            - name: SOLVER_HOST
+              value: "solvers-service.project.svc.cluster.local"
+
             - name: PGHOST
               value: "auth-postgres-postgresql.project.svc.cluster.local"
 

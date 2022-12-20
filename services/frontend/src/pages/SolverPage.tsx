@@ -1,4 +1,5 @@
 import { useMatch, useNavigate } from "@tanstack/react-location";
+import { Button, Form, Input, InputRef } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import {
   apiCreateSolver,
@@ -15,16 +16,16 @@ export const SolverPage: React.FC<ISolverPageProps> = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const refImage = useRef<HTMLInputElement>(null);
-  const refName = useRef<HTMLInputElement>(null);
+  const refImage = useRef<InputRef>(null);
+  const refName = useRef<InputRef>(null);
 
   const solverId = match.params.id;
 
   useEffect(() => {
     if (solverId !== "undefined") {
       apiGetSolver(solverId).then((r) => {
-        refName.current!.value = r.name;
-        refImage.current!.value = r.image;
+        refName.current!.input!.value = r.name;
+        refImage.current!.input!.value = r.image;
       });
     }
   }, [solverId]);
@@ -58,16 +59,19 @@ export const SolverPage: React.FC<ISolverPageProps> = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <label>Name</label>
-        <input ref={refName} type="text" required={true} name="name" />
+        <Form.Item label="Name">
+          <Input ref={refName} type="text" required={true} name="name" />
+        </Form.Item>
+
         <div>
-          <label>Image</label>
-          <input ref={refImage} type="text" required={true} name="image" />
+          <Form.Item label="Image">
+            <Input ref={refImage} type="text" required={true} name="image" />
+          </Form.Item>
         </div>
         {error ? <div>{error} </div> : null}
-        <button type="submit">
+        <Button type="primary" htmlType="submit">
           {solverId === "undefined" ? "Create" : "Update"}
-        </button>
+        </Button>
       </form>
     </div>
   );

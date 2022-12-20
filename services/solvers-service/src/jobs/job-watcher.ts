@@ -129,18 +129,36 @@ async function attachLogger(
   await exponentialBackoff(
     5,
     async () => {
+      console.log('Starting logger attach')
       await logger.log(client.ns, jobPodName, 'minizinc-solver', logStream, {
         follow: true,
         pretty: false,
         timestamps: false,
       })
+      console.log('Finished logger attach')
     },
     cancelPromise,
     async () => {
+      console.log('cancel requested (before attach), destroying logger')
       logStream.destroy()
       await stopSolverJob(client, job.job_id)
     }
   )
+
+  // wait for log stream to emit 'end' event
+  const streamEndedPromise = new Promise<undefined>((resolve) => {
+    logStream.on('end', () => {
+      console.log('Logger stream ended')
+      resolve(undefined)
+    })
+  })
+
+  const result = await Promise.race([cancelPromise, streamEndedPromise])
+  if (result == 'cancel_solver') {
+    console.log('cancel requested (after attach), destroying logger')
+    logStream.destroy()
+    await stopSolverJob(client, job.job_id)
+  }
 
   console.log('Logger finished')
 }
@@ -159,7 +177,8 @@ async function exponentialBackoff(
     try {
       const result = await Promise.race([callback(), cancelPromise])
       if (result == 'cancel_solver') {
-        if (cancelCleanup) cancelCleanup()
+        console.log('canceling exponential backoff')
+        if (cancelCleanup) await cancelCleanup()
         return
       }
 
