@@ -17,9 +17,9 @@ export async function outerGetByName(
 
   if (db) {
 
-    if (recievedFrom == 1) {
+    if (receivedFrom == 1) {
       var result = (await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rows[0]
-    } else if (recievedFrom == 2) {
+    } else if (receivedFrom == 2) {
       var result = (await db.public.query(`SELECT * FROM solvers WHERE name = \'${name}\'`)).rows[0]
 
     }
@@ -41,14 +41,14 @@ export async function outerChangeSolver(
 
   if (db) {
 
-    if (recievedFrom == 1) {
+    if (receivedFrom == 1) {
       const solverCount = (await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rowCount
       if (solverCount == 0) {
         return null
       }
       var result = (await db.query("UPDATE solvers SET name = '$1', image = '$2' WHERE name = '$3';",[newName, newImage, name])).rows
     } 
-    else if (recievedFrom == 2) {
+    else if (receivedFrom == 2) {
       const solverCount = (await db.public.query(`SELECT * FROM solvers WHERE name = '${name}'`)).rowCount
 
       if (solverCount == 0) {
@@ -69,14 +69,14 @@ export async function outerAddSolver(
 ) {
 
   if (db) {
-    if (recievedFrom == 1) {
+    if (receivedFrom == 1) {
       if ((await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rowCount > 0) {
         return null
       } else {
         return await db.query("INSERT INTO solvers (name, image) VALUES ('$1', '$2')", [name, image])
       }
 
-    } else if (recievedFrom == 2) {
+    } else if (receivedFrom == 2) {
       if ((await db.public.query(`SELECT * FROM solvers WHERE name = '${name}'`)).rowCount > 0) {
         return null
       } else {
@@ -94,7 +94,7 @@ export async function outerDeleteSolver(
 
   if (db) {
 
-    if (recievedFrom == 1) {
+    if (receivedFrom == 1) {
       const solverCount = (await db.query("SELECT * FROM solvers WHERE solver_id = '$1'", [id])).rowCount
       if (solverCount == 0) {
         return null
