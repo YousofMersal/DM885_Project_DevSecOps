@@ -9,16 +9,16 @@ export async function outerGetAll(db: any) {
 }
 
 export async function outerGetByName(
-  recievedFrom: Number,
+  receivedFrom: Number,
   db: any,
   name: string
 ) {
   var q = `SELECT * FROM solvers WHERE name = \'${name}\'`
 
   if (db) {
-    if (recievedFrom == 1) {
+    if (receivedFrom == 1) {
       var result = (await db.query(q)).rows[0]
-    } else if (recievedFrom == 2) {
+    } else if (receivedFrom == 2) {
       var result = (await db.public.query(q)).rows[0]
     }
   }
@@ -30,7 +30,7 @@ export async function outerGetByName(
 }
 
 export async function outerChangeSolver(
-  recievedFrom: Number,
+  receivedFrom: Number,
   db: any,
   name: string,
   newName: string,
@@ -40,14 +40,13 @@ export async function outerChangeSolver(
   var preQ = `SELECT * FROM solvers WHERE name = '${name}'`
 
   if (db) {
-    if (recievedFrom == 1) {
+    if (receivedFrom == 1) {
       const solverCount = (await db.query(preQ)).rowCount
       if (solverCount == 0) {
         return null
       }
       var result = (await db.query(q)).rows
-    } 
-    else if (recievedFrom == 2) {
+    } else if (receivedFrom == 2) {
       const solverCount = (await db.public.query(preQ)).rowCount
       if (solverCount == 0) {
         return null
@@ -60,7 +59,7 @@ export async function outerChangeSolver(
 }
 
 export async function outerAddSolver(
-  recievedFrom: Number,
+  receivedFrom: Number,
   db: any,
   name: string,
   image: string
@@ -68,13 +67,13 @@ export async function outerAddSolver(
   var q = `INSERT INTO solvers (name, image) VALUES ('${name}', '${image}')`
   var preQ = `SELECT * FROM solvers WHERE name = '${name}'`
   if (db) {
-    if (recievedFrom == 1) {
+    if (receivedFrom == 1) {
       if ((await db.query(preQ)).rowCount > 0) {
         return null
       } else {
         return await db.query(q)
       }
-    } else if (recievedFrom == 2) {
+    } else if (receivedFrom == 2) {
       if ((await db.public.query(preQ)).rowCount > 0) {
         return null
       } else {
@@ -85,7 +84,7 @@ export async function outerAddSolver(
 }
 
 export async function outerDeleteSolver(
-  recievedFrom: Number,
+  receivedFrom: Number,
   db: any,
   id: string
 ) {
@@ -93,7 +92,7 @@ export async function outerDeleteSolver(
   var preQ = `SELECT * FROM solvers WHERE solver_id = '${id}'`
 
   if (db) {
-    if (recievedFrom == 1) {
+    if (receivedFrom == 1) {
       const solverCount = (await db.query(preQ)).rowCount
       if (solverCount == 0) {
         return null
@@ -111,9 +110,7 @@ export async function outerDeleteSolver(
   }
 }
 
-
 // API endpoints start here
-
 
 export default (db: Client) => {
   const jobs = express.Router()
