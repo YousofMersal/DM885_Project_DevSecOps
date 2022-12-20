@@ -149,6 +149,20 @@ export const apiSaveDataOnModel = (
   });
 };
 
+export const apiUpdateUserInfo = (
+  userId: string,
+  cpuLimit: string,
+  memLimit: string
+) => {
+  return request(`/job-users/${userId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      cpu_limit: cpuLimit,
+      mem_limit: memLimit,
+    }),
+  });
+};
+
 export const apiUpdateDataOnModel = (
   dataId: string,
   modelId: string,
