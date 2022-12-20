@@ -7,6 +7,7 @@ import {
   ApiSignupResponse,
   ApiSolver,
   ApiUser,
+  ApiUserInfo,
   AuthServiceForm,
 } from "./types";
 import { isApiServiceError, isSolverServiceError } from "./utils/common";
@@ -206,7 +207,8 @@ export const apiCancelJob = (
   });
 };
 
-export const apiGetJobUsers = () => request("/job-users");
+export const apiGetJobUsers = (): Promise<ApiUserInfo[]> =>
+  request("/job-users");
 
 const request = async (path: string, requestConfig?: RequestInit) => {
   const token = localStorage.getItem("token");
