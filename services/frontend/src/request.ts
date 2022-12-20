@@ -192,8 +192,16 @@ export const apiRemoveUser = (userName: string) =>
     method: "DELETE",
   });
 
-export const apiCancelJob = (jobId: string): Promise<ApiJob> => {
-  return request(`/jobs/${jobId}/cancel`, {
+export const apiCancelJob = (
+  jobId: string,
+  solverId?: number
+): Promise<ApiJob> => {
+  let url = `/jobs/${jobId}/cancel`;
+
+  if (solverId) {
+    url += `?solver_id=${solverId}`;
+  }
+  return request(url, {
     method: "POST",
   });
 };
