@@ -177,10 +177,7 @@ async function startSolverJob(
   ]
 
   if (job_desc.time_limit) {
-    commandArgs.push(
-      '--time-limit',
-      String(job_desc.time_limit) // timeout after 10 minutes. TODO: make this customizable)
-    )
+    commandArgs.push('--time-limit', String(job_desc.time_limit))
   }
 
   if (job_desc.data?.data_id != null) {
@@ -217,6 +214,10 @@ async function startSolverJob(
               limits: {
                 cpu: String(job_desc.user.cpu_limit),
                 memory: String(job_desc.user.mem_limit),
+              },
+              requests: {
+                cpu: '1',
+                memory: '1M',
               },
             },
             volumeMounts: [
@@ -275,7 +276,14 @@ export async function stopSolverJob(client: K8sClient, job_id: string) {
     client.batch.deleteNamespacedJob(jobName(job_id, solver_id), client.ns)
   })
 
-  await Promise.all(promises)
+  try {
+    await Promise.all(promises)
+  } catch (e) {
+    throw {
+      error: `failed to stop solver job: ${job_id}`,
+      exception: e,
+    }
+  }
 }
 
 function jobName(job_id: string, solver_id: string): string {

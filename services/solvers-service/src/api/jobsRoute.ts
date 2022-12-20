@@ -65,7 +65,6 @@ export default (client: K8sClient, db: Client) => {
     let solvers: DBSolver[] = []
     try {
       await db.query('BEGIN')
-
       job = (
         await db.query(
           "INSERT INTO jobs (job_id, user_id, model_id, data_id, job_status) VALUES ($1, $2, $3, $4, 'running')",
