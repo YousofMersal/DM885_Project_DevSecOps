@@ -56,8 +56,7 @@ CREATE INDEX solution_status_idx ON job_solutions(sol_status);
 INSERT INTO solvers (name, image) VALUES
 	('gecode', 'minizinc/minizinc'),
     ('chuffed', 'minizinc/minizinc'),
-    ('osicbc', 'minizinc/minizinc'),
-    ('or-tools', 'juanmarcos935/minizinc-or-tools');
+    ('osicbc', 'minizinc/minizinc');
 
 INSERT INTO mzn_models (name, content) VALUES
 	('australia-coloring',
