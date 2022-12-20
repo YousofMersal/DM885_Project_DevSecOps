@@ -1,13 +1,23 @@
+import { Button, Form, Input, Modal, Space } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useRef } from "react";
 import { apiSaveModel } from "../request";
-import { createProblemPayload, handleError } from "../utils/common";
-import { OutlinedButton } from "./OutlinedButton";
+import { createModelData, handleError } from "../utils/common";
 
 interface IUploadProblemDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;
 }
+
+const getFile = (e: any) => {
+  console.log("Upload event:", e);
+
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e && e.fileList;
+};
 
 export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
   isOpen,
@@ -21,20 +31,23 @@ export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
 
     const fd = new FormData(e.currentTarget);
 
+    console.log("");
+
     try {
-      const fields = createProblemPayload.parse({
+      const fields = createModelData.parse({
         content: fd.get("content"),
         name: fd.get("name"),
       });
 
       await apiSaveModel({
-        content: await fields.content.text(),
+        content: fields.content,
         name: fields.name,
       });
 
       onClose();
       onSubmit();
     } catch (e) {
+      console.log(e);
       handleError(e);
     }
   };
@@ -48,18 +61,21 @@ export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
   }, [isOpen]);
 
   return (
-    <dialog ref={ref}>
+    <Modal open={isOpen} footer={[]}>
       <form onSubmit={handleSubmit}>
-        <label>Name</label>
-        <input type="text" required={true} name="name" />
-        <div>
-          <label>Model (.mzn file)</label>
-          <input type="file" name="content" required={true} accept=".mzn" />
-        </div>
-        <div></div>
-        <button type="submit">Submit</button>
-        <OutlinedButton onClick={onClose}>Cancel</OutlinedButton>
+        <Form.Item label="Name">
+          <Input type="text" required={true} name="name" />
+        </Form.Item>
+        <Form.Item label="Model" name="content" getValueFromEvent={getFile}>
+          <TextArea name="content" />
+        </Form.Item>
+        <Space>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+          <Button onClick={onClose}>Cancel</Button>
+        </Space>
       </form>
-    </dialog>
+    </Modal>
   );
 };

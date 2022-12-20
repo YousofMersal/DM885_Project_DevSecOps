@@ -1,11 +1,9 @@
 import { useMatch, useNavigate } from "@tanstack/react-location";
+import { Button, Form, Input } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import React, { useState } from "react";
 import { apiSaveDataOnModel } from "../request";
-import {
-  createModelData,
-  createProblemPayload,
-  handleError,
-} from "../utils/common";
+import { createModelData, handleError } from "../utils/common";
 
 interface IProblemDataPageProps {}
 
@@ -39,17 +37,21 @@ export const ProblemDataPage: React.FC<IProblemDataPageProps> = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>Name</label>
-      <input name="name" />
-      <label>Content</label>
-      <textarea
-        name="content"
-        style={{
-          height: 300,
-        }}
-      />
+      <Form.Item label="Name">
+        <Input name="name" />
+      </Form.Item>
+      <Form.Item label="Content">
+        <TextArea
+          name="content"
+          style={{
+            height: 300,
+          }}
+        />
+      </Form.Item>
       {error ? <p>{error}</p> : null}
-      <button type="submit">Submit</button>
+      <Button htmlType="submit" type="primary">
+        Submit
+      </Button>
     </form>
   );
 };
