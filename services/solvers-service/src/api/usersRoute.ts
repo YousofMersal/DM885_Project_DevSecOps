@@ -19,7 +19,7 @@ export async function outerGetByUserId(
   db: any,
   userId: string
 ) {
-  var q = `SELECT * FROM user_data WHERE user_id = '$1'`
+  var q = `SELECT * FROM user_data WHERE user_id = $1`
 
   if (db) {
     if (receivedFrom == 1) {
@@ -72,8 +72,8 @@ export async function outerDeleteUser(
   db: any,
   userId: string
 ) {
-  var q = `DELETE FROM user_data WHERE user_id = '$1';`
-  var preQ = `SELECT * FROM user_data WHERE user_id = '$1';`
+  var q = `DELETE FROM user_data WHERE user_id = $1;`
+  var preQ = `SELECT * FROM user_data WHERE user_id = $1;`
 
   if (db) {
     if (receivedFrom == 1) {
