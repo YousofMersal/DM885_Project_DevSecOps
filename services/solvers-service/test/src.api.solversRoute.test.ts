@@ -55,6 +55,7 @@ describe("Solver service unit test", () => {
   test('Deleting item from database',async () => {
     
     const dbResult = await outerDeleteSolver(2, db, "5")
+    expect(dbResult).not.toBeNull()
   })
 
   test('Testing that deleted item does not exist in database', async () => {
