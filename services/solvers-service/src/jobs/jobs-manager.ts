@@ -219,16 +219,16 @@ async function startSolverJob(
             name: 'minizinc-solver',
             image: solver.image,
             command: commandArgs,
-            // resources: {
-            //   limits: {
-            //     cpu: String(job_desc.user.cpu_limit),
-            //     memory: `${job_desc.user.mem_limit}M`,
-            //   },
-            //   requests: {
-            //     cpu: '1',
-            //     memory: '1M',
-            //   },
-            // },
+            resources: {
+              limits: {
+                cpu: '1',
+                memory: '500Mi',
+              },
+              requests: {
+                cpu: '250m',
+                memory: '32Mi',
+              },
+            },
             volumeMounts: [
               {
                 name: 'mzn-model',
