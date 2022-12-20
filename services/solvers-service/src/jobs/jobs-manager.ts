@@ -201,6 +201,8 @@ async function startSolverJob(
     }
   }
 
+  console.log('Creating job for user', job_desc.user)
+
   // https://kubernetes.io/docs/concepts/workloads/controllers/job/#running-an-example-job
   let job = new k8s.V1Job()
   job.apiVersion = 'batch/v1'
@@ -219,16 +221,16 @@ async function startSolverJob(
             name: 'minizinc-solver',
             image: solver.image,
             command: commandArgs,
-            // resources: {
-            //   limits: {
-            //     cpu: String(job_desc.user.cpu_limit),
-            //     memory: `${job_desc.user.mem_limit}M`,
-            //   },
-            //   requests: {
-            //     cpu: '1',
-            //     memory: '1M',
-            //   },
-            // },
+            resources: {
+              limits: {
+                cpu: String(job_desc.user.cpu_limit),
+                memory: `${job_desc.user.mem_limit}Mi`,
+              },
+              requests: {
+                cpu: '250m',
+                memory: '32Mi',
+              },
+            },
             volumeMounts: [
               {
                 name: 'mzn-model',
@@ -257,6 +259,7 @@ async function startSolverJob(
 
   try {
     // send the Job object to the kubernetes API to create it
+    console.log('Starting job', job)
     job = (await client.batch.createNamespacedJob(client.ns, job)).body
   } catch (err) {
     client.core.deleteNamespacedConfigMap(configMapName, client.ns)
