@@ -26,6 +26,7 @@ export type ApiJob = {
   created_at: string;
   finished_at: string;
   job_status: string;
+  solvers: ApiSolver[];
 };
 
 export type ApiJobResult = {

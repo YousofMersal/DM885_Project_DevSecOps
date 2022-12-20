@@ -31,8 +31,6 @@ export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
 
     const fd = new FormData(e.currentTarget);
 
-    console.log("");
-
     try {
       const fields = createModelData.parse({
         content: fd.get("content"),

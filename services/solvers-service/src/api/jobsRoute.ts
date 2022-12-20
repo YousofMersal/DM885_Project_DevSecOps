@@ -40,13 +40,12 @@ export default (client: K8sClient, db: Client) => {
 
     if (!user) {
       user = (
-        await db.query<DBUser>(
-          'SELECT * FROM user_data WHERE user_id = $1',
-          [user_id]
-        )
+        await db.query<DBUser>('SELECT * FROM user_data WHERE user_id = $1', [
+          user_id,
+        ])
       ).rows[0]
     }
-    
+
     const body: components['schemas']['Job_create'] = req.body
 
     if (!body.solver_ids) {
@@ -132,15 +131,22 @@ export default (client: K8sClient, db: Client) => {
   jobs.get<{ job_id: string }>('/:job_id', async (req, res) => {
     const job_id = req.params.job_id
 
-    const jobs = await (
+    const jobs = (
       await db.query('SELECT * FROM jobs WHERE job_id = $1', [job_id])
+    ).rows
+
+    const solvers = (
+      await db.query('SELECT * FROM job_solvers WHERE job_id = $1', [job_id])
     ).rows
 
     if (jobs.length == 0) {
       return res.status(404).send({ message: 'job not found' })
     }
 
-    res.send(jobs[0])
+    res.send({
+      ...jobs[0],
+      solvers,
+    })
   })
 
   jobs.delete<{ job_id: string }>('/:job_id', async (req, res) => {
@@ -180,7 +186,7 @@ export default (client: K8sClient, db: Client) => {
 
   jobs.post<{ job_id: string }>('/:job_id/cancel', async (req, res) => {
     const job_id = req.params.job_id
-    // const solvers = req.body as string[]
+    const solverId = req.query.solver_id
 
     if (!(job_id in runningJobs)) {
       return res
@@ -191,7 +197,10 @@ export default (client: K8sClient, db: Client) => {
     const jobCtx = runningJobs[job_id]
 
     const solvers = Object.keys(jobCtx.solvers)
-    Object.values(jobCtx.solvers).forEach((solver) => solver.cancelSolver())
+    Object.values(jobCtx.solvers)
+      // if solverId is undefined, filter will return all solvers, otherwise it will only cancel one solver
+      .filter((_, i) => solverId === undefined || solverId === solvers[i])
+      .forEach((solver) => solver.cancelSolver())
 
     res.send({
       message: 'cancelled solvers',

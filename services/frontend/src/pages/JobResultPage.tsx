@@ -1,5 +1,5 @@
 import { useMatch } from "@tanstack/react-location";
-import { Alert, Button, Divider, Spin, Typography } from "antd";
+import { Alert, Button, Divider, Space, Spin, Typography } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { apiCancelJob, apiGetJob, apiGetJobResult } from "../request";
 import { ApiJob, ApiJobResult } from "../types";
@@ -111,18 +111,34 @@ export const JobResultPage: React.FC = () => {
         </Typography.Paragraph>
       </div>
       {job?.job_status !== "finished" ? (
-        <Button
-          danger
-          onClick={() => {
-            setErr("");
+        <Space>
+          <Button
+            danger
+            onClick={() => {
+              setErr("");
 
-            apiCancelJob(jobId).catch((e) => {
-              setErr(e instanceof Error ? e.message : "Unknown error");
-            });
-          }}
-        >
-          Cancel
-        </Button>
+              apiCancelJob(jobId).catch((e) => {
+                setErr(e instanceof Error ? e.message : "Unknown error");
+              });
+            }}
+          >
+            Cancel all
+          </Button>
+          {job?.solvers.map((solver) => (
+            <Button
+              danger
+              onClick={() => {
+                setErr("");
+
+                apiCancelJob(jobId, solver.solver_id).catch((e) => {
+                  setErr(e instanceof Error ? e.message : "Unknown error");
+                });
+              }}
+            >
+              Cancel {solver.name} - ID: {solver.solver_id}
+            </Button>
+          ))}
+        </Space>
       ) : null}
       <p>{err}</p>
       <Divider />
