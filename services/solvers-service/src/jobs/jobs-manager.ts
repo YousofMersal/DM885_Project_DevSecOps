@@ -201,6 +201,8 @@ async function startSolverJob(
     }
   }
 
+  console.log('Creating job for user', job_desc.user)
+
   // https://kubernetes.io/docs/concepts/workloads/controllers/job/#running-an-example-job
   let job = new k8s.V1Job()
   job.apiVersion = 'batch/v1'
