@@ -182,7 +182,7 @@ async function startSolverJob(
     '--solver',
     solver.name,
     '-p',
-    job_desc.user.cpu_limit
+    String(job_desc.user.cpu_limit)
   ]
 
   if (job_desc.time_limit) {
