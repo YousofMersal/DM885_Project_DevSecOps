@@ -21,12 +21,12 @@ describe("Solver service unit test", () => {
 
   test('Inserting item into database', async () => {
 
-    expect(await outerAddSolver(2, db, "newEntry", "linkminizinc")).toBe(undefined)
+    expect(await outerAddSolver(2, db, "newEntry", "linkminizinc")).not.toBeNull()
   });
 
   test('Inserting same item into database, expecting \'null\' returned', async () => {
 
-    expect(await outerAddSolver(2, db, "newEntry", "linkminizinc")).toBe(null)
+    expect(await outerAddSolver(2, db, "newEntry", "linkminizinc")).toBeNull()
   });
 
   test('Getting newly inserted item from database"', async () => {
@@ -49,18 +49,19 @@ describe("Solver service unit test", () => {
   test('Testing that old item does not exist in database', async () => {
 
     const dbResult = await outerGetByName(2, db, "newEntry")
-    expect(dbResult).toBe(null)
+    expect(dbResult).toBeNull()
   });
 
   test('Deleting item from database',async () => {
     
     const dbResult = await outerDeleteSolver(2, db, "5")
+    expect(dbResult).not.toBeNull()
   })
 
   test('Testing that deleted item does not exist in database', async () => {
 
     const dbResult = await outerGetByName(2, db, "5")
-    expect(dbResult).toBe(null)
+    expect(dbResult).toBeNull()
   });
 
   
