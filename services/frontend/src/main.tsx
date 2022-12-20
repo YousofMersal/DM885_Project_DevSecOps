@@ -23,6 +23,7 @@ import { JobResultPage } from "./pages/JobResultPage";
 import { EditProblemPage } from "./pages/EditProblemPage";
 import { SolverPage } from "./pages/SolverPage";
 import { JobList } from "./pages/JobList";
+import "antd/dist/reset.css";
 
 const location = new ReactLocation();
 

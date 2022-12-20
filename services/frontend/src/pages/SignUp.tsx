@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { apiSignup } from "../request";
 import { Link, useNavigate } from "@tanstack/react-location";
 import { authServicePayload, handleError } from "../utils/common";
+import { Button, Form, Input, Space, Typography } from "antd";
+import FormItem from "antd/es/form/FormItem";
 
 export const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,30 +34,41 @@ export const SignUpPage: React.FC = () => {
   return (
     <div className="center">
       <form onSubmit={handleSubmit} style={{ width: 500 }}>
-        <h1>Sign up</h1>
-        <label htmlFor="email">Email (username)</label>
-        <input required id="email" name="email" type="email" />
-        <label htmlFor="password">Password</label>
-        <input
-          required
-          pattern="^.{5,}$"
-          id="password"
-          name="password"
-          type="password"
-        />
+        <Typography.Title style={{ marginBottom: 50 }}>
+          Sign up
+        </Typography.Title>
+        <Form.Item label="Email">
+          <Input required id="email" name="email" type="email" />
+        </Form.Item>
+        <Form.Item label="Password">
+          <Input
+            required
+            pattern="^.{5,}$"
+            id="password"
+            name="password"
+            type="password"
+          />
+        </Form.Item>
         {error ? (
-          <p style={{ color: "red" }}>{error}</p>
+          <Typography.Paragraph style={{ color: "red" }}>
+            {error}
+          </Typography.Paragraph>
         ) : (
-          <p className="helper-text">
+          <Typography.Paragraph className="helper-text">
             Your password should be 5 characters or more
-          </p>
+          </Typography.Paragraph>
         )}
-        <button>Create profile</button>
+        <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
+          <Space>
+            <Button type="primary" htmlType="submit">
+              Create profile
+            </Button>
+            <Link to="/login">
+              <Button>Got a profile? Login</Button>
+            </Link>
+          </Space>
+        </Form.Item>
       </form>
-      <div>
-        <p>Already have a user?</p>
-        <Link to="/login">Login</Link>
-      </div>
     </div>
   );
 };

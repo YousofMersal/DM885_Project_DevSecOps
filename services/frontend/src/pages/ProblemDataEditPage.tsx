@@ -1,4 +1,6 @@
 import { useMatch, useNavigate } from "@tanstack/react-location";
+import { Button, Form, Input, InputRef } from "antd";
+import TextArea, { TextAreaRef } from "antd/es/input/TextArea";
 import React, { useEffect, useRef } from "react";
 import { apiGetModelData, apiUpdateDataOnModel } from "../request";
 import { createModelData, handleError } from "../utils/common";
@@ -9,16 +11,16 @@ export const ProblemDataEditPage: React.FC<IProblemDataEditPageProps> = () => {
   const match = useMatch();
   const navigate = useNavigate();
 
-  const nameRef = useRef<HTMLInputElement>(null);
-  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const nameRef = useRef<InputRef>(null);
+  const contentRef = useRef<TextAreaRef>(null);
 
   const modelId = match.params.id;
   const dataId = match.params.data_id;
 
   useEffect(() => {
     apiGetModelData(modelId, dataId).then((result) => {
-      nameRef.current!.value = result.name;
-      contentRef.current!.value = result.content;
+      nameRef.current!.input!.value = result.name;
+      contentRef.current!.resizableTextArea!.textArea.value = result.content;
     });
   }, [modelId, dataId]);
 
@@ -47,17 +49,15 @@ export const ProblemDataEditPage: React.FC<IProblemDataEditPageProps> = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <label>Name</label>
-        <input name="name" ref={nameRef} />
-        <label>Content</label>
-        <textarea
-          ref={contentRef}
-          name="content"
-          style={{
-            height: 300,
-          }}
-      />
-        <button type="submit">Save</button>
+        <Form.Item label="Name">
+          <Input name="name" ref={nameRef} />
+        </Form.Item>
+        <Form.Item label="Content">
+          <TextArea ref={contentRef} name="content" />
+        </Form.Item>
+        <Button htmlType="submit" type="primary">
+          Save
+        </Button>
       </form>
     </div>
   );

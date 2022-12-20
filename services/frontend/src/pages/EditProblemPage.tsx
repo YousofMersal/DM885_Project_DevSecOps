@@ -1,4 +1,7 @@
 import { useMatch, useNavigate } from "@tanstack/react-location";
+import { Button, Input, InputRef } from "antd";
+import FormItem from "antd/es/form/FormItem";
+import TextArea, { TextAreaRef } from "antd/es/input/TextArea";
 import React, { useEffect, useRef, useState } from "react";
 import { apiEditModel, apiGetModel } from "../request";
 import { createModelData, handleError } from "../utils/common";
@@ -6,8 +9,8 @@ import { createModelData, handleError } from "../utils/common";
 interface IEditProblemPageProps {}
 
 export const EditProblemPage: React.FC<IEditProblemPageProps> = () => {
-  const refContent = useRef<HTMLTextAreaElement>(null);
-  const refName = useRef<HTMLInputElement>(null);
+  const refContent = useRef<TextAreaRef>(null);
+  const refName = useRef<InputRef>(null);
 
   const navigate = useNavigate();
   const match = useMatch();
@@ -16,8 +19,8 @@ export const EditProblemPage: React.FC<IEditProblemPageProps> = () => {
 
   useEffect(() => {
     apiGetModel(modelId).then((result) => {
-      refContent.current!.value = result.content;
-      refName.current!.value = result.name;
+      refContent.current!.resizableTextArea!.textArea.value = result.content;
+      refName.current!.input!.value = result.name;
     });
   }, [modelId]);
 
@@ -49,19 +52,17 @@ export const EditProblemPage: React.FC<IEditProblemPageProps> = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>Name</label>
-      <input type="text" ref={refName} required={true} name="name" />
-      <div>
-        <label>Model</label>
-        <textarea
-          ref={refContent}
-          name="content"
-          required={true}
-          style={{ height: 200 }}
-        />
-      </div>
+      <FormItem label="Name">
+        <Input type="text" ref={refName} required={true} name="name" />
+      </FormItem>
+
+      <FormItem label="Model">
+        <TextArea ref={refContent} name="content" required={true} />
+      </FormItem>
       {error ? <div>{error} </div> : null}
-      <button type="submit">Update</button>
+      <Button htmlType="submit" type="primary">
+        Update
+      </Button>
     </form>
   );
 };

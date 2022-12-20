@@ -1,4 +1,6 @@
 import { useMatch, useNavigate } from "@tanstack/react-location";
+import { Button, Space, Typography } from "antd";
+import Table, { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
 import {
   apiGetModel,
@@ -25,33 +27,81 @@ export const ProblemPage: React.FC = () => {
     getData();
   }, [match]);
 
+  const columns: ColumnsType<ApiModel> = [
+    {
+      title: "Id",
+      dataIndex: "data_id",
+      key: "data_id",
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Content",
+      dataIndex: "content",
+      key: "content",
+    },
+    {
+      title: "",
+      render: (data: ApiModelData) => (
+        <Space>
+          <Button
+            onClick={() =>
+              navigate({
+                to: `/problems/${modelId}/data/${data.data_id}`,
+              })
+            }
+          >
+            Edit
+          </Button>
+
+          <Button
+            onClick={() =>
+              apiRemoveModelData(data.model_id, data.data_id).then((r) =>
+                getData()
+              )
+            }
+            danger
+          >
+            Remove
+          </Button>
+          <Button
+            onClick={() =>
+              navigate({
+                to: `/problems/${modelId}/data/${data.data_id}/job`,
+              })
+            }
+            type="primary"
+          >
+            Start job
+          </Button>
+        </Space>
+      ),
+    },
+  ];
   return (
     <div>
       <div
         style={{
-          marginTop: 20,
-          marginBottom: 20,
           display: "flex",
           justifyContent: "space-between",
         }}
       >
         <div>
-          <div>Model Id: {model?.model_id} </div>
-          <div>Name: {model?.name} </div>
+          <Typography.Title>{model?.name} </Typography.Title>
         </div>
-        <div>
-          <button
+        <Space>
+          <Button
             onClick={() =>
               apiRemoveModel(modelId).then(() => navigate({ to: "/" }))
             }
-            style={{
-              background: "red",
-              borderColor: "red",
-            }}
+            danger
           >
             Remove
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               navigate({
                 to: `/problems/${modelId}/edit`,
@@ -59,69 +109,26 @@ export const ProblemPage: React.FC = () => {
             }
           >
             Edit
-          </button>
-        </div>
+          </Button>
+        </Space>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Data Id</th>
-            <th>Name</th>
-            <th>Content</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.map((data) => (
-            <tr key={data.data_id}>
-              <td>{data.data_id}</td>
-              <td>{data.name}</td>
-              <td>{data.content}</td>
-              <td>
-                <button
-                  onClick={() =>
-                    navigate({
-                      to: `/problems/${modelId}/data/${data.data_id}`,
-                    })
-                  }
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() =>
-                    apiRemoveModelData(data.model_id, data.data_id).then((r) =>
-                      getData()
-                    )
-                  }
-                >
-                  Remove
-                </button>
-                <button
-                  onClick={() =>
-                    navigate({
-                      to: `/problems/${modelId}/data/${data.data_id}/job`,
-                    })
-                  }
-                >
-                  Start job
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <button
-        onClick={() => navigate({ to: `/problems/${match.params.id}/data` })}
-      >
-        Upload data
-      </button>
-      <button
-        onClick={() =>
-          navigate({ to: `/problems/${modelId}/data/undefined/job` })
-        }
-      >
-        Start job without data
-      </button>
+      <Table columns={columns} dataSource={data} />
+      <Space style={{ marginTop: 20 }}>
+        <Button
+          type="default"
+          onClick={() => navigate({ to: `/problems/${match.params.id}/data` })}
+        >
+          Upload data
+        </Button>
+        <Button
+          type="primary"
+          onClick={() =>
+            navigate({ to: `/problems/${modelId}/data/undefined/job` })
+          }
+        >
+          Start job without data
+        </Button>
+      </Space>
     </div>
   );
 };
