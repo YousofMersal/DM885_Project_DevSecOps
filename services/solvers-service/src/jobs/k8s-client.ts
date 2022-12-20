@@ -24,6 +24,8 @@ export async function configureK8sClient(): Promise<K8sClient> {
     { encoding: 'utf8' }
   )
 
+  if (!ns) throw 'Could not determine Pod namespace'
+
   // automatically load kubernetes API credentials from Pod environment
   const kc = new k8s.KubeConfig()
   kc.loadFromDefault()

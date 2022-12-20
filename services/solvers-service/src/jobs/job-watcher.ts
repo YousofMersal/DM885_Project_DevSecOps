@@ -21,44 +21,44 @@ export enum JobStatusLogStatus {
 // Docs https://www.minizinc.org/doc-2.6.2/en/json-stream.html
 export type JobStatusLog =
   | {
-    type: 'statistics'
-    statistics: {
-      paths?: number
-      flatIntVars?: number
-      flatIntConstraints?: number
-      method?: 'satisfy'
-      flatTime?: number
-      initTime?: number
-      solveTime?: number
-      solutions?: number
-      variables?: number
-      propagators?: number
-      propagations?: number
-      nodes?: number
-      failures?: number
-      restarts?: number
-      peakDepth?: number
-      nSolutions?: number
-    }
-  }
-  | {
-    type: 'solution'
-    output: {
-      default: string
-      raw: string
-      json: {
-        // the variables and their assignments
-        [key: string]: any
-        _output?: string
+      type: 'statistics'
+      statistics: {
+        paths?: number
+        flatIntVars?: number
+        flatIntConstraints?: number
+        method?: 'satisfy'
+        flatTime?: number
+        initTime?: number
+        solveTime?: number
+        solutions?: number
+        variables?: number
+        propagators?: number
+        propagations?: number
+        nodes?: number
+        failures?: number
+        restarts?: number
+        peakDepth?: number
+        nSolutions?: number
       }
-      sections: ['default', 'raw', 'json']
     }
-    time: number
-  }
   | {
-    type: 'status'
-    status: JobStatusLogStatus
-  }
+      type: 'solution'
+      output: {
+        default: string
+        raw: string
+        json: {
+          // the variables and their assignments
+          [key: string]: any
+          _output?: string
+        }
+        sections: ['default', 'raw', 'json']
+      }
+      time: number
+    }
+  | {
+      type: 'status'
+      status: JobStatusLogStatus
+    }
 
 export async function registerJobWatch(
   client: K8sClient,
@@ -69,22 +69,29 @@ export async function registerJobWatch(
   const jobName = job.job.metadata?.name
   if (jobName === undefined) throw 'Expected jobname to be defined'
 
-  const jobPod = await client.core.listNamespacedPod(
-    client.ns,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    `job-name=${jobName}`
-  )
-  const jobPodName = jobPod.body.items.at(0)?.metadata?.name
-  console.log(jobPod)
-  if (jobPodName === undefined) {
-    console.error('Expected to find pod for corresponding job')
-    return
-  }
+  let jobPodName: string | undefined = undefined
+  await exponentialBackoff(
+    5,
+    async () => {
+      console.log('looking for jobpodname')
+      const jobPod = await client.core.listNamespacedPod(
+        client.ns,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        `job-name=${jobName}`
+      )
+      jobPodName = jobPod.body.items.at(0)?.metadata?.name
 
-  await attachLogger(client, db, jobPodName, job, cancelPromise)
+      if (jobPodName === undefined) {
+        throw `Expected to find pod for corresponding job: ${jobName}`
+      }
+    },
+    cancelPromise
+  )
+
+  await attachLogger(client, db, jobPodName!, job, cancelPromise)
   // attachWatcher(client, job)
 }
 
@@ -114,43 +121,57 @@ async function attachLogger(
         )
       }
     } catch (e) {
-      console.error('Error parsing log chunk', e)
+      console.error('failed to process log chunk', e)
     }
   })
 
-  const MAX_ATTEMPTS = 5
-  for (let i = 0; i < MAX_ATTEMPTS; i++) {
-    try {
-      const loggerPromise = logger.log(
-        client.ns,
-        jobPodName,
-        'minizinc-solver',
-        logStream,
-        {
-          follow: true,
-          pretty: false,
-          timestamps: false,
-        }
-      )
-
-      if (
-        (await Promise.race([loggerPromise, cancelPromise])) == 'cancel_solver'
-      ) {
-        logStream.destroy()
-        await stopSolverJob(client, job.job_id)
-      }
-    } catch (err) {
-      if (i == MAX_ATTEMPTS - 1) throw err
-
-      console.log(`Job pod not ready, waiting ${2 ** i} seconds before retry`)
-      const result = await Promise.race([sleep(2 ** i * 1000), cancelPromise])
-      if (result == 'cancel_solver') return
+  console.log('attaching to solver job log', client.ns, jobPodName)
+  await exponentialBackoff(
+    5,
+    async () => {
+      await logger.log(client.ns, jobPodName, 'minizinc-solver', logStream, {
+        follow: true,
+        pretty: false,
+        timestamps: false,
+      })
+    },
+    cancelPromise,
+    async () => {
+      logStream.destroy()
+      await stopSolverJob(client, job.job_id)
     }
-  }
+  )
 
   console.log('Logger finished')
 }
 
 function sleep(ms: number) {
   return new Promise<undefined>((resolve) => setTimeout(resolve, ms))
+}
+
+async function exponentialBackoff(
+  maxAttempts: number,
+  callback: () => Promise<void>,
+  cancelPromise: Promise<'cancel_solver'> | undefined = undefined,
+  cancelCleanup: (() => Promise<unknown>) | undefined = undefined
+) {
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      const result = await Promise.race([callback(), cancelPromise])
+      if (result == 'cancel_solver') {
+        if (cancelCleanup) cancelCleanup()
+        return
+      }
+
+      return
+    } catch (err) {
+      if (i == maxAttempts - 1) throw err
+
+      console.log(`Not ready, waiting ${2 ** i} seconds before retry`)
+      const result = await Promise.race([sleep(2 ** i * 1000), cancelPromise])
+      if (result == 'cancel_solver') return
+    }
+  }
+
+  throw 'max attempts exceeded'
 }
