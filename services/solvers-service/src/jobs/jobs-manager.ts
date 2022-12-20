@@ -221,8 +221,8 @@ async function startSolverJob(
             command: commandArgs,
             resources: {
               limits: {
-                cpu: '1',
-                memory: '500Mi',
+                cpu: String(job_desc.user.cpu_limit),
+                memory: `${job_desc.user.mem_limit}Mi`,
               },
               requests: {
                 cpu: '250m',
