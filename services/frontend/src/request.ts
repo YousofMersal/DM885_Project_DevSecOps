@@ -60,6 +60,9 @@ export const apiStartJob = (
 
 export const apiGetUsers = (): Promise<ApiUser[]> => request("/auth/users");
 
+export const apiGetUser = (id: string): Promise<ApiUser[]> =>
+  request(`/auth/users/${id}`);
+
 export const apiListModels = (): Promise<ApiModel[]> => {
   return request("/models");
 };

@@ -1,3 +1,4 @@
+import { Button } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
 import { apiGetUsers, apiRemoveUser } from "../request";
@@ -28,9 +29,12 @@ export const Users: React.FC = () => {
       dataIndex: "username",
       key: "username",
       render: (key) => (
-        <button onClick={() => apiRemoveUser(key).then(() => getUsers())}>
+        <Button
+          danger
+          onClick={() => apiRemoveUser(key).then(() => getUsers())}
+        >
           Delete
-        </button>
+        </Button>
       ),
     },
   ];
