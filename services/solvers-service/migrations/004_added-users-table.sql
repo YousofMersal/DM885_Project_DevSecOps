@@ -1,8 +1,12 @@
-CREATE TABLE users (
-  user_id SERIAL NOT NULL PRIMARY KEY,
-  name VARCHAR(255),
-  cpulimit VARCHAR(255),
-  
+-- Add user table
+-- Modify `jobs` to contain user_id
+
+DELETE FROM jobs; -- delete all old jobs without a user associated with it
+
+CREATE TABLE user_data (
+  user_id VARCHAR(36) NOT NULL PRIMARY KEY,
+  cpu_limit INT NOT NULL DEFAULT 4,
+  mem_limit INT NOT NULL DEFAULT 536870912 -- 0.5 GB
 );
 
-CREATE INDEX solver_name_idx ON solvers(name);
+ALTER TABLE jobs ADD COLUMN user_id VARCHAR(36) NOT NULL REFERENCES user_data(user_id) ON DELETE CASCADE;
