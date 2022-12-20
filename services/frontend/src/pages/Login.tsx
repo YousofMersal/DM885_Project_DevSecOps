@@ -1,6 +1,5 @@
 import { Link, Navigate } from "@tanstack/react-location";
 import React, { useState } from "react";
-import { LoginButton } from "../components/LoginButton";
 import { useGlobalState } from "../utils/store";
 import "./Login.css";
 import { apiLogin } from "../request";
