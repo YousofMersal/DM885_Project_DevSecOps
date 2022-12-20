@@ -1,9 +1,8 @@
-import { Button, Form, Input, Modal, Space, Upload } from "antd";
+import { Button, Form, Input, Modal, Space } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useRef } from "react";
 import { apiSaveModel } from "../request";
 import { createModelData, handleError } from "../utils/common";
-import { OutlinedButton } from "./OutlinedButton";
 
 interface IUploadProblemDialogProps {
   isOpen: boolean;
