@@ -13,6 +13,10 @@ on:
     - .github/workflows/frontend-testing.yaml
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: ./services/frontend
+
 # Only one job  that does the following
 jobs:
   unittest:
@@ -39,9 +43,7 @@ jobs:
     # Clean install the required dependencies
     - name: Install dependencies
       run: npm ci
-      working-directory: ./services/solvers-service
 
     # Run the tests
     - name: Test
       run: npm test
-      working-directory: ./services/solvers-service

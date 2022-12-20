@@ -3,11 +3,13 @@ import express from 'express'
 import type { Client } from 'pg'
 
 export async function outerGetAll(db: any) {
+
   var q = 'SELECT * FROM solvers'
 
   let result = await db.query(q)
 
   return result.rows ?? []
+
 }
 
 export async function outerGetByName(
@@ -24,7 +26,8 @@ export async function outerGetByName(
       var result = (await db.public.query(q)).rows[0]
     }
   }
-  if (result.length == 0) {
+
+  if (result == undefined) {
     return null
   }
   return result

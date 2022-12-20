@@ -32,7 +32,7 @@ describe("Solver service unit test", () => {
   test('Getting newly inserted item from database"', async () => {
 
     const dbResult = await outerGetByName(2, db, "newEntry")
-    expect(JSON.stringify(dbResult?.at(0))).toMatch(new RegExp('{\"name\":\"newEntry\",\"image\":\"linkminizinc\",\"solver_id\":[0-9]+}'))
+    expect(JSON.stringify(dbResult)).toMatch(new RegExp('{\"name\":\"newEntry\",\"image\":\"linkminizinc\",\"solver_id\":[0-9]+}'))
   });
 
   test('Changing values for newly inserted item in database', async () => {
@@ -43,7 +43,7 @@ describe("Solver service unit test", () => {
   test('Getting newly changed item from database', async () => {
 
     const dbResult = await outerGetByName(2, db, "NewNameHere")
-    expect(JSON.stringify(dbResult?.at(0))).toMatch(new RegExp('{\"name\":\"NewNameHere\",\"image\":\"NewImageHere\",\"solver_id\":[0-9]+}'))
+    expect(JSON.stringify(dbResult)).toMatch(new RegExp('{\"name\":\"NewNameHere\",\"image\":\"NewImageHere\",\"solver_id\":[0-9]+}'))
   });
 
   test('Testing that old item does not exist in database', async () => {
