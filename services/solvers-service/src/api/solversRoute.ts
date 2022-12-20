@@ -18,9 +18,9 @@ export async function outerGetByName(
   if (db) {
 
     if (receivedFrom == 1) {
-      var result = (await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rows[0]
+      var result = (await db.query("SELECT * FROM solvers WHERE name = $1", [name])).rows[0]
     } else if (receivedFrom == 2) {
-      var result = (await db.public.query(`SELECT * FROM solvers WHERE name = \'${name}\'`)).rows[0]
+      var result = (await db.public.query(`SELECT * FROM solvers WHERE name = '${name}'`)).rows[0]
 
     }
   }
@@ -42,11 +42,11 @@ export async function outerChangeSolver(
   if (db) {
 
     if (receivedFrom == 1) {
-      const solverCount = (await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rowCount
+      const solverCount = (await db.query("SELECT * FROM solvers WHERE name = $1", [name])).rowCount
       if (solverCount == 0) {
         return null
       }
-      var result = (await db.query("UPDATE solvers SET name = '$1', image = '$2' WHERE name = '$3';",[newName, newImage, name])).rows
+      var result = (await db.query("UPDATE solvers SET name = $1, image = $2 WHERE name = $3;",[newName, newImage, name])).rows
     } 
     else if (receivedFrom == 2) {
       const solverCount = (await db.public.query(`SELECT * FROM solvers WHERE name = '${name}'`)).rowCount
@@ -70,10 +70,10 @@ export async function outerAddSolver(
 
   if (db) {
     if (receivedFrom == 1) {
-      if ((await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rowCount > 0) {
+      if ((await db.query("SELECT * FROM solvers WHERE name = $1", [name])).rowCount > 0) {
         return null
       } else {
-        return await db.query("INSERT INTO solvers (name, image) VALUES ('$1', '$2')", [name, image])
+        return await db.query("INSERT INTO solvers (name, image) VALUES ($1, $2)", [name, image])
       }
 
     } else if (receivedFrom == 2) {
@@ -95,11 +95,11 @@ export async function outerDeleteSolver(
   if (db) {
 
     if (receivedFrom == 1) {
-      const solverCount = (await db.query("SELECT * FROM solvers WHERE solver_id = '$1'", [id])).rowCount
+      const solverCount = (await db.query("SELECT * FROM solvers WHERE solver_id = $1", [id])).rowCount
       if (solverCount == 0) {
         return null
       }
-      var result = (await db.query("DELETE FROM solvers WHERE solver_id = '$1';", [id])).rows
+      var result = (await db.query("DELETE FROM solvers WHERE solver_id = $1;", [id])).rows
     } else {
       const solverCount = (await db.public.query(`SELECT * FROM solvers WHERE solver_id = '${id}'`)).rowCount
       if (solverCount == 0) {
