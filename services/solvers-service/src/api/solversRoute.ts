@@ -3,13 +3,9 @@ import express from 'express'
 import type { Client } from 'pg'
 
 export async function outerGetAll(db: any) {
-
   var q = 'SELECT * FROM solvers'
-
   let result = await db.query(q)
-
   return result.rows ?? []
-
 }
 
 export async function outerGetByName(
@@ -75,13 +71,13 @@ export async function outerAddSolver(
       if ((await db.query(preQ)).rowCount > 0) {
         return null
       } else {
-        await db.query(q)
+        return await db.query(q)
       }
     } else if (recievedFrom == 2) {
       if ((await db.public.query(preQ)).rowCount > 0) {
         return null
       } else {
-        await db.public.query(q)
+        return await db.public.query(q)
       }
     }
   }
@@ -113,6 +109,10 @@ export async function outerDeleteSolver(
     return result
   }
 }
+
+
+// API endpoints start here
+
 
 export default (db: Client) => {
   const jobs = express.Router()
