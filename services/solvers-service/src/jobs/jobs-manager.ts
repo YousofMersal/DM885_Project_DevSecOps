@@ -257,6 +257,7 @@ async function startSolverJob(
 
   try {
     // send the Job object to the kubernetes API to create it
+    console.log('Starting job', job)
     job = (await client.batch.createNamespacedJob(client.ns, job)).body
   } catch (err) {
     client.core.deleteNamespacedConfigMap(configMapName, client.ns)
