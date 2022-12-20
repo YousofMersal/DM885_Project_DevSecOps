@@ -57,12 +57,12 @@ export const JobResultPage: React.FC = () => {
         <p>Result</p>
         {result.map((r) => (
           <ul>
+            <li>Solver Id: {r.solver_id}</li>
+            <li>Status: {r.sol_status}</li>
+            <hr />
             {Object.keys(r.data).map((key) => (
               <li>{`${key} : ${r.data[key]}`}</li>
             ))}
-            <hr />
-            <li>Solver Id: {r.solver_id}</li>
-            <li>Status: {r.sol_status}</li>
           </ul>
         ))}
       </div>
@@ -73,9 +73,9 @@ export const JobResultPage: React.FC = () => {
 
   return (
     <div>
-      <p>{job?.job_status}</p>
-      <p>{job?.created_at}</p>
-      <p>{job?.finished_at}</p>
+      <p>Status: {job?.job_status}</p>
+      <p>Created at: {job?.created_at}</p>
+      <p>Finished at: {job?.finished_at}</p>
       {job?.job_status !== "finished" ? (
         <button
           onClick={() => {
