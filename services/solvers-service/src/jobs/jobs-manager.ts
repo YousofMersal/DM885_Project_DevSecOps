@@ -179,7 +179,7 @@ async function startSolverJob(
     commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
   }
 
-  const configMapName = config_map.metadata!.name!
+  const configMapName = config_map.metadata?.name
   if (!configMapName) {
     throw {
       error: 'job config map not found',
