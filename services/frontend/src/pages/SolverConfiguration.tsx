@@ -38,18 +38,18 @@ export const SolverConfiguration: React.FC<ISolverConfigurationProps> = () => {
       title: "",
       render: (solver: ApiSolver) => (
         <Space>
-          <button
+          <Button
             onClick={() => navigate({ to: "/solver-config/" + solver.name })}
           >
             Edit
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() =>
               apiDeleteSolver(solver.solver_id).then(() => getSolvers())
             }
           >
             Delete
-          </button>
+          </Button>
         </Space>
       ),
     },
