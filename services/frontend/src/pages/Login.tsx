@@ -5,6 +5,7 @@ import { useGlobalState } from "../utils/store";
 import "./Login.css";
 import { apiLogin } from "../request";
 import { authServicePayload, handleError } from "../utils/common";
+import { Button, Form, Input, Space, Typography } from "antd";
 
 export const Login: React.FC = () => {
   const { isLoggedIn, login } = useGlobalState();
@@ -36,33 +37,37 @@ export const Login: React.FC = () => {
   return (
     <div className="center">
       <form onSubmit={handleSubmit} style={{ width: 500 }}>
-        <h1>Login</h1>
+        <Typography.Title style={{ marginBottom: 50 }}>Login</Typography.Title>
         <div>
-          <label htmlFor="username">Email</label>
-          <input
-            minLength={1}
-            name="username"
-            id="username"
-            required={true}
-            type="email"
-          />
+          <Form.Item label="Username" required={true}>
+            <Input name="username" required={true} minLength={1} type="email" />
+          </Form.Item>
         </div>
         <div>
-          <label htmlFor="password">Password</label>
-          <input
-            minLength={1}
-            name="password"
-            id="password"
-            type="password"
-            required={true}
-          />
+          <Form.Item label="Password" required={true}>
+            <Input
+              name="password"
+              required={true}
+              minLength={1}
+              type="password"
+            />
+          </Form.Item>
         </div>
-        {error ? <p style={{ color: "red" }}>{error}</p> : null}
-        <LoginButton />
-        <div>
-          <p>Not yet a user?</p>
-          <Link to="/sign-up">Create profile</Link>
-        </div>
+        {error ? (
+          <Typography.Paragraph style={{ color: "red" }}>
+            {error}
+          </Typography.Paragraph>
+        ) : null}
+        <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
+          <Space>
+            <Button type="primary" htmlType="submit">
+              Login
+            </Button>
+            <Link to="/sign-up">
+              <Button>Create profile</Button>
+            </Link>
+          </Space>
+        </Form.Item>
       </form>
       {isLoggedIn && <Navigate to="/" />}
     </div>
