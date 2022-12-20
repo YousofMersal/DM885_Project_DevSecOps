@@ -10,22 +10,11 @@ interface IUploadProblemDialogProps {
   onSubmit: () => void;
 }
 
-const getFile = (e: any) => {
-  console.log("Upload event:", e);
-
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e && e.fileList;
-};
-
 export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
   isOpen,
   onClose,
   onSubmit,
 }) => {
-  const ref = useRef<HTMLDialogElement>(null);
-
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
@@ -50,21 +39,13 @@ export const UploadProblemDialog: React.FC<IUploadProblemDialogProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      ref.current?.show();
-    } else {
-      ref.current?.close();
-    }
-  }, [isOpen]);
-
   return (
     <Modal title="Upload model" open={isOpen} footer={[]} onCancel={onClose}>
       <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
         <Form.Item label="Name">
           <Input type="text" required={true} name="name" />
         </Form.Item>
-        <Form.Item label="Model" name="content" getValueFromEvent={getFile}>
+        <Form.Item label="Model" name="content">
           <TextArea name="content" />
         </Form.Item>
         <Space>

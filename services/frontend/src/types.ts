@@ -67,4 +67,5 @@ export type ApiUser = {
   username: string;
   role: string;
   email: string;
+  id: string;
 };

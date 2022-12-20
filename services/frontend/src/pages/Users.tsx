@@ -1,13 +1,18 @@
-import { Button } from "antd";
+import { Button, Space } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import Paragraph from "antd/es/typography/Paragraph";
 import React, { useEffect, useState } from "react";
+import { EditUserDialog } from "../components/EditUserDialog";
 import { apiGetJobUsers, apiGetUsers, apiRemoveUser } from "../request";
 import { ApiUser, ApiUserInfo } from "../types";
 
 export const Users: React.FC = () => {
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [usersInfo, setUsersInfo] = useState<ApiUserInfo[]>([]);
+
+  const [selectedUser, setSelectedUser] = useState<ApiUser | undefined>(
+    undefined
+  );
 
   const getUsers = () => apiGetUsers().then((r) => setUsers(r));
 
@@ -31,7 +36,7 @@ export const Users: React.FC = () => {
     },
     {
       title: "Resources",
-      dataIndex: "username",
+      dataIndex: "id",
       render: (key) => {
         const info = usersInfo.find((info) => info.user_id === key);
 
@@ -49,16 +54,17 @@ export const Users: React.FC = () => {
     },
     {
       title: "",
-      dataIndex: "username",
-      key: "username",
-      render: (key) => {
+      render: (key: ApiUser) => {
         return (
-          <Button
-            danger
-            onClick={() => apiRemoveUser(key).then(() => getUsers())}
-          >
-            Delete
-          </Button>
+          <Space>
+            <Button onClick={() => setSelectedUser(key)}>Edit</Button>
+            <Button
+              danger
+              onClick={() => apiRemoveUser(key.username).then(() => getUsers())}
+            >
+              Delete
+            </Button>
+          </Space>
         );
       },
     },
@@ -67,6 +73,12 @@ export const Users: React.FC = () => {
   return (
     <div>
       <Table columns={columns} dataSource={users} />
+      <EditUserDialog
+        isOpen={Boolean(selectedUser)}
+        onClose={() => setSelectedUser(undefined)}
+        onSubmit={getJobUsers}
+        userId={selectedUser?.id}
+      />
     </div>
   );
 };
