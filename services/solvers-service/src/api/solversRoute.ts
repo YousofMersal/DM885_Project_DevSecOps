@@ -22,6 +22,7 @@ export async function outerGetByName(
       var result = (await db.public.query(q)).rows[0]
     }
   }
+
   if (result == undefined) {
     return null
   }
@@ -45,8 +46,7 @@ export async function outerChangeSolver(
         return null
       }
       var result = (await db.query(q)).rows
-    } 
-    else if (recievedFrom == 2) {
+    } else if (recievedFrom == 2) {
       const solverCount = (await db.public.query(preQ)).rowCount
       if (solverCount == 0) {
         return null

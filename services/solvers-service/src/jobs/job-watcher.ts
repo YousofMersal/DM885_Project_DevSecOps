@@ -106,8 +106,8 @@ async function attachLogger(
       delete data._output
 
       db.query(
-        'INSERT INTO job_solutions (job_id, sol_status, data) VALUES ($1, $2, $3)',
-        [job.job_id, 'solution', data]
+        'INSERT INTO job_solutions (job_id, solver_id, sol_status, data) VALUES ($1, $2, $3, $4)',
+        [job.job_id, job.solver_id, 'solution', data]
       )
     }
   })
