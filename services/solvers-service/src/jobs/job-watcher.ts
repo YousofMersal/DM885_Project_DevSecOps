@@ -21,44 +21,44 @@ export enum JobStatusLogStatus {
 // Docs https://www.minizinc.org/doc-2.6.2/en/json-stream.html
 export type JobStatusLog =
   | {
-      type: 'statistics'
-      statistics: {
-        paths?: number
-        flatIntVars?: number
-        flatIntConstraints?: number
-        method?: 'satisfy'
-        flatTime?: number
-        initTime?: number
-        solveTime?: number
-        solutions?: number
-        variables?: number
-        propagators?: number
-        propagations?: number
-        nodes?: number
-        failures?: number
-        restarts?: number
-        peakDepth?: number
-        nSolutions?: number
-      }
+    type: 'statistics'
+    statistics: {
+      paths?: number
+      flatIntVars?: number
+      flatIntConstraints?: number
+      method?: 'satisfy'
+      flatTime?: number
+      initTime?: number
+      solveTime?: number
+      solutions?: number
+      variables?: number
+      propagators?: number
+      propagations?: number
+      nodes?: number
+      failures?: number
+      restarts?: number
+      peakDepth?: number
+      nSolutions?: number
     }
+  }
   | {
-      type: 'solution'
-      output: {
-        default: string
-        raw: string
-        json: {
-          // the variables and their assignments
-          [key: string]: any
-          _output?: string
-        }
-        sections: ['default', 'raw', 'json']
+    type: 'solution'
+    output: {
+      default: string
+      raw: string
+      json: {
+        // the variables and their assignments
+        [key: string]: any
+        _output?: string
       }
-      time: number
+      sections: ['default', 'raw', 'json']
     }
+    time: number
+  }
   | {
-      type: 'status'
-      status: JobStatusLogStatus
-    }
+    type: 'status'
+    status: JobStatusLogStatus
+  }
 
 export async function registerJobWatch(
   client: K8sClient,
@@ -78,6 +78,7 @@ export async function registerJobWatch(
     `job-name=${jobName}`
   )
   const jobPodName = jobPod.body.items.at(0)?.metadata?.name
+  console.log(jobPod)
   if (jobPodName === undefined) {
     console.error('Expected to find pod for corresponding job')
     return
@@ -99,16 +100,21 @@ async function attachLogger(
   logStream.on('data', (chunk: string) => {
     process.stdout.write(`SOLVER [${job.solver_id}]: `)
     process.stdout.write(chunk)
-    const log: JobStatusLog = JSON.parse(chunk)
 
-    if (log.type == 'solution') {
-      const data = log.output.json
-      delete data._output
+    try {
+      const log: JobStatusLog = JSON.parse(chunk)
 
-      db.query(
-        'INSERT INTO job_solutions (job_id, solver_id, sol_status, data) VALUES ($1, $2, $3, $4)',
-        [job.job_id, job.solver_id, 'solution', data]
-      )
+      if (log.type == 'solution') {
+        const data = log.output.json
+        delete data._output
+
+        db.query(
+          'INSERT INTO job_solutions (job_id, solver_id, sol_status, data) VALUES ($1, $2, $3, $4)',
+          [job.job_id, job.solver_id, 'solution', data]
+        )
+      }
+    } catch (e) {
+      console.error('Error parsing log chunk', e)
     }
   })
 
