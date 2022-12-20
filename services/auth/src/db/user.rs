@@ -8,7 +8,7 @@ use std::{
     sync::Arc,
 };
 
-use actix_web::{http, web::Data, FromRequest};
+use actix_web::{web::Data, FromRequest};
 use argon2::password_hash::{rand_core::OsRng, SaltString};
 use color_eyre::Result;
 use sqlx::{self, query_as, PgPool};
@@ -108,6 +108,7 @@ impl UserRepo {
         &self,
         username: &str,
         id: Uuid,
+        admin_token: &str,
     ) -> Result<Option<SimpleUser>> {
         //! Delete a user given a username if the id given is an admin
         let is_admin = self.is_admin(id).await?;
@@ -119,23 +120,21 @@ impl UserRepo {
                     .fetch_optional(&*self.pool)
                     .await?;
 
-            // if Some(user) = possible_user {
-            //     println!("Deleted user {}", user.id);
-            // }
-
             match possible_user {
                 Some(user) => {
-                    // let client = awc::Client::default();
+                    let client = awc::Client::default();
 
-                    // let resp = client
-                    //     // .post("http://localhost/api/v1/solver/delete")
-                    //     .get(format!(
-                    //         "http://project.10.108.192.1.sslip.io/api/v1/auth/users"
-                    //     ))
-                    //     .insert_header(("Authorization", format!("Bearer {}", id)))
-                    // .send()
-                    // // .send_json(&user.id)
-                    // .await;
+                    let Some(solver_host) = std::env::var("SOLVER_HOST").ok() else {
+                        bail!("SOLVER_HOST not set");
+                    };
+
+                    let resp = dbg!(client
+                        .delete(format!("http://{solver_host}/api/v1/job-users/{}", user.id))
+                        .insert_header(("Authorization", format!("Bearer {}", admin_token))))
+                    .send()
+                    .await;
+
+                    dbg!(&resp);
 
                     Ok(Some(SimpleUser::from(user)))
                 }
