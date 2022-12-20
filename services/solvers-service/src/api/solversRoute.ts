@@ -6,6 +6,7 @@ export async function outerGetAll(db: any) {
   var q = 'SELECT * FROM solvers'
   let result = await db.query(q)
   return result.rows ?? []
+
 }
 
 export async function outerGetByName(
@@ -13,13 +14,14 @@ export async function outerGetByName(
   db: any,
   name: string
 ) {
-  var q = `SELECT * FROM solvers WHERE name = \'${name}\'`
 
   if (db) {
+
     if (receivedFrom == 1) {
-      var result = (await db.query(q)).rows[0]
+      var result = (await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rows[0]
     } else if (receivedFrom == 2) {
-      var result = (await db.public.query(q)).rows[0]
+      var result = (await db.public.query(`SELECT * FROM solvers WHERE name = \'${name}\'`)).rows[0]
+
     }
   }
 
@@ -36,22 +38,23 @@ export async function outerChangeSolver(
   newName: string,
   newImage: string
 ) {
-  var q = `UPDATE solvers SET name = '${newName}', image = '${newImage}' WHERE name = '${name}';`
-  var preQ = `SELECT * FROM solvers WHERE name = '${name}'`
 
   if (db) {
+
     if (receivedFrom == 1) {
-      const solverCount = (await db.query(preQ)).rowCount
+      const solverCount = (await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rowCount
       if (solverCount == 0) {
         return null
       }
-      var result = (await db.query(q)).rows
-    } else if (receivedFrom == 2) {
-      const solverCount = (await db.public.query(preQ)).rowCount
+      var result = (await db.query("UPDATE solvers SET name = '$1', image = '$2' WHERE name = '$3';",[newName, newImage, name])).rows
+    } 
+    else if (receivedFrom == 2) {
+      const solverCount = (await db.public.query(`SELECT * FROM solvers WHERE name = '${name}'`)).rowCount
+
       if (solverCount == 0) {
         return null
       }
-      var result = (await db.public.query(q)).rows
+      var result = (await db.public.query(`UPDATE solvers SET name = '${newName}', image = '${newImage}' WHERE name = '${name}';`)).rows
     }
 
     return result
@@ -64,20 +67,20 @@ export async function outerAddSolver(
   name: string,
   image: string
 ) {
-  var q = `INSERT INTO solvers (name, image) VALUES ('${name}', '${image}')`
-  var preQ = `SELECT * FROM solvers WHERE name = '${name}'`
+
   if (db) {
     if (receivedFrom == 1) {
-      if ((await db.query(preQ)).rowCount > 0) {
+      if ((await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rowCount > 0) {
         return null
       } else {
-        return await db.query(q)
+        return await db.query("INSERT INTO solvers (name, image) VALUES ('$1', '$2')", [name, image])
       }
+
     } else if (receivedFrom == 2) {
-      if ((await db.public.query(preQ)).rowCount > 0) {
+      if ((await db.public.query(`SELECT * FROM solvers WHERE name = '${name}'`)).rowCount > 0) {
         return null
       } else {
-        return await db.public.query(q)
+        return await db.public.query(`INSERT INTO solvers (name, image) VALUES ('${name}', '${image}')`)
       }
     }
   }
@@ -88,29 +91,30 @@ export async function outerDeleteSolver(
   db: any,
   id: string
 ) {
-  var q = `DELETE FROM solvers WHERE solver_id = '${id}';`
-  var preQ = `SELECT * FROM solvers WHERE solver_id = '${id}'`
 
   if (db) {
+
     if (receivedFrom == 1) {
-      const solverCount = (await db.query(preQ)).rowCount
+      const solverCount = (await db.query("SELECT * FROM solvers WHERE solver_id = '$1'", [id])).rowCount
       if (solverCount == 0) {
         return null
       }
-      var result = (await db.query(q)).rows
+      var result = (await db.query("DELETE FROM solvers WHERE solver_id = '$1';", [id])).rows
     } else {
-      const solverCount = (await db.public.query(preQ)).rowCount
+      const solverCount = (await db.public.query(`SELECT * FROM solvers WHERE solver_id = '${id}'`)).rowCount
       if (solverCount == 0) {
         return null
       }
-      var result = (await db.public.query(q)).rows
+      var result = (await db.public.query(`DELETE FROM solvers WHERE solver_id = '${id}';`)).rows
     }
 
     return result
   }
 }
 
+
 // API endpoints start here
+
 
 export default (db: Client) => {
   const jobs = express.Router()
