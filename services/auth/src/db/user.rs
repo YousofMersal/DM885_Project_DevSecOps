@@ -1,5 +1,6 @@
 // use futures_util::future::{Future, Ready};
 use actix_utils::future::{ready, Ready};
+use awc;
 use eyre::bail;
 use std::{
     // future::{ready, Ready},
@@ -7,7 +8,7 @@ use std::{
     sync::Arc,
 };
 
-use actix_web::{web::Data, FromRequest};
+use actix_web::{http, web::Data, FromRequest};
 use argon2::password_hash::{rand_core::OsRng, SaltString};
 use color_eyre::Result;
 use sqlx::{self, query_as, PgPool};
@@ -113,12 +114,33 @@ impl UserRepo {
 
         if is_admin {
             let possible_user =
-                query_as::<_, SimpleUser>("DELETE FROM users WHERE username = $1 RETURNING *")
+                query_as::<_, User>("DELETE FROM users WHERE username = $1 RETURNING *")
                     .bind(username)
                     .fetch_optional(&*self.pool)
                     .await?;
 
-            Ok(possible_user)
+            // if Some(user) = possible_user {
+            //     println!("Deleted user {}", user.id);
+            // }
+
+            match possible_user {
+                Some(user) => {
+                    // let client = awc::Client::default();
+
+                    // let resp = client
+                    //     // .post("http://localhost/api/v1/solver/delete")
+                    //     .get(format!(
+                    //         "http://project.10.108.192.1.sslip.io/api/v1/auth/users"
+                    //     ))
+                    //     .insert_header(("Authorization", format!("Bearer {}", id)))
+                    // .send()
+                    // // .send_json(&user.id)
+                    // .await;
+
+                    Ok(Some(SimpleUser::from(user)))
+                }
+                _ => Ok(None),
+            }
         } else {
             bail!("User is not an admin")
         }
