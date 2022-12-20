@@ -11,6 +11,7 @@ on:
     paths:
     - services/solvers-service/**
     - .github/workflows/solvers-testing.yaml
+  workflow_dispatch:
 
 # Only one job  that does the following
 jobs:
