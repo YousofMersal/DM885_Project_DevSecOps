@@ -15,7 +15,7 @@ export const SolverPage: React.FC<ISolverPageProps> = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const refImage = useRef<HTMLTextAreaElement>(null);
+  const refImage = useRef<HTMLInputElement>(null);
   const refName = useRef<HTMLInputElement>(null);
 
   const solverId = match.params.id;
@@ -23,8 +23,8 @@ export const SolverPage: React.FC<ISolverPageProps> = () => {
   useEffect(() => {
     if (solverId !== "undefined") {
       apiGetSolver(solverId).then((r) => {
-        refImage.current!.value = r.name;
-        refName.current!.value = r.image;
+        refName.current!.value = r.name;
+        refImage.current!.value = r.image;
       });
     }
   }, [solverId]);
@@ -62,12 +62,7 @@ export const SolverPage: React.FC<ISolverPageProps> = () => {
         <input ref={refName} type="text" required={true} name="name" />
         <div>
           <label>Image</label>
-          <textarea
-            ref={refImage}
-            name="image"
-            required={true}
-            style={{ height: 200 }}
-          />
+          <input ref={refImage} type="text" required={true} name="image" />
         </div>
         {error ? <div>{error} </div> : null}
         <button type="submit">

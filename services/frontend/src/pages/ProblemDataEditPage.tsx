@@ -10,7 +10,7 @@ export const ProblemDataEditPage: React.FC<IProblemDataEditPageProps> = () => {
   const navigate = useNavigate();
 
   const nameRef = useRef<HTMLInputElement>(null);
-  const contentRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const modelId = match.params.id;
   const dataId = match.params.data_id;
@@ -50,7 +50,13 @@ export const ProblemDataEditPage: React.FC<IProblemDataEditPageProps> = () => {
         <label>Name</label>
         <input name="name" ref={nameRef} />
         <label>Content</label>
-        <input name="content" ref={contentRef} />
+        <textarea
+          ref={contentRef}
+          name="content"
+          style={{
+            height: 300,
+          }}
+      />
         <button type="submit">Save</button>
       </form>
     </div>
