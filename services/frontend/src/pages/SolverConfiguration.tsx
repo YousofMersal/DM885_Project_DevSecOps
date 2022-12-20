@@ -33,7 +33,7 @@ export const SolverConfiguration: React.FC<ISolverConfigurationProps> = () => {
           <tr>
             <th>Id</th>
             <th>Name</th>
-            <th>Content</th>
+            <th>Image</th>
             <th></th>
           </tr>
         </thead>
@@ -46,7 +46,7 @@ export const SolverConfiguration: React.FC<ISolverConfigurationProps> = () => {
               <td>
                 <button
                   onClick={() =>
-                    navigate({ to: "/solver-config/" + solver.solver_id })
+                    navigate({ to: "/solver-config/" + solver.name })
                   }
                 >
                   Edit

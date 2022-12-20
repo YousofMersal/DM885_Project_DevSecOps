@@ -36,7 +36,7 @@ export const ProblemPage: React.FC = () => {
         }}
       >
         <div>
-          <div>ID: {model?.model_id} </div>
+          <div>Model Id: {model?.model_id} </div>
           <div>Name: {model?.name} </div>
         </div>
         <div>
@@ -65,7 +65,7 @@ export const ProblemPage: React.FC = () => {
       <table>
         <thead>
           <tr>
-            <th>Id</th>
+            <th>Data Id</th>
             <th>Name</th>
             <th>Content</th>
             <th></th>

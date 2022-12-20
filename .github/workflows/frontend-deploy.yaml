@@ -33,11 +33,11 @@ jobs:
       - name: Install Skaffold
         run: curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install /tmp/skaffold /usr/local/bin/
 
-      - name: Run Skaffold build
+      - name: Run Skaffold build latest
         run: skaffold build -p latest
         working-directory: ./services/frontend
 
-      - name: Run Skaffold build
+      - name: Run Skaffold build production
         run: skaffold build -p production --file-output=image.json
         working-directory: ./services/frontend
 
