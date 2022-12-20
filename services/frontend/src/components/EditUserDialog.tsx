@@ -1,9 +1,10 @@
 import { Modal, Form, Space, Button } from "antd";
+import Paragraph from "antd/es/typography/Paragraph";
 import Input from "rc-input";
 import TextArea from "rc-textarea";
-import React from "react";
+import React, { useState } from "react";
 import { apiUpdateUserInfo } from "../request";
-import { editUserInfo } from "../utils/common";
+import { editUserInfo, handleError } from "../utils/common";
 
 interface IEditUserDialogProps {
   isOpen: boolean;
@@ -18,8 +19,10 @@ export const EditUserDialog: React.FC<IEditUserDialogProps> = ({
   onSubmit,
   userId,
 }) => {
+  const [error, setError] = useState("");
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
+    setError("");
 
     const fd = new FormData(e.currentTarget);
 
@@ -39,6 +42,7 @@ export const EditUserDialog: React.FC<IEditUserDialogProps> = ({
       onSubmit();
     } catch (e) {
       console.log(e);
+      setError(handleError(e));
     }
   };
 
@@ -49,8 +53,9 @@ export const EditUserDialog: React.FC<IEditUserDialogProps> = ({
           <Input type="text" required={true} name="cpu_limit" />
         </Form.Item>
         <Form.Item label="Memory" name="content">
-          <TextArea name="mem_limit" />
+          <Input name="mem_limit" />
         </Form.Item>
+        {error ? <Paragraph>{error}</Paragraph> : null}
         <Space>
           <Button type="primary" htmlType="submit">
             Submit
