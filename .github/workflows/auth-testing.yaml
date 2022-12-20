@@ -11,6 +11,7 @@ on:
     paths:
     - services/auth/**
     - .github/workflows/auth-testing.yaml
+  workflow_dispatch:
 
 # Only one job  that does the following
 jobs:

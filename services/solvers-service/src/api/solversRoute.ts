@@ -26,7 +26,8 @@ export async function outerGetByName(
       var result = (await db.public.query(q)).rows[0]
     }
   }
-  if (result.length == 0) {
+
+  if (result == undefined) {
     return null
   }
   return result
