@@ -23,7 +23,7 @@ pub struct Loginfo {
 }
 
 #[derive(Debug)]
-pub struct AuthenticatedUser(pub Uuid);
+pub struct AuthenticatedUser(pub Uuid, pub String);
 impl FromRequest for AuthenticatedUser {
     type Error = AppError;
 
@@ -55,7 +55,7 @@ impl FromRequest for AuthenticatedUser {
                     AppError::NOT_AUTHORIZED
                 })?;
 
-                Ok(AuthenticatedUser(user_id))
+                Ok(AuthenticatedUser(user_id, bearer.token().to_string()))
             };
             Box::pin(future)
         } else {

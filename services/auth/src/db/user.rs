@@ -1,5 +1,6 @@
 // use futures_util::future::{Future, Ready};
 use actix_utils::future::{ready, Ready};
+use awc;
 use eyre::bail;
 use std::{
     // future::{ready, Ready},
@@ -107,18 +108,38 @@ impl UserRepo {
         &self,
         username: &str,
         id: Uuid,
+        admin_token: &str,
     ) -> Result<Option<SimpleUser>> {
         //! Delete a user given a username if the id given is an admin
         let is_admin = self.is_admin(id).await?;
 
         if is_admin {
             let possible_user =
-                query_as::<_, SimpleUser>("DELETE FROM users WHERE username = $1 RETURNING *")
+                query_as::<_, User>("DELETE FROM users WHERE username = $1 RETURNING *")
                     .bind(username)
                     .fetch_optional(&*self.pool)
                     .await?;
 
-            Ok(possible_user)
+            match possible_user {
+                Some(user) => {
+                    let client = awc::Client::default();
+
+                    let Some(solver_host) = std::env::var("SOLVER_HOST").ok() else {
+                        bail!("SOLVER_HOST not set");
+                    };
+
+                    let resp = dbg!(client
+                        .delete(format!("http://{solver_host}/api/v1/job-users/{}", user.id))
+                        .insert_header(("Authorization", format!("Bearer {}", admin_token))))
+                    .send()
+                    .await;
+
+                    dbg!(&resp);
+
+                    Ok(Some(SimpleUser::from(user)))
+                }
+                _ => Ok(None),
+            }
         } else {
             bail!("User is not an admin")
         }
