@@ -73,6 +73,7 @@ export async function registerJobWatch(
   await exponentialBackoff(
     5,
     async () => {
+      console.log('looking for jobpodname')
       const jobPod = await client.core.listNamespacedPod(
         client.ns,
         undefined,
@@ -81,7 +82,7 @@ export async function registerJobWatch(
         undefined,
         `job-name=${jobName}`
       )
-      const jobPodName = jobPod.body.items.at(0)?.metadata?.name
+      jobPodName = jobPod.body.items.at(0)?.metadata?.name
 
       if (jobPodName === undefined) {
         throw `Expected to find pod for corresponding job: ${jobName}`
@@ -120,10 +121,11 @@ async function attachLogger(
         )
       }
     } catch (e) {
-      console.error('Error parsing log chunk', e)
+      console.error('failed to process log chunk', e)
     }
   })
 
+  console.log('attaching to solver job log', client.ns, jobPodName)
   await exponentialBackoff(
     5,
     async () => {
