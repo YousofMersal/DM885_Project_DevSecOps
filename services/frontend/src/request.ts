@@ -206,6 +206,8 @@ export const apiCancelJob = (
   });
 };
 
+export const apiGetJobUsers = () => request("/job-users");
+
 const request = async (path: string, requestConfig?: RequestInit) => {
   const token = localStorage.getItem("token");
 

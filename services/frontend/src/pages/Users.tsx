@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
-import { apiGetUsers, apiRemoveUser } from "../request";
+import { apiGetJobUsers, apiGetUsers, apiRemoveUser } from "../request";
 import { ApiUser } from "../types";
 
 export const Users: React.FC = () => {
@@ -9,8 +9,11 @@ export const Users: React.FC = () => {
 
   const getUsers = () => apiGetUsers().then((r) => setUsers(r));
 
+  const getJobUsers = () => apiGetJobUsers().then((r) => console.log("r", r));
+
   useEffect(() => {
     getUsers();
+    getJobUsers();
   }, []);
 
   const columns: ColumnsType<ApiUser> = [

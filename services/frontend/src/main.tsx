@@ -160,7 +160,7 @@ const Routes: React.FC = () => {
         {
           path: "/users",
           element: (
-            <ProtectedRoute isAdminRoute={true}>
+            <ProtectedRoute isAdminRoute={false}>
               <Layout>
                 <Users />
               </Layout>
