@@ -5,12 +5,6 @@ export const authServicePayload = z.object({
   password: z.string(),
 });
 
-export const createProblemPayload = z.object({
-  name: z.string(),
-  content: z.instanceof(File),
-  data: z.instanceof(File).optional(),
-});
-
 export const createModelData = z.object({
   name: z.string(),
   content: z.string(),

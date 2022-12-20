@@ -1,4 +1,5 @@
 import { useMatch } from "@tanstack/react-location";
+import { Button, Spin } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { apiCancelJob, apiGetJob, apiGetJobResult } from "../request";
 import { ApiJob, ApiJobResult } from "../types";
@@ -41,7 +42,9 @@ export const JobResultPage: React.FC = () => {
     getJob();
   }, []);
 
-  useInterval(getJob, job?.job_status !== "finished" ? 5000 : null);
+  const isRunning = job?.job_status !== "finished";
+
+  useInterval(getJob, isRunning ? 5000 : null);
 
   useEffect(() => {
     if (job?.job_status === "finished") {
@@ -76,8 +79,10 @@ export const JobResultPage: React.FC = () => {
       <p>Status: {job?.job_status}</p>
       <p>Created at: {job?.created_at}</p>
       <p>Finished at: {job?.finished_at}</p>
+      <div>{isRunning ? <Spin /> : null}</div>
       {job?.job_status !== "finished" ? (
-        <button
+        <Button
+          danger
           onClick={() => {
             setErr("");
 
@@ -87,7 +92,7 @@ export const JobResultPage: React.FC = () => {
           }}
         >
           Cancel
-        </button>
+        </Button>
       ) : null}
       <p>{err}</p>
       {renderedResult}

@@ -1,4 +1,6 @@
 import { useNavigate } from "@tanstack/react-location";
+import { Button } from "antd";
+import Table, { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
 import { apiListJobs } from "../request";
 import { ApiJob } from "../types";
@@ -15,44 +17,52 @@ export const JobList: React.FC<IJobListProps> = () => {
     getJobs();
   }, []);
 
+  const columns: ColumnsType<ApiJob> = [
+    {
+      title: "Id",
+      dataIndex: "job_id",
+      key: "job_id",
+    },
+    {
+      title: "Status",
+      dataIndex: "job_status",
+      key: "job_status",
+    },
+    {
+      title: "Created at",
+      dataIndex: "created_at",
+      key: "created_at",
+    },
+    {
+      title: "Finished at",
+      dataIndex: "finished_at",
+      key: "finished_at",
+    },
+    {
+      title: "Model id",
+      dataIndex: "model_id",
+      key: "model_id",
+    },
+    {
+      title: "",
+      dataIndex: "job_id",
+      render: (key) => (
+        <Button
+          onClick={() => {
+            navigate({
+              to: `/jobs/${key}`,
+            });
+          }}
+        >
+          View
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Status</th>
-            <th>Created at</th>
-            <th>Finished at</th>
-            <th>Model id</th>
-            <th>Data id</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {jobs.map((job, i) => (
-            <tr key={i}>
-              <td>{job.job_id}</td>
-              <td>{job.job_status}</td>
-              <td>{job.created_at}</td>
-              <td>{job.finished_at}</td>
-              <td>{job.model_id}</td>
-              <td>{job.data_id}</td>
-              <td>
-                <button
-                  onClick={() => {
-                    navigate({
-                      to: `/jobs/${job.job_id}`,
-                    });
-                  }}
-                >
-                  View
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ marginTop: 20 }}>
+      <Table dataSource={jobs} columns={columns} />
     </div>
   );
 };
