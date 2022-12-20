@@ -11,6 +11,8 @@ import express from 'express'
 import { startJob } from '../jobs/jobs-manager.js'
 import { randomUUID } from 'crypto'
 import { Client } from 'pg'
+import { Request as JWTRequest } from 'express-jwt'
+import { DBUser } from './usersRoute.js'
 
 export interface CreateJob {
   modelId: string
@@ -21,8 +23,20 @@ export interface CreateJob {
 export default (client: K8sClient, db: Client) => {
   const jobs = express.Router()
 
-  jobs.post('/', async (req, res) => {
+  jobs.post('/', async (req: JWTRequest, res) => {
     console.log('Starting solver job requested')
+
+    const time_limit: number | undefined = req.body.time_limit
+
+    const user_id = req.auth?.sub
+    if (!user_id) throw 'user_id not found'
+
+    const user = (
+      await db.query<DBUser>(
+        'INSERT INTO user_data (user_id) VALUES ($1) ON CONFLICT DO NOTHING RETURNING *',
+        [user_id]
+      )
+    ).rows[0]
 
     const body: components['schemas']['Job_create'] = req.body
 
@@ -37,7 +51,7 @@ export default (client: K8sClient, db: Client) => {
       )
     ).rows[0]
 
-    let data = undefined
+    let data: DBMznData | undefined = undefined
     if (body.data_id) {
       data = (
         await db.query<DBMznData>('SELECT * FROM mzn_data WHERE data_id = $1', [
@@ -51,11 +65,10 @@ export default (client: K8sClient, db: Client) => {
     let solvers: DBSolver[] = []
     try {
       await db.query('BEGIN')
-
       job = (
         await db.query(
-          "INSERT INTO jobs (job_id, model_id, data_id, job_status) VALUES ($1, $2, $3, 'running')",
-          [job_id, 1, null]
+          "INSERT INTO jobs (job_id, user_id, model_id, data_id, job_status) VALUES ($1, $2, $3, $4, 'running')",
+          [job_id, user_id, model.model_id, data?.data_id]
         )
       ).rows[0]
 
@@ -85,6 +98,8 @@ export default (client: K8sClient, db: Client) => {
         model,
         data,
         solvers,
+        user,
+        time_limit,
       })
 
       res.status(201).send({

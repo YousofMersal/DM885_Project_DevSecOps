@@ -10,16 +10,18 @@ export async function outerGetAll(db: any) {
 }
 
 export async function outerGetByName(
-  recievedFrom: Number,
+  receivedFrom: Number,
   db: any,
   name: string
 ) {
 
   if (db) {
+
     if (recievedFrom == 1) {
       var result = (await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rows[0]
     } else if (recievedFrom == 2) {
       var result = (await db.public.query(`SELECT * FROM solvers WHERE name = \'${name}\'`)).rows[0]
+
     }
   }
 
@@ -30,7 +32,7 @@ export async function outerGetByName(
 }
 
 export async function outerChangeSolver(
-  recievedFrom: Number,
+  receivedFrom: Number,
   db: any,
   name: string,
   newName: string,
@@ -38,6 +40,7 @@ export async function outerChangeSolver(
 ) {
 
   if (db) {
+
     if (recievedFrom == 1) {
       const solverCount = (await db.query("SELECT * FROM solvers WHERE name = '$1'", [name])).rowCount
       if (solverCount == 0) {
@@ -47,6 +50,7 @@ export async function outerChangeSolver(
     } 
     else if (recievedFrom == 2) {
       const solverCount = (await db.public.query(`SELECT * FROM solvers WHERE name = '${name}'`)).rowCount
+
       if (solverCount == 0) {
         return null
       }
@@ -58,7 +62,7 @@ export async function outerChangeSolver(
 }
 
 export async function outerAddSolver(
-  recievedFrom: Number,
+  receivedFrom: Number,
   db: any,
   name: string,
   image: string
@@ -71,6 +75,7 @@ export async function outerAddSolver(
       } else {
         return await db.query("INSERT INTO solvers (name, image) VALUES ('$1', '$2')", [name, image])
       }
+
     } else if (recievedFrom == 2) {
       if ((await db.public.query(`SELECT * FROM solvers WHERE name = '${name}'`)).rowCount > 0) {
         return null
@@ -82,12 +87,13 @@ export async function outerAddSolver(
 }
 
 export async function outerDeleteSolver(
-  recievedFrom: Number,
+  receivedFrom: Number,
   db: any,
   id: string
 ) {
 
   if (db) {
+
     if (recievedFrom == 1) {
       const solverCount = (await db.query("SELECT * FROM solvers WHERE solver_id = '$1'", [id])).rowCount
       if (solverCount == 0) {
@@ -105,6 +111,10 @@ export async function outerDeleteSolver(
     return result
   }
 }
+
+
+// API endpoints start here
+
 
 export default (db: Client) => {
   const jobs = express.Router()

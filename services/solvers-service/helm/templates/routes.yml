@@ -6,28 +6,30 @@ metadata:
 spec:
   # This is the gateway shared in knative service mesh.
   gateways:
-  - knative-serving/knative-ingress-gateway
+    - knative-serving/knative-ingress-gateway
   # Set host to the domain name that you own.
   hosts:
-  - {{ .Values.publicDomain }}
+    - {{.Values.publicDomain}}
   http:
-  - match:
-    - uri:
-        prefix: "/api/v1/jobs"
-    - uri:
-        prefix: "/api/v1/models"
-    - uri:
-        prefix: "/api/v1/solvers"
-    rewrite:
-      # Rewrite the original host header to the host header of Search service
-      # in order to redirect requests to Search service.
-      authority: "{{ .Chart.Name }}.{{ .Values.projectDomain }}"
-    route:
-      # Basically here we redirect the request to the cluster entry again with
-      # updated header "search-service.default.example.com" so the request will
-      # eventually be directed to Search service.
-      - destination:
-          host: istio-ingressgateway.istio-system.svc.cluster.local
-          port:
-            number: 80
-        weight: 100
+    - match:
+        - uri:
+            prefix: "/api/v1/jobs"
+        - uri:
+            prefix: "/api/v1/models"
+        - uri:
+            prefix: "/api/v1/solvers"
+        - uri:
+            prefix: "/api/v1/job-users"
+      rewrite:
+        # Rewrite the original host header to the host header of Search service
+        # in order to redirect requests to Search service.
+        authority: "{{ .Chart.Name }}.{{ .Values.projectDomain }}"
+      route:
+        # Basically here we redirect the request to the cluster entry again with
+        # updated header "search-service.default.example.com" so the request will
+        # eventually be directed to Search service.
+        - destination:
+            host: istio-ingressgateway.istio-system.svc.cluster.local
+            port:
+              number: 80
+          weight: 100

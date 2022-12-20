@@ -1,3 +1,4 @@
+import { DBUser } from './../api/usersRoute.js'
 import { Client } from 'pg'
 import k8s from '@kubernetes/client-node'
 import { registerJobWatch } from './job-watcher.js'
@@ -8,6 +9,8 @@ export interface JobDesc {
   model: DBMznModel
   data?: DBMznData
   solvers: DBSolver[]
+  user: DBUser
+  time_limit?: number
 }
 
 export interface DBJob {
@@ -83,6 +86,7 @@ export async function startJob(
   db: Client,
   job_desc: JobDesc
 ): Promise<SolverJob[]> {
+  console.log('start job begin', job_desc.job_id)
   const configMapName = `minizinc-job-data-${job_desc.job_id}`
 
   let map = new k8s.V1ConfigMap()
@@ -96,7 +100,9 @@ export async function startJob(
   }
   if (job_desc.data?.data_id) map.data.data = job_desc.data.data_id
 
+  console.log('creating config map for job')
   map = (await client.core.createNamespacedConfigMap(client.ns, map)).body
+  console.log('created config map for job')
 
   const watchers = job_desc.solvers.map(async (solver) => {
     const jobResult = await startSolverJob(client, job_desc, solver, map)
@@ -115,7 +121,9 @@ export async function startJob(
     }
   })
 
+  console.log('waiting for all solver jobs to start')
   const watcherResults = await Promise.all(watchers)
+  console.log('all solver jobs started')
 
   const jobContextSolvers = watcherResults.reduce<JobContextSolvers>(
     (acc, x) => {
@@ -134,9 +142,10 @@ export async function startJob(
     solvers: jobContextSolvers,
   }
 
+  // when all done clean up in the background (no await)
   Promise.all(watcherResults.map((x) => x.watcher)).finally(async () => {
     console.log(`Cleaning up config map for job: ${job_desc.job_id}`)
-    client.core.deleteNamespacedConfigMap(configMapName, client.ns)
+    await client.core.deleteNamespacedConfigMap(configMapName, client.ns)
 
     delete runningJobs[job_desc.job_id]
 
@@ -144,6 +153,7 @@ export async function startJob(
       "UPDATE jobs SET job_status = 'finished', finished_at = CURRENT_TIMESTAMP WHERE job_id = $1",
       [job_desc.job_id]
     )
+    console.log(`Successfully cleaned config map for job: ${job_desc.job_id}`)
   })
 
   return watcherResults.map((x) => x.jobResult)
@@ -171,9 +181,13 @@ async function startSolverJob(
     '--output-output-item',
     '--solver',
     solver.name,
-    '--time-limit',
-    String(1000 * 60 * 10), // timeout after 10 minutes. TODO: make this customizable
+    // '-p',
+    // job_desc.user.cpu_limit
   ]
+
+  if (job_desc.time_limit) {
+    commandArgs.push('--time-limit', String(job_desc.time_limit))
+  }
 
   if (job_desc.data?.data_id != null) {
     commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
@@ -205,6 +219,16 @@ async function startSolverJob(
             name: 'minizinc-solver',
             image: solver.image,
             command: commandArgs,
+            // resources: {
+            //   limits: {
+            //     cpu: String(job_desc.user.cpu_limit),
+            //     memory: `${job_desc.user.mem_limit}M`,
+            //   },
+            //   requests: {
+            //     cpu: '1',
+            //     memory: '1M',
+            //   },
+            // },
             volumeMounts: [
               {
                 name: 'mzn-model',
@@ -261,7 +285,14 @@ export async function stopSolverJob(client: K8sClient, job_id: string) {
     client.batch.deleteNamespacedJob(jobName(job_id, solver_id), client.ns)
   })
 
-  await Promise.all(promises)
+  try {
+    await Promise.all(promises)
+  } catch (e) {
+    throw {
+      error: `failed to stop solver job: ${job_id}`,
+      exception: e,
+    }
+  }
 }
 
 function jobName(job_id: string, solver_id: string): string {
