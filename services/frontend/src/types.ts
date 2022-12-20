@@ -38,6 +38,12 @@ export type ApiJobResult = {
   solver_id: number;
 };
 
+export type ApiUserInfo = {
+  user_id: string;
+  cpu_limit: number;
+  mem_limit: number;
+};
+
 export type ApiModel = {
   content: string;
   model_id: number;
