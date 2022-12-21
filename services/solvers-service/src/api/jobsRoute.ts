@@ -83,6 +83,8 @@ export default (client: K8sClient, db: Client) => {
       ).rows[0]
     }
 
+    console.log('Data used', req_body.data_id, data)
+
     const job_id = randomUUID()
     let job = {} as DBJob
     let dbSolvers: DBSolver[] = []
