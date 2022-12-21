@@ -39,19 +39,26 @@ export const apiLogin = (input: AuthServiceForm): Promise<ApiLoginResponse> => {
   });
 };
 
+export type SolverJobInfo = {
+  solver_id: number;
+  cpus: number;
+  memory: number;
+  timeout: number;
+};
+
 export const apiStartJob = (
   modelId: number,
-  solverIds: number[],
+  solvers: SolverJobInfo[],
   dataId?: number
 ): Promise<{ job_id: string; status: string }> => {
   const payload = {
     model_id: modelId,
-    solvers: solverIds.map(id => ({solver_id: id})),
+    solvers,
   };
 
   if (dataId) {
     //@ts-expect-error
-    payload.data_id = dataId;
+    payload.dataId = dataId;
   }
   return request("/jobs", {
     method: "POST",

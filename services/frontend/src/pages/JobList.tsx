@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-location";
 import { Button } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
+import { isValid } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { apiListJobs } from "../request";
 import { ApiJob } from "../types";
@@ -11,7 +12,16 @@ export const JobList: React.FC<IJobListProps> = () => {
   const [jobs, setJobs] = useState<ApiJob[]>([]);
   const navigate = useNavigate();
 
-  const getJobs = () => apiListJobs().then((result) => setJobs(result));
+  const getJobs = () =>
+    apiListJobs().then((result) =>
+      setJobs(
+        result.sort((x, y) => {
+          return (
+            new Date(x.created_at).getTime() - new Date(y.created_at).getTime()
+          );
+        })
+      )
+    );
 
   useEffect(() => {
     getJobs();
