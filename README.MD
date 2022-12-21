@@ -53,15 +53,27 @@ For every service in the services folder change the `skaffold.yaml` files to the
 
 #### Change cluster configuration in Terraform and in the deploy pipeline.
 
-In the `/terraform/google_cloud/terraform.tfvars` change the relevant names of the google cloud variables`. 
-In the `.github/workflows` change the deployt files to deployt to your google cloud instance, by changeing the environment vars 
+The configuration variables are in ´terraform.tfvars´.
+
+By default it uses ´e2-standard-4´ instances'. Beaware small instances may not be able to run Istio.
+
+
+### Static IP-address
+
+When the cluster is deployed then change the IP-address to static.
+
+
+### Run
+
+Get the credentials and configure kubectl:
 ```
-env:
-  PROJECT_ID
-  GKE_CLUSTER
-  GKE_ZONE
-  PROJECT_DOMAIN
-  PUBLIC_DOMAIN
+gcloud container clusters get-credentials steam-airfoil-367315-gke --region europe-west8-b
+```
+
+Provision the cluster:
+```
+terraform init
+terraform apply
 ```
 
 ### List and set project
@@ -95,3 +107,4 @@ gcloud iam service-accounts keys create key.json --iam-account=954508260996-comp
 ```
 After retrieving your key in the repository settings under Secrets, Actions: Add the content of the key-file as a repository secret named 
 GKE_SA_KEY.
+
