@@ -19,13 +19,12 @@ export async function outerGetByUserId(
   db: any,
   userId: string
 ) {
-  var q = `SELECT * FROM user_data WHERE user_id = $1`
 
   if (db) {
     if (receivedFrom == 1) {
-      var result = (await db.query(q, [userId])).rows[0]
+      var result = (await db.query('SELECT * FROM user_data WHERE user_id = $1', [userId])).rows[0]
     } else if (receivedFrom == 2) {
-      var result = (await db.public.query(q, [userId])).rows[0]
+      var result = (await db.public.query(`SELECT * FROM user_data WHERE user_id = '${userId}'`)).rows[0]
     }
   }
 
@@ -42,24 +41,23 @@ export async function outerChangeUser(
   newCpuLimit: Number,
   newMemoryLimit: Number
 ) {
-  var q = `UPDATE user_data SET cpu_limit = $1, mem_limit = $2 WHERE user_id = $3;`
-  var preQ = `SELECT * FROM user_data WHERE user_id = $1;`
 
   if (db) {
     if (receivedFrom == 1) {
-      const userCount = (await db.query(preQ, [userId])).rowCount
-      if (userCount == 0) {
-        return null
-      }
-      var result = (await db.query(q, [newCpuLimit, newMemoryLimit, userId]))
-        .rows
-    } else if (receivedFrom == 2) {
-      const userCount = (await db.public.query(preQ, [userId])).rowCount
+      const userCount = (await db.query('SELECT * FROM user_data WHERE user_id = $1;', [userId])).rowCount
       if (userCount == 0) {
         return null
       }
       var result = (
-        await db.public.query(q, [newCpuLimit, newMemoryLimit, userId])
+        await db.query('UPDATE user_data SET cpu_limit = $1, mem_limit = $2 WHERE user_id = $3;', [newCpuLimit, newMemoryLimit, userId])
+      ).rows
+    } else if (receivedFrom == 2) {
+      const userCount = (await db.public.query(`SELECT * FROM user_data WHERE user_id = '${userId}';`)).rowCount
+      if (userCount == 0) {
+        return null
+      }
+      var result = (
+        await db.public.query(`UPDATE user_data SET cpu_limit = '${newCpuLimit}', mem_limit = '${newMemoryLimit}' WHERE user_id = '${userId}';`)
       ).rows
     }
 
@@ -77,17 +75,17 @@ export async function outerDeleteUser(
 
   if (db) {
     if (receivedFrom == 1) {
-      const userCount = (await db.query(preQ, [userId])).rowCount
+      const userCount = (await db.query('SELECT * FROM user_data WHERE user_id = $1;', [userId])).rowCount
       if (userCount == 0) {
         return null
       }
-      var result = (await db.query(q, [userId])).rows
+      var result = (await db.query('DELETE FROM user_data WHERE user_id = $1;', [userId])).rows[0]
     } else {
-      const userCount = (await db.public.query(preQ, [userId])).rowCount
+      const userCount = (await db.public.query(`SELECT * FROM user_data WHERE user_id = '${userId}';`)).rowCount
       if (userCount == 0) {
         return null
       }
-      var result = (await db.public.query(q, [userId])).rows
+      var result = (await db.public.query(`DELETE FROM user_data WHERE user_id = '${userId}';`)).rows[0]
     }
 
     return result
