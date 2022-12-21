@@ -51,7 +51,7 @@ export const apiStartJob = (
 
   if (dataId) {
     //@ts-expect-error
-    payload.dataId = dataId;
+    payload.data_id = dataId;
   }
   return request("/jobs", {
     method: "POST",
