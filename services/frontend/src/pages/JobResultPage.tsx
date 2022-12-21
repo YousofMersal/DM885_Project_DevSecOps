@@ -64,7 +64,7 @@ export const JobResultPage: React.FC = () => {
     renderedResult = (
       <div>
         <Typography.Paragraph>Result:</Typography.Paragraph>
-        <Space direction="vertical">
+        <Space>
           {result.map((r) => (
             <Card title={r.solver_id}>
               <Typography.Paragraph>

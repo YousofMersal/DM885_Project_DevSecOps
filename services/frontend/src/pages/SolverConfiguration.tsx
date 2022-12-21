@@ -44,6 +44,7 @@ export const SolverConfiguration: React.FC<ISolverConfigurationProps> = () => {
             Edit
           </Button>
           <Button
+            danger
             onClick={() =>
               apiDeleteSolver(solver.solver_id).then(() => getSolvers())
             }

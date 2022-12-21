@@ -1,8 +1,13 @@
 import { Link, useMatch, useNavigate } from "@tanstack/react-location";
-import { Button } from "antd";
+import { Button, Form, Input } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
-import { apiGetJob, apiListSolvers, apiStartJob } from "../request";
+import {
+  apiGetJob,
+  apiListSolvers,
+  apiStartJob,
+  SolverJobInfo,
+} from "../request";
 import { ApiJob, ApiSolver } from "../types";
 
 interface IJobPageProps {}
@@ -14,16 +19,33 @@ export const JobPage: React.FC<IJobPageProps> = () => {
   const modelId = match.params.id;
   const dataId = match.params.data_id;
   const navigate = useNavigate();
+  const [solverResources, setSolverResources] = useState<
+    Omit<SolverJobInfo, "solver_id">[]
+  >([]);
 
   useEffect(() => {
-    apiListSolvers().then((result) => setSolvers(result));
+    apiListSolvers().then((result) => {
+      setSolvers(result);
+      setSolverResources(
+        result.map((r) => ({
+          cpus: 4,
+          memory: 100,
+          timeout: 60,
+        }))
+      );
+    });
   }, []);
 
   const handleStart = async () => {
     try {
       const result = await apiStartJob(
         Number(modelId),
-        selectedSolvers,
+        selectedSolvers.map((solverId, i) => ({
+          solver_id: solverId,
+          cpus: solverResources[i].cpus,
+          memory: solverResources[i].memory,
+          timeout: solverResources[i].timeout,
+        })),
         dataId !== "undefined" ? Number(dataId) : undefined
       );
       navigate({ to: `/jobs/${result.job_id}` });
@@ -32,6 +54,17 @@ export const JobPage: React.FC<IJobPageProps> = () => {
     } catch (e) {
       console.log("e", e);
     }
+  };
+
+  const handleChange = (index: number, key: string, value: string) => {
+    setSolverResources((prev) => {
+      const copy = { ...prev };
+
+      //@ts-expect-error
+      copy[index][key] = value;
+
+      return copy;
+    });
   };
 
   const columns: ColumnsType<ApiSolver> = [
@@ -44,6 +77,51 @@ export const JobPage: React.FC<IJobPageProps> = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+    },
+    {
+      title: "",
+      dataIndex: "",
+      render: (solver: ApiSolver) => {
+        const solverIndex = solvers.findIndex(
+          (s) => s.solver_id === solver.solver_id
+        );
+
+        if (!selectedSolvers.includes(solver.solver_id)) {
+          return null;
+        }
+
+        return (
+          <div>
+            <Form.Item label="CPU">
+              <Input
+                value={solverResources[solverIndex].cpus}
+                onChange={(e) =>
+                  handleChange(solverIndex, "cpus", e.target.value)
+                }
+                style={{ width: 50 }}
+              />
+            </Form.Item>
+            <Form.Item label="Memory">
+              <Input
+                value={solverResources[solverIndex].memory}
+                onChange={(e) =>
+                  handleChange(solverIndex, "memory", e.target.value)
+                }
+                style={{ width: 50 }}
+              />
+            </Form.Item>
+            <Form.Item label="Timeout">
+              <Input
+                value={solverResources[solverIndex].timeout}
+                onChange={(e) =>
+                  handleChange(solverIndex, "timeout", e.target.value)
+                }
+                style={{ width: 50 }}
+              />
+            </Form.Item>
+          </div>
+        );
+      },
     },
     {
       title: "",

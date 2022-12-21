@@ -57,7 +57,14 @@ export const EditProblemPage: React.FC<IEditProblemPageProps> = () => {
       </FormItem>
 
       <FormItem label="Model">
-        <TextArea ref={refContent} name="content" required={true} />
+        <TextArea
+          ref={refContent}
+          name="content"
+          required={true}
+          style={{
+            height: 200,
+          }}
+        />
       </FormItem>
       {error ? <div>{error} </div> : null}
       <Button htmlType="submit" type="primary">
