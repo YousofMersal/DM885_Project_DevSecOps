@@ -99,7 +99,7 @@ export async function startJob(
   map.data = {
     model: job_desc.model.content,
   }
-  if (job_desc.data?.data_id) map.data.data = job_desc.data.data_id
+  if (job_desc.data?.data_id) map.data.data = job_desc.data.content
 
   console.log('creating config map for job')
   map = (await client.core.createNamespacedConfigMap(client.ns, map)).body
