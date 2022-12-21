@@ -80,5 +80,5 @@ Change cluster configuration in Terraform and in the deploy pipeline.
 `gcloud iam service-accounts list`
 
 ```
- gcloud iam service-accounts keys create key.json --iam-account=954508260996-compute@developer.gserviceaccount.com
+gcloud iam service-accounts keys create key.json --iam-account=954508260996-compute@developer.gserviceaccount.com
 ```
