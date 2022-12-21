@@ -40,8 +40,8 @@ export const JobPage: React.FC<IJobPageProps> = () => {
     try {
       const result = await apiStartJob(
         Number(modelId),
-        solvers.map((solver, i) => ({
-          solver_id: solver.solver_id,
+        selectedSolvers.map((solverId, i) => ({
+          solver_id: solverId,
           cpus: solverResources[i].cpus,
           memory: solverResources[i].memory,
           timeout: solverResources[i].timeout,
@@ -85,6 +85,11 @@ export const JobPage: React.FC<IJobPageProps> = () => {
         const solverIndex = solvers.findIndex(
           (s) => s.solver_id === solver.solver_id
         );
+
+        if (!selectedSolvers.includes(solver.solver_id)) {
+          return null;
+        }
+
         return (
           <div>
             <Form.Item label="CPU">
@@ -93,6 +98,7 @@ export const JobPage: React.FC<IJobPageProps> = () => {
                 onChange={(e) =>
                   handleChange(solverIndex, "cpus", e.target.value)
                 }
+                style={{ width: 50 }}
               />
             </Form.Item>
             <Form.Item label="Memory">
@@ -101,6 +107,7 @@ export const JobPage: React.FC<IJobPageProps> = () => {
                 onChange={(e) =>
                   handleChange(solverIndex, "memory", e.target.value)
                 }
+                style={{ width: 50 }}
               />
             </Form.Item>
             <Form.Item label="Timeout">
@@ -109,6 +116,7 @@ export const JobPage: React.FC<IJobPageProps> = () => {
                 onChange={(e) =>
                   handleChange(solverIndex, "timeout", e.target.value)
                 }
+                style={{ width: 50 }}
               />
             </Form.Item>
           </div>
