@@ -26,7 +26,7 @@ terraform init
 terraform apply
 ```
 
-For now the auth serivce is available on: http://auth-service.project.34.154.63.245.sslip.io/api/v1/auth
+For now the serivce is available on: http://dm885.qpqp.dk/
 
 
 ## Debugging
