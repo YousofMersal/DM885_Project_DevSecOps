@@ -3,9 +3,9 @@
 
 ## Configuration
 
-The configuration varaibles are in ´terraform.tfvars´.
+The configuration variables are in ´terraform.tfvars´.
 
-By default it uses ´n2-standard-4´ instances'. Beaware small instances may not be able to run Istio.
+By default it uses ´e2-standard-4´ instances'. Beaware small instances may not be able to run Istio.
 
 
 ## Static IP-address
@@ -26,7 +26,7 @@ terraform init
 terraform apply
 ```
 
-For now the auth serivce is available on: http://auth-service.project.34.154.63.245.sslip.io/api/v1/auth
+For now the serivce is available on: http://dm885.qpqp.dk/
 
 
 ## Debugging
