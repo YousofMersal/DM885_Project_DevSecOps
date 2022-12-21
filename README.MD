@@ -45,15 +45,15 @@ The `kubectl` CLI can be used to interact with the local Kubernetes cluster.
 - `kubectl get virtualservice -n project` get all Istio VirtualServices (API routes).
 - `kubectl get vs -n project api-service-routes -o yaml` get info about a specific VirtualService.
 
-# Project setup in cloud
+## Project setup in cloud
 
-## Configuration
+### Configuration
 
 Change skaffold config where images is tagged: yousofmersal.
 
 Change cluster configuration in Terraform and in the deploy pipeline.
 
-## List and set project
+#### List and set project
 
 `gcloud projects list`
 
@@ -61,20 +61,20 @@ Change cluster configuration in Terraform and in the deploy pipeline.
 
 `gcloud config set project dm885-dev`
 
-### Enable GKE
+##### Enable GKE
 
 `gcloud --project=dm885-dev services enable container.googleapis.com`
 
 `gcloud --project=dm885-dev services enable compute.googleapis.com`
 
-## Get credentials for cluster
+#### Get credentials for cluster
 
 `gcloud container clusters list`
 
 `gcloud container clusters get-credentials dm885-dev-gke --region europe-north1`
 
 
-### Get service-account key
+#### Get service-account key
  * Add secret in github action to enable pipeline
  
 `gcloud iam service-accounts list`
