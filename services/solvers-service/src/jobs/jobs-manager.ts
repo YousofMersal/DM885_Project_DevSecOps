@@ -99,7 +99,11 @@ export async function startJob(
   map.data = {
     model: job_desc.model.content,
   }
-  if (job_desc.data?.data_id) map.data.data = job_desc.data.data_id
+  if (job_desc.data?.data_id) {
+    map.data.data = job_desc.data.content
+  } else {
+    map.data.data = ''
+  }
 
   console.log('creating config map for job')
   map = (await client.core.createNamespacedConfigMap(client.ns, map)).body
@@ -179,11 +183,14 @@ async function startSolverJob(
   config_map: k8s.V1ConfigMap
 ): Promise<SolverJob> {
   console.log('starting solver job', dbSolver, reqSolver, job_desc.job_id)
+  console.log('Job data', job_desc.data)
 
   const commandArgs = [
     'minizinc',
     '-m',
     '/tmp/mzn-model/model.mzn',
+    '-d',
+    '/tmp/mzn-model/model.dzn',
     '--output-mode',
     'json',
     '--json-stream', // stream result as newline-separated json objects
@@ -203,10 +210,10 @@ async function startSolverJob(
   // if (job_desc.time_limit) {
   //   commandArgs.push('--time-limit', String(job_desc.time_limit))
   // }
-
-  if (job_desc.data?.data_id != null) {
-    commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
-  }
+  
+  // if (job_desc.data?.data_id != null) {
+  //   commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
+  // }
 
   const configMapName = config_map.metadata?.name
   if (!configMapName) {
@@ -263,6 +270,10 @@ async function startSolverJob(
                 {
                   key: 'model',
                   path: 'model.mzn',
+                },
+                {
+                  key: 'data',
+                  path: 'model.dzn',
                 },
               ],
             },
