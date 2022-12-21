@@ -209,6 +209,7 @@ async function startSolverJob(
   // }
 
   if (job_desc.data?.data_id != null) {
+    console.log('Adding data')
     commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
   }
 
@@ -263,6 +264,16 @@ async function startSolverJob(
             name: 'mzn-model',
             configMap: {
               name: configMapName,
+              items: [
+                {
+                  key: 'model',
+                  path: 'model.mzn',
+                },
+                {
+                  key: 'data',
+                  path: 'model.dzn',
+                },
+              ],
             },
           },
         ],
