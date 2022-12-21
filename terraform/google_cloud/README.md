@@ -3,9 +3,9 @@
 
 ## Configuration
 
-The configuration varaibles are in ´terraform.tfvars´.
+The configuration variables are in ´terraform.tfvars´.
 
-By default it uses ´n2-standard-4´ instances'. Beaware small instances may not be able to run Istio.
+By default it uses ´e2-standard-4´ instances'. Beaware small instances may not be able to run Istio.
 
 
 ## Static IP-address
