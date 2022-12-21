@@ -183,11 +183,14 @@ async function startSolverJob(
   config_map: k8s.V1ConfigMap
 ): Promise<SolverJob> {
   console.log('starting solver job', dbSolver, reqSolver, job_desc.job_id)
+  console.log('Job data', job_desc.data)
 
   const commandArgs = [
     'minizinc',
     '-m',
     '/tmp/mzn-model/model.mzn',
+    '-d',
+    '/tmp/mzn-model/model.dzn',
     '--output-mode',
     'json',
     '--json-stream', // stream result as newline-separated json objects
@@ -207,11 +210,10 @@ async function startSolverJob(
   // if (job_desc.time_limit) {
   //   commandArgs.push('--time-limit', String(job_desc.time_limit))
   // }
-
-  if (job_desc.data?.data_id != null) {
-    console.log('Adding data')
-    commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
-  }
+  
+  // if (job_desc.data?.data_id != null) {
+  //   commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
+  // }
 
   const configMapName = config_map.metadata?.name
   if (!configMapName) {
