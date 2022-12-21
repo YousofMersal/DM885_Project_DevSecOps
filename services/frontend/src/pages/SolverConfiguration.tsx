@@ -21,8 +21,8 @@ export const SolverConfiguration: React.FC<ISolverConfigurationProps> = () => {
   const columns: ColumnsType<ApiSolver> = [
     {
       title: "Id",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "solver_id",
+      key: "solver_id",
     },
     {
       title: "Name",
