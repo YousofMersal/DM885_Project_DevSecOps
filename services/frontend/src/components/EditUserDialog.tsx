@@ -1,7 +1,5 @@
-import { Modal, Form, Space, Button } from "antd";
+import { Modal, Form, Space, Button, Input } from "antd";
 import Paragraph from "antd/es/typography/Paragraph";
-import Input from "rc-input";
-import TextArea from "rc-textarea";
 import React, { useState } from "react";
 import { apiUpdateUserInfo } from "../request";
 import { editUserInfo, handleError } from "../utils/common";

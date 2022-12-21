@@ -49,15 +49,19 @@ export const Users: React.FC = () => {
           );
         }
 
-        return <Paragraph>⁉️</Paragraph>;
+        return <Paragraph>Didn't start a job yet.</Paragraph>;
       },
     },
     {
       title: "",
       render: (key: ApiUser) => {
+        const info = Boolean(usersInfo.find((info) => info.user_id === key.id));
+
         return (
           <Space>
-            <Button onClick={() => setSelectedUser(key)}>Edit</Button>
+            <Button disabled={!info} onClick={() => setSelectedUser(key)}>
+              Edit
+            </Button>
             <Button
               danger
               onClick={() => apiRemoveUser(key.username).then(() => getUsers())}
