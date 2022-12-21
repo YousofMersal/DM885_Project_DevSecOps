@@ -264,6 +264,10 @@ async function startSolverJob(
                   key: 'model',
                   path: 'model.mzn',
                 },
+                {
+                  key: 'data',
+                  path: 'model.dzn',
+                },
               ],
             },
           },
