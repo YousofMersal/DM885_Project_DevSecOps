@@ -49,9 +49,35 @@ The `kubectl` CLI can be used to interact with the local Kubernetes cluster.
 
 ### Configuration
 
-Change skaffold config where images is tagged: yousofmersal.
+For every service in the services folder change the `skaffold.yaml` files to the github page where the packages should be hosted E.g. `- image: ghcr.io/yousofmersal/dm885_auth-service` to `- image: ghcr.io/{YOU_REPO}/dm885_auth-service`
 
-Change cluster configuration in Terraform and in the deploy pipeline.
+#### Change cluster configuration in Terraform and in the deploy pipeline.
+
+The configuration variables are in ´terraform.tfvars´.
+
+By default it uses ´e2-standard-4´ instances'. Beaware small instances may not be able to run Istio.
+
+
+### Static IP-address
+
+When the cluster is deployed then change the IP-address to static.
+
+
+### Run
+
+Get the credentials and configure kubectl:
+```
+gcloud container clusters get-credentials steam-airfoil-367315-gke --region europe-west8-b
+```
+
+Provision the cluster by running the following commands in the `terraform/google_cloud/` directory:
+```
+terraform init
+terraform apply
+```
+
+When the cluster is up and running, run the same terraform commands as above but from the `terraform/production/` directory,
+this will install and start all third party services such as databases and Knative on the newly created cluster.
 
 ### List and set project
 
@@ -82,3 +108,6 @@ Change cluster configuration in Terraform and in the deploy pipeline.
 ```
 gcloud iam service-accounts keys create key.json --iam-account=954508260996-compute@developer.gserviceaccount.com
 ```
+After retrieving your key in the repository settings under Secrets, Actions: Add the content of the key-file as a repository secret named 
+GKE_SA_KEY.
+
