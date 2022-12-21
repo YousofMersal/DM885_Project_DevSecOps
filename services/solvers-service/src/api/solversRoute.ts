@@ -74,7 +74,6 @@ export async function outerAddSolver(
         return null
       } else {
         return await db.query("INSERT INTO solvers (name, image) VALUES ($1, $2)", [name, image])
-        return await db.query(q)
       }
 
     } else if (receivedFrom == 2) {
