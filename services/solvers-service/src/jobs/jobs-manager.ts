@@ -3,14 +3,15 @@ import { Client } from 'pg'
 import k8s from '@kubernetes/client-node'
 import { registerJobWatch } from './job-watcher.js'
 import { K8sClient } from './k8s-client.js'
+import { StartJobBodySolver } from '../api/jobsRoute.js'
 
 export interface JobDesc {
   job_id: JobID
   model: DBMznModel
   data?: DBMznData
-  solvers: DBSolver[]
+  dbSolvers: DBSolver[]
+  reqSolvers: StartJobBodySolver[]
   user: DBUser
-  time_limit?: number
 }
 
 export interface DBJob {
@@ -86,7 +87,7 @@ export async function startJob(
   db: Client,
   job_desc: JobDesc
 ): Promise<SolverJob[]> {
-  console.log('start job begin', job_desc.job_id)
+  console.log('start job begin', job_desc.job_id, job_desc.reqSolvers)
   const configMapName = `minizinc-job-data-${job_desc.job_id}`
 
   let map = new k8s.V1ConfigMap()
@@ -104,8 +105,19 @@ export async function startJob(
   map = (await client.core.createNamespacedConfigMap(client.ns, map)).body
   console.log('created config map for job')
 
-  const watchers = job_desc.solvers.map(async (solver) => {
-    const jobResult = await startSolverJob(client, job_desc, solver, map)
+  const watchers = job_desc.dbSolvers.map(async (dbSolver) => {
+    const reqSolver = job_desc.reqSolvers.find(
+      (x) => x.solver_id == dbSolver.solver_id
+    )
+    if (!reqSolver) throw 'could not find matching reqSolver'
+
+    const jobResult = await startSolverJob(
+      client,
+      job_desc,
+      dbSolver,
+      reqSolver,
+      map
+    )
 
     const { cancelFn, promise: cancelPromise } = createSolverCancelPromise()
 
@@ -117,7 +129,7 @@ export async function startJob(
       ),
       jobResult,
       cancelFn,
-      solver_id: solver.solver_id,
+      solver_id: dbSolver.solver_id,
     }
   })
 
@@ -162,10 +174,11 @@ export async function startJob(
 async function startSolverJob(
   client: K8sClient,
   job_desc: JobDesc,
-  solver: DBSolver,
+  dbSolver: DBSolver,
+  reqSolver: StartJobBodySolver,
   config_map: k8s.V1ConfigMap
 ): Promise<SolverJob> {
-  console.log('starting solver job', solver, job_desc.job_id)
+  console.log('starting solver job', dbSolver, reqSolver, job_desc.job_id)
 
   const commandArgs = [
     'minizinc',
@@ -180,14 +193,16 @@ async function startSolverJob(
     '--output-objective',
     '--output-output-item',
     '--solver',
-    solver.name,
+    dbSolver.name,
     '-p',
-    String(job_desc.user.cpu_limit)
+    String(reqSolver.cpus),
+    '--time-limit',
+    String(reqSolver.timeout),
   ]
 
-  if (job_desc.time_limit) {
-    commandArgs.push('--time-limit', String(job_desc.time_limit))
-  }
+  // if (job_desc.time_limit) {
+  //   commandArgs.push('--time-limit', String(job_desc.time_limit))
+  // }
 
   if (job_desc.data?.data_id != null) {
     commandArgs.push('-d', '/tmp/mzn-model/model.dzn')
@@ -208,7 +223,7 @@ async function startSolverJob(
   job.apiVersion = 'batch/v1'
   job.kind = 'Job'
   job.metadata = {
-    name: jobName(job_desc.job_id, solver.solver_id),
+    name: jobName(job_desc.job_id, dbSolver.solver_id),
   }
   job.spec = {
     backoffLimit: 0,
@@ -219,16 +234,16 @@ async function startSolverJob(
         containers: [
           {
             name: 'minizinc-solver',
-            image: solver.image,
+            image: dbSolver.image,
             command: commandArgs,
             resources: {
               limits: {
-                cpu: String(job_desc.user.cpu_limit),
-                memory: `${job_desc.user.mem_limit}Mi`,
+                cpu: String(reqSolver.cpus),
+                memory: `${reqSolver.memory}Mi`,
               },
               requests: {
-                cpu: '250m',
-                memory: '32Mi',
+                cpu: '100m',
+                memory: '10Mi',
               },
             },
             volumeMounts: [
@@ -266,14 +281,14 @@ async function startSolverJob(
     throw {
       error: 'failed to create job',
       job_name: jobName,
-      solver,
+      solver: dbSolver,
       exception: err,
     }
   }
 
   return {
     job_id: job_desc.job_id,
-    solver_id: solver.solver_id,
+    solver_id: dbSolver.solver_id,
     job,
     config_map,
   }

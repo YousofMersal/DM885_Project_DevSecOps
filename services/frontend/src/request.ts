@@ -46,7 +46,7 @@ export const apiStartJob = (
 ): Promise<{ job_id: string; status: string }> => {
   const payload = {
     model_id: modelId,
-    solver_ids: solverIds,
+    solvers: solverIds.map(id => ({solver_id: id})),
   };
 
   if (dataId) {
