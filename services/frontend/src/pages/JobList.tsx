@@ -17,7 +17,7 @@ export const JobList: React.FC<IJobListProps> = () => {
       setJobs(
         result.sort((x, y) => {
           return (
-            new Date(x.created_at).getTime() - new Date(y.created_at).getTime()
+            new Date(y.created_at).getTime() - new Date(x.created_at).getTime()
           );
         })
       )
