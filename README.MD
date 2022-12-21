@@ -49,9 +49,20 @@ The `kubectl` CLI can be used to interact with the local Kubernetes cluster.
 
 ### Configuration
 
-Change skaffold config where images is tagged: yousofmersal.
+For every service in the services folder change the `skaffold.yaml` files to the github page where the packages should be hosted E.g. `- image: ghcr.io/yousofmersal/dm885_auth-service` to `- image: ghcr.io/{YOU_REPO}/dm885_auth-service`
 
-Change cluster configuration in Terraform and in the deploy pipeline.
+#### Change cluster configuration in Terraform and in the deploy pipeline.
+
+In the `/terraform/google_cloud/terraform.tfvars` change the relevant names of the google cloud variables`. 
+In the `.github/workflows` change the deployt files to deployt to your google cloud instance, by changeing the environment vars 
+```
+env:
+  PROJECT_ID
+  GKE_CLUSTER
+  GKE_ZONE
+  PROJECT_DOMAIN
+  PUBLIC_DOMAIN
+```
 
 ### List and set project
 
@@ -82,3 +93,5 @@ Change cluster configuration in Terraform and in the deploy pipeline.
 ```
 gcloud iam service-accounts keys create key.json --iam-account=954508260996-compute@developer.gserviceaccount.com
 ```
+After retrieving your key in the repository settings under Secrets, Actions: Add the content of the key-file as a repository secret named 
+GKE_SA_KEY.
