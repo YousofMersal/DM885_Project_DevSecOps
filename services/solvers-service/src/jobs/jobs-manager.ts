@@ -263,16 +263,6 @@ async function startSolverJob(
             name: 'mzn-model',
             configMap: {
               name: configMapName,
-              items: [
-                {
-                  key: 'model',
-                  path: 'model.mzn',
-                },
-                {
-                  key: 'data',
-                  path: 'model.dzn',
-                },
-              ],
             },
           },
         ],
