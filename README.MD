@@ -70,11 +70,14 @@ Get the credentials and configure kubectl:
 gcloud container clusters get-credentials steam-airfoil-367315-gke --region europe-west8-b
 ```
 
-Provision the cluster:
+Provision the cluster by running the following commands in the `terraform/google_cloud/` directory:
 ```
 terraform init
 terraform apply
 ```
+
+When the cluster is up and running, run the same terraform commands as above but from the `terraform/production/` directory,
+this will install and start all third party services such as databases and Knative on the newly created cluster.
 
 ### List and set project
 
