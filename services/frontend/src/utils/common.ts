@@ -15,6 +15,11 @@ export const createSolverData = z.object({
   image: z.string(),
 });
 
+export const editUserInfo = z.object({
+  cpu_limit: z.string(),
+  mem_limit: z.string(),
+});
+
 export const handleError = (e: unknown) => {
   if (e instanceof ZodError) {
     return e.errors?.[0].message;

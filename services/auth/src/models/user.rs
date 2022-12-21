@@ -26,6 +26,7 @@ pub struct NewUser {
 #[derive(Serialize, sqlx::FromRow, Debug, Deserialize)]
 /// Struct which represents information about a user that is safe to send to the client
 pub struct SimpleUser {
+    pub id: Uuid,
     pub username: String,
     pub role: String,
     pub email: String,
@@ -34,6 +35,7 @@ pub struct SimpleUser {
 impl From<User> for SimpleUser {
     fn from(user: User) -> Self {
         Self {
+            id: user.id,
             username: user.username,
             role: user.role,
             email: user.email,

@@ -20,13 +20,34 @@ export interface CreateJob {
   solverTypes: string[]
 }
 
+export interface StartJobBodySolver {
+  solver_id: string
+  cpus: number
+  memory: number
+  timeout: number
+}
+
+interface StartJobBody {
+  model_id: string
+  data_id?: string
+  solvers: StartJobBodySolver[]
+}
+
 export default (client: K8sClient, db: Client) => {
   const jobs = express.Router()
 
   jobs.post('/', async (req: JWTRequest, res) => {
     console.log('Starting solver job requested')
 
-    const time_limit: number | undefined = req.body.time_limit
+    const req_body = req.body as StartJobBody
+
+    // TODO: validate req_body
+
+    req_body.solvers.forEach((solver) => {
+      solver.cpus = solver.cpus ?? 1
+      solver.memory = solver.memory ?? 15
+      solver.timeout = solver.timeout ?? 150_000 // 2.5 minutes
+    })
 
     const user_id = req.auth?.sub
     if (!user_id) throw 'user_id not found'
@@ -40,38 +61,31 @@ export default (client: K8sClient, db: Client) => {
 
     if (!user) {
       user = (
-        await db.query<DBUser>(
-          'SELECT * FROM user_data WHERE user_id = $1',
-          [user_id]
-        )
+        await db.query<DBUser>('SELECT * FROM user_data WHERE user_id = $1', [
+          user_id,
+        ])
       ).rows[0]
-    }
-    
-    const body: components['schemas']['Job_create'] = req.body
-
-    if (!body.solver_ids) {
-      throw 'missing `solver_ids`'
     }
 
     const model = (
       await db.query<DBMznModel>(
         'SELECT * FROM mzn_models WHERE model_id = $1',
-        [body.model_id]
+        [req_body.model_id]
       )
     ).rows[0]
 
     let data: DBMznData | undefined = undefined
-    if (body.data_id) {
+    if (req_body.data_id) {
       data = (
         await db.query<DBMznData>('SELECT * FROM mzn_data WHERE data_id = $1', [
-          body.data_id,
+          req_body.data_id,
         ])
       ).rows[0]
     }
 
     const job_id = randomUUID()
     let job = {} as DBJob
-    let solvers: DBSolver[] = []
+    let dbSolvers: DBSolver[] = []
     try {
       await db.query('BEGIN')
       job = (
@@ -81,14 +95,14 @@ export default (client: K8sClient, db: Client) => {
         )
       ).rows[0]
 
-      for (const solver_id of body.solver_ids) {
+      for (const solver of req_body.solvers) {
         await db.query(
           'INSERT INTO job_solvers (job_id, solver_id) VALUES ($1, $2)',
-          [job_id, solver_id]
+          [job_id, solver.solver_id]
         )
       }
 
-      solvers = (
+      dbSolvers = (
         await db.query(
           'SELECT * FROM job_solvers INNER JOIN solvers ON solvers.solver_id = job_solvers.solver_id WHERE job_solvers.job_id = $1',
           [job_id]
@@ -106,9 +120,9 @@ export default (client: K8sClient, db: Client) => {
         job_id,
         model,
         data,
-        solvers,
+        dbSolvers,
+        reqSolvers: req_body.solvers,
         user,
-        time_limit,
       })
 
       res.status(201).send({
@@ -132,15 +146,22 @@ export default (client: K8sClient, db: Client) => {
   jobs.get<{ job_id: string }>('/:job_id', async (req, res) => {
     const job_id = req.params.job_id
 
-    const jobs = await (
+    const jobs = (
       await db.query('SELECT * FROM jobs WHERE job_id = $1', [job_id])
+    ).rows
+
+    const solvers = (
+      await db.query('SELECT * FROM job_solvers WHERE job_id = $1', [job_id])
     ).rows
 
     if (jobs.length == 0) {
       return res.status(404).send({ message: 'job not found' })
     }
 
-    res.send(jobs[0])
+    res.send({
+      ...jobs[0],
+      solvers,
+    })
   })
 
   jobs.delete<{ job_id: string }>('/:job_id', async (req, res) => {
@@ -180,7 +201,7 @@ export default (client: K8sClient, db: Client) => {
 
   jobs.post<{ job_id: string }>('/:job_id/cancel', async (req, res) => {
     const job_id = req.params.job_id
-    // const solvers = req.body as string[]
+    const solverId = req.query.solver_id
 
     if (!(job_id in runningJobs)) {
       return res
@@ -191,7 +212,10 @@ export default (client: K8sClient, db: Client) => {
     const jobCtx = runningJobs[job_id]
 
     const solvers = Object.keys(jobCtx.solvers)
-    Object.values(jobCtx.solvers).forEach((solver) => solver.cancelSolver())
+    Object.values(jobCtx.solvers)
+      // if solverId is undefined, filter will return all solvers, otherwise it will only cancel one solver
+      .filter((_, i) => solverId === undefined || solverId === solvers[i])
+      .forEach((solver) => solver.cancelSolver())
 
     res.send({
       message: 'cancelled solvers',

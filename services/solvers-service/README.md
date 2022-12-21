@@ -23,7 +23,7 @@ POST /api/v1/jobs/ HTTP/1.1
 Content-Type: application/json
 Host: project.127.0.0.1.sslip.io
 
-{"model_id":"1","solver_ids":["1","2"],"data_id":""}
+{"model_id":"1","data_id":"","solvers":[{"solver_id":"1","cpus":"2","memory":"40","timeout":"100000"},{"solver_id":"2"}]}
 ```
 
 Response:

@@ -26,6 +26,7 @@ export type ApiJob = {
   created_at: string;
   finished_at: string;
   job_status: string;
+  solvers: ApiSolver[];
 };
 
 export type ApiJobResult = {
@@ -35,6 +36,12 @@ export type ApiJobResult = {
   sol_id: number;
   sol_status: string;
   solver_id: number;
+};
+
+export type ApiUserInfo = {
+  user_id: string;
+  cpu_limit: number;
+  mem_limit: number;
 };
 
 export type ApiModel = {
@@ -60,4 +67,5 @@ export type ApiUser = {
   username: string;
   role: string;
   email: string;
+  id: string;
 };

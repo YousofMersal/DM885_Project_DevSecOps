@@ -1,5 +1,5 @@
 import { useMatch } from "@tanstack/react-location";
-import { Alert, Button, Divider, Spin, Typography } from "antd";
+import { Alert, Button, Card, Divider, Space, Spin, Typography } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { apiCancelJob, apiGetJob, apiGetJobResult } from "../request";
 import { ApiJob, ApiJobResult } from "../types";
@@ -33,6 +33,7 @@ export const JobResultPage: React.FC = () => {
   const [job, setJob] = useState<ApiJob | undefined>(undefined);
   const [result, setResult] = useState<ApiJobResult[] | undefined>(undefined);
   const [err, setErr] = useState("");
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const getJob = () =>
     apiGetJob(jobId).then((r) => {
@@ -53,26 +54,43 @@ export const JobResultPage: React.FC = () => {
     }
   }, [job]);
 
-  let renderedResult = <p>No result yet...</p>;
+  let renderedResult = (
+    <Typography.Paragraph style={{ fontWeight: "bold" }}>
+      👁️ No result yet...
+    </Typography.Paragraph>
+  );
 
   if (Array.isArray(result) && result.length) {
     renderedResult = (
       <div>
         <Typography.Paragraph>Result:</Typography.Paragraph>
-        {result.map((r) => (
-          <ul>
-            <li>Solver Id: {r.solver_id}</li>
-            <li>Status: {r.sol_status}</li>
-            <hr />
-            {Object.keys(r.data).map((key) => (
-              <li>{`${key} : ${r.data[key]}`}</li>
-            ))}
-          </ul>
-        ))}
+        <Space direction="vertical">
+          {result.map((r) => (
+            <Card title={r.solver_id}>
+              <Typography.Paragraph>
+                Solver Id: {r.solver_id}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                Status: {r.sol_status}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                Found at: {r.found_at}
+              </Typography.Paragraph>
+              <Divider />
+              {Object.keys(r.data).map((key) => (
+                <Typography.Paragraph>{`${key} : ${r.data[key]}`}</Typography.Paragraph>
+              ))}
+            </Card>
+          ))}
+        </Space>
       </div>
     );
   } else if (Array.isArray(result)) {
-    renderedResult = <p>Solver ran but no result found</p>;
+    renderedResult = (
+      <Typography.Paragraph style={{ fontWeight: "bold" }}>
+        🍭 Solver ran but no result found
+      </Typography.Paragraph>
+    );
   }
 
   let type: "success" | "info" | "warning" | "error" | undefined = undefined;
@@ -111,18 +129,38 @@ export const JobResultPage: React.FC = () => {
         </Typography.Paragraph>
       </div>
       {job?.job_status !== "finished" ? (
-        <Button
-          danger
-          onClick={() => {
-            setErr("");
+        <Space>
+          <Button
+            danger
+            disabled={isDisabled}
+            onClick={() => {
+              setErr("");
 
-            apiCancelJob(jobId).catch((e) => {
-              setErr(e instanceof Error ? e.message : "Unknown error");
-            });
-          }}
-        >
-          Cancel
-        </Button>
+              setIsDisabled(true);
+              apiCancelJob(jobId).catch((e) => {
+                setErr(e instanceof Error ? e.message : "Unknown error");
+              });
+            }}
+          >
+            Cancel all
+          </Button>
+          {job?.solvers.map((solver) => (
+            <Button
+              danger
+              onClick={() => {
+                setErr("");
+
+                setIsDisabled(true);
+                apiCancelJob(jobId, solver.solver_id).catch((e) => {
+                  setErr(e instanceof Error ? e.message : "Unknown error");
+                });
+              }}
+              disabled={isDisabled}
+            >
+              Cancel {solver.name} - ID: {solver.solver_id}
+            </Button>
+          ))}
+        </Space>
       ) : null}
       <p>{err}</p>
       <Divider />

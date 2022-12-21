@@ -7,6 +7,7 @@ import {
   ApiSignupResponse,
   ApiSolver,
   ApiUser,
+  ApiUserInfo,
   AuthServiceForm,
 } from "./types";
 import { isApiServiceError, isSolverServiceError } from "./utils/common";
@@ -45,7 +46,7 @@ export const apiStartJob = (
 ): Promise<{ job_id: string; status: string }> => {
   const payload = {
     model_id: modelId,
-    solver_ids: solverIds,
+    solvers: solverIds.map(id => ({solver_id: id})),
   };
 
   if (dataId) {
@@ -148,6 +149,20 @@ export const apiSaveDataOnModel = (
   });
 };
 
+export const apiUpdateUserInfo = (
+  userId: string,
+  cpuLimit: string,
+  memLimit: string
+) => {
+  return request(`/job-users/${userId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      cpu_limit: cpuLimit,
+      mem_limit: memLimit,
+    }),
+  });
+};
+
 export const apiUpdateDataOnModel = (
   dataId: string,
   modelId: string,
@@ -192,11 +207,22 @@ export const apiRemoveUser = (userName: string) =>
     method: "DELETE",
   });
 
-export const apiCancelJob = (jobId: string): Promise<ApiJob> => {
-  return request(`/jobs/${jobId}/cancel`, {
+export const apiCancelJob = (
+  jobId: string,
+  solverId?: number
+): Promise<ApiJob> => {
+  let url = `/jobs/${jobId}/cancel`;
+
+  if (solverId) {
+    url += `?solver_id=${solverId}`;
+  }
+  return request(url, {
     method: "POST",
   });
 };
+
+export const apiGetJobUsers = (): Promise<ApiUserInfo[]> =>
+  request("/job-users");
 
 const request = async (path: string, requestConfig?: RequestInit) => {
   const token = localStorage.getItem("token");
