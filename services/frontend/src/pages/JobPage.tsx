@@ -1,6 +1,7 @@
 import { Link, useMatch, useNavigate } from "@tanstack/react-location";
 import { Button, Form, Input } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
+import Typography from "antd/es/typography/Typography";
 import React, { useEffect, useState } from "react";
 import {
   apiGetJob,
@@ -28,9 +29,9 @@ export const JobPage: React.FC<IJobPageProps> = () => {
       setSolvers(result);
       setSolverResources(
         result.map((r) => ({
-          cpus: 4,
+          cpus: 1,
           memory: 100,
-          timeout: 60,
+          timeout: 600000,
         }))
       );
     });
@@ -116,7 +117,8 @@ export const JobPage: React.FC<IJobPageProps> = () => {
                 onChange={(e) =>
                   handleChange(solverIndex, "timeout", e.target.value)
                 }
-                style={{ width: 50 }}
+                style={{ width: 250 }}
+                addonAfter={<Typography>milliseconds</Typography>}
               />
             </Form.Item>
           </div>
