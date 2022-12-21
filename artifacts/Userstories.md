@@ -7,7 +7,7 @@
 
 * As an user I want to upload data of my choosing to run on the solvers.
 
-* As an user I want to create a profile such that I am able to login using my personal credentials
+* As an user I want to create a profile such that I am able to login using my personal credentials.
 
 * As an user I want to be able to use multiple solvers at the same time 
     on the same model, to solve the same problem.
@@ -26,7 +26,7 @@
 * As an admin I want to edit each users resources.
 
 * As a developer I want any changes to the codebase continously tested and deployed 
-    using a CI/CD pipeline
+    using a CI/CD pipeline.
 
 ## DEVELOPER
 
