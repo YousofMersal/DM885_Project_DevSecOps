@@ -1,0 +1,198 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[a4paper,margin=2.4cm]{geometry} \linespread{1.25} 
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[page,toc]{appendix}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage[T1]{fontenc}	
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+\usepackage{hyperref}	
+
+\DeclareGraphicsExtensions{.png}	\graphicspath{{img/}}               
+\renewcommand{\arraystretch}{1.15}
+
+\hypersetup{
+    colorlinks=true,
+    citecolor=gray,
+    linkcolor=darkgray,
+    urlcolor=violet,
+}
+
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\lfoot{}
+\cfoot{}
+\rfoot{\thepage{}/\pageref{lastpage}}
+\usepackage[newfloat]{minted}
+\usepackage{caption}
+\captionsetup[listing]{position=bottom,skip=-5pt}
+
+\pagestyle{fancy}
+\lhead{Group X}
+\chead{Title}
+\rhead{\today}
+
+\begin{document}
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+% Defines a new command for 
+% horizontal lines, change thickness here
+
+\center % Centre everything on the page
+
+	%------------------------------------------------
+	%	Headings
+	%------------------------------------------------
+
+	\textsc{\LARGE University of Southern Denmark}\\[1.5cm]
+	% Main heading such as the name of your university/college
+
+	\textsc{\Large Department of Mathematics and Computer Science}\\[0.5cm]
+	%Major heading such as course name
+
+	\textsc{\large DM885: Microservices and Dev(Sec)Ops}\\[0.5cm]
+	% COURSE ID AND NAME
+
+	%------------------------------------------------
+	%	Title
+	%------------------------------------------------
+
+	\HRule\\[0.7cm]
+
+	{\huge\bfseries Title}\\[0.4cm] % Title of your document
+
+	\HRule\\[1.0cm]
+
+	%------------------------------------------------
+	%	Author(s)
+	%------------------------------------------------
+	\large
+	\textit{Authors}\\ \bigskip
+	\begin{minipage}[t]{0.45\textwidth}
+	    \begin{center}
+		    \normalsize
+		    X X\\
+		    \href{mailto:x@x.x}{x@x.x}\\ \bigskip
+		    Z Z\\
+		    \href{mailto:x@x.x}{x@x.x}\\ \bigskip
+
+	   \end{center}
+	\end{minipage}
+	~
+	\begin{minipage}[t]{0.45\textwidth}
+	    \begin{center}
+		    \normalsize
+		    Y Y\\
+		    \href{mailto:y@y.y}{y@y.y}\\ \bigskip
+		\end{center}
+	\end{minipage}
+	
+
+	%------------------------------------------------
+	%	Date
+	%------------------------------------------------
+
+	\vfill\vfill\vfill % Position the date 3/4 down the remaining page
+
+	{\large \today}
+
+	%------------------------------------------------
+	%	Logo
+	%------------------------------------------------
+
+	\vfill\vfill
+	\begin{centering}
+	\includegraphics[width=0.3\textwidth]{SDU_logo}\\[1cm]
+	% Include a 
+% department/university logo - this will require the graphicx package
+	\end{centering}
+	
+%-------------------------------------------------------------------------------
+
+	\vfill % Push the date up 1/4 of the remaining page
+
+\end{titlepage}
+
+\pagenumbering{arabic}
+
+\section{Introduction}
+
+The structure is a guideline for the project description. Feel free to insert 
+subsections as you
+see fit.
+
+This introduction gives an overview of the motivations and results of what you 
+have
+done. Describe the challenge that you want to address, motivating why it is
+relevant.
+
+
+\section{Preliminaries}
+
+Give a brief overview of the background knowledge needed to understand your
+report. Provide references to what you have used. Note: thre is no need to
+repeat what we discuss during the course, you should be brief.
+
+\section{Technical Description}
+
+Here you explain the technical work you have carried out. You should present the
+overall view of your microservice architecture. You may include code
+snippets where relevant, and refer to source code in the project files. Try to
+explain the development choices you did taking into account important properties
+such as deployability, availability, reusability, security, modifiability,
+performance.
+
+\subsection{Architecture}
+  
+In this subsection please provide at least a diagram of the entire 
+architecture and describe it.
+
+\subsection{Infrastructure}
+
+\subsubsection{Automation}
+
+\subsubsection{Security}
+    
+\subsubsection{Monitoring and Logging} 
+    
+\subsection{Testing \& Evaluation}
+
+\section{Related Work and Discussion}
+
+In this section you review the relevant state of the art. This may include
+alternative solutions to the same challenge you have tried to address in your
+project, or alternative methodologies that you may have followed (e.g., choice
+of other technologies for implementing the project). Provide a discussion on the
+implications of your choices in the design of your work and the
+technologies/techniques that you have used.
+
+Discuss what are the shortcomings/limitations of
+your project, possibly explaining how they could be solved or mitigated.
+    
+\section{References}
+
+This section should contain references to the articles/websites/resources/etc.
+cited in your report.
+
+
+    \label{lastpage} % Allows using the page number of this page as the last in 
+% the footer
+    \newpage
+    \pagenumbering{gobble} % Stop numbering pages
+    \rfoot{} % Remove page number from footer
+
+% \bibliographystyle{plain}
+% \bibliography{xxx.bib}
+    
+
+% \appendix
+% \section{Whatever you want to add}
+
+\end{document}
