@@ -1,0 +1,366 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[a4paper,margin=2.4cm]{geometry} \linespread{1.25} 
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[page,toc]{appendix}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage[T1]{fontenc}	
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+\usepackage{hyperref}	
+
+
+% bibliography
+\usepackage[style=ieee, backend=biber]{biblatex}
+\bibliography{./biblo.bib}
+
+\DeclareGraphicsExtensions{.png}	\graphicspath{{img/}}               
+\renewcommand{\arraystretch}{1.15}
+
+\hypersetup{
+    colorlinks=true,
+    citecolor=gray,
+    linkcolor=darkgray,
+    urlcolor=violet,
+}
+
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\lfoot{}
+\cfoot{}
+\rfoot{\thepage{}/\pageref{lastpage}}
+\usepackage[newfloat]{minted}
+\usepackage{caption}
+\captionsetup[listing]{position=bottom,skip=-5pt}
+
+\pagestyle{fancy}
+\lhead{Group 2}
+\chead{Title}
+\rhead{\today}
+
+\begin{document}
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+% Defines a new command for 
+% horizontal lines, change thickness here
+
+\center % Centre everything on the page
+
+	%------------------------------------------------
+	%	Headings
+	%------------------------------------------------
+
+	\textsc{\LARGE University of Southern Denmark}\\[1.5cm]
+	% Main heading such as the name of your university/college
+
+	\textsc{\Large Department of Mathematics and Computer Science}\\[0.5cm]
+	%Major heading such as course name
+
+	\textsc{\large DM885: Microservices and Dev(Sec)Ops}\\[0.5cm]
+	% COURSE ID AND NAME
+
+	%------------------------------------------------
+	%	Title
+	%------------------------------------------------
+
+	\HRule\\[0.7cm]
+
+	{\huge\bfseries Title}\\[0.4cm] % Title of your document
+
+	\HRule\\[1.0cm]
+
+	%------------------------------------------------
+	%	Author(s)
+	%------------------------------------------------
+	\large
+	\textit{Authors}\\ \bigskip
+	\begin{minipage}[t]{0.45\textwidth}
+	    \begin{center}
+		    \normalsize
+		    X X\\
+		    \href{mailto:x@x.x}{x@x.x}\\ \bigskip
+		    Z Z\\
+		    \href{mailto:x@x.x}{x@x.x}\\ \bigskip
+
+	   \end{center}
+	\end{minipage}
+	~
+	\begin{minipage}[t]{0.45\textwidth}
+	    \begin{center}
+		    \normalsize
+		    Y Y\\
+		    \href{mailto:y@y.y}{y@y.y}\\ \bigskip
+		\end{center}
+	\end{minipage}
+	
+
+	%------------------------------------------------
+	%	Date
+	%------------------------------------------------
+
+	\vfill\vfill\vfill % Position the date 3/4 down the remaining page
+
+	{\large \today}
+
+	%------------------------------------------------
+	%	Logo
+	%------------------------------------------------
+
+	\vfill\vfill
+	\begin{centering}
+	\includegraphics[width=0.3\textwidth]{SDU_logo}\\[1cm]
+	% Include a 
+% department/university logo - this will require the graphicx package
+	\end{centering}
+	
+%-------------------------------------------------------------------------------
+
+	\vfill % Push the date up 1/4 of the remaining page
+
+\end{titlepage}
+
+\pagenumbering{arabic}
+
+\section{Introduction}
+
+The structure is a guideline for the project description. Feel free to insert 
+subsections as you
+see fit.
+
+This introduction gives an overview of the motivations and results of what you 
+have
+done. Describe the challenge that you want to address, motivating why it is
+relevant.
+
+
+\section{Preliminaries}
+
+Stefan
+
+Give a brief overview of the background knowledge needed to understand your
+report. Provide references to what you have used. Note: there is no need to
+repeat what we discuss during the course, you should be brief.
+
+- General understanding of the DevOps workflow
+- Cloud
+- Micro services
+- REST APIs
+
+\section{Technical Description}
+
+- Introduction to this section
+
+Here you explain the technical work you have carried out. You should present the
+overall view of your microservice architecture. You may include code
+snippets where relevant, and refer to source code in the project files. Try to
+explain the development choices you took into account important properties
+such as deployability, availability, reusability, security, modifiability,
+performance.
+
+\subsection{Architecture}
+
+In this subsection please provide at least a diagram of the entire 
+architecture and describe it.
+
+- Diagram (Jonas)
+
+
+Knative \cite{knative} is a set of cloud-native open source components that aim to enable developers to deploy and manage serverless and/or event driven workloads on top of Kubernetes.
+It provides a set of APIs and runtime components that extend the functionality of Kubernetes and allows applications to be scalable and easier to manage.
+This project uses two main components of Knative, Knative Serving and Knative Eventing. Knative Serving defines a set of object as Kubernetes Custom Resource Definitions (CRDs).
+These custom resources might define how autoscaling should be handled, or how Gradual rollout of revisions should be done.
+The provided Knative Serving operator is used to allow for our services to be managed by Kubernetes.
+While Knative Eventing is a set of APIs that enable the use of event-driven architecture, which is used to allow for our services to communicate with each other intra-cluster.
+This is also installed by using the operator Kubernetes pattern which is already provided by the project.
+
+\medskip
+
+Istio \cite{istio} is an open source service mesh which provide a uniform way to connect and secure microservices,
+which this project uses as an extension of Knative on top of Kubernetes.
+This project uses Istio as a networking layer and an ingress, which integrates with Knative to provide some features of Knative Serving.
+Because Istio is the ingress and the networking layer, when a request is made to any service it first has to pass through the Istio ingress gateway,
+where Knative-Serving is used to route the request to the correct service, and use features such as autoscaling when needed.
+
+\subsubsection{Front-end service}
+
+Jonas
+
+\subsubsection{Authentication service}
+\label{sec:auth}
+
+Another service is the authentication service, which is only tasked with managing sessions, users, and authenticating said users.
+The management of the users include the creation of new users in the system,
+this is done by storing the username, hashed password, email, role, salt, and a unique UUID in a database.
+Going through the process of creating a user is done by sending a POST request to the authentication service on \verb|BASEURL/api/v1/auth/users| with the 
+username, password, email as the JSON body of the request.
+After a valid request has reached the server the email and username is checked to make sure they are not malformed, where after the user creation process is started.
+First a random salt is generated and then the argon2 hash function is used to hash the password with the salt, this along with the rest of the information is then stored in the database.
+This results in the password never being stored in plain text, and the salt is stored with the hash to make sure that the same password will always generate the same hash.
+Any user created thought this endpoint will have the role of a normal user, which means that they will not be able to access any of the admin privileges.
+However, an admin user is created by default, with a default password which should be changed by the administrator as soon as possible.
+
+
+Another crucial service given by the authentication service is the authentication of users.
+When the user wants to log in, they send a POST request to the authentication service on \verb|BASEURL/api/v1/auth/login| with the username and password as the JSON body of the request.
+The server then checks if the username exists in the database, if it does not, the server returns a 401 Unauthorized response.
+The server then has the given password with the salt stored in the database, and compares the result with the hash stored in the database.
+If the hashes match, the server generates a JSON web token (JWT) with the UUID of the user and their role as the payload, and the secret key as the key for the signature.
+The header of will include the algorithm used to sign the token, which in this case is HS256.
+The body will include the previously mentioned payload and the expiration time of the token, which is 24 hours after the creation of the token.
+Lastly the token also includes the signature, which is the result of hashing the header, body, and the secret key with the algorithm specified in the header.
+The JWT is then returned to the user, and the user can use this token to authenticate themselves with the other microservices.
+
+Lastly the service allows for deletion of a user by sending a DELETE request to \verb|BASEURL/api/v1/auth/users/{id}| with the username of the user to be deleted as the JSON body of the request.
+This requires the user to be authenticated, and the user must also have the role of an admin to be able to delete a user. 
+The token sent along as a request header is validated by the authentication service, and if the token is valid, the user is deleted from the database.
+This endpoint will also inform the solver service of the deletion of a user, so that the user is also deleted from the solver service.
+
+\bigskip
+
+The choice to use JWT for authentication was made because it's a widely used standard for authentication,
+it's secure, and its state is encapsulated in the token itself, by way of the expiration, subject, state and signature being shared
+which can then be verified by other services,
+which makes it ideal for microservices.
+
+\subsubsection{Solvers service}
+
+- REST API + database parsing etc. (Danni)
+- Jobs (Viktor)
+
+\subsection{Infrastructure}
+
+\subsubsection{Project setup}
+\label{subsec:project-setup}
+
+Viktor
+
+- Local and cloud setup
+- Skaffold, Helm, Terraform
+
+\subsubsection{Cloud}
+
+Henrik
+
+- Google cloud
+
+\subsubsection{Automation}
+
+Henrik
+
+- Terraform
+- GitHub actions
+
+\subsubsection{Security}
+
+As any other service that is exposed to the internet, it is crucial to have security in mind when developing and deploying the any service(s).
+This project uses a number of different security measures to ensure that the services are secure.
+In this section a number of  security measures and considerations that were used will be discussed.
+
+\bigskip
+
+Many of our services require some sort of secret to be used, such as a password for a database or a secret key for a JWT.
+One way to solve this is to use Kubernetes \cite{kubernetes} secrets, which is a way to store sensitive information securely.
+In Kubernetes a secret is a resource that is used to store sensitive information, such as passwords, tokens or keys. 
+Secrets are stored in base64 encoded format in the Kubernetes API and are protected by the authentication/authorization mechanisms of the cluster.
+When a resource that references a secret is created in the cluster, the secret is automatically mounted as a volume in the resource's containers. 
+This allows the containers to access the sensitive data stored in the secret without the data being directly exposed in the deployment configuration.
+
+These secrets can then be shared with other services by interacting with Kubernetes either statically by configuration or dynamically by using the Kubernetes API. 
+This project however only needed to statically set secret for accessing databases and a single secret key for JWTs and the authentication server.
+On deployment the services are configured to extract the relevant secret from the Kubernetes API and use it in the service.
+This configuration is done in Skaffold and helm, as discussed in \autoref{subsec:project-setup}.
+
+\bigskip
+
+Another security measure that had to be tackled was the authentication and authorization of users.
+This is done mainly by the authentication service, which is responsible for authenticating users and managing sessions.
+The technical details of how authentication and authorization is done is discussed in \autoref{sec:auth}.
+However, a more general discussion of the security measures taken is done in this section.
+As mentioned in \autoref{sec:auth} the authentication service uses JWTs to authenticate users.
+The JWTs are signed with a secret key, which is stored in a Kubernetes secret.
+The secret key is also used to verify the signature of the JWT, which ensures that the JWT has not been tampered with, by all services who wish to authenticate the JWT is valid.
+As dealing with users passwords is a sensitive matter, the passwords are never stored in plain text, but instead hashed with a salt using the argon2 standard,
+which won the 2015 Password Hashing Competition \cite{argon2} which in recent years has proved to be a better alternative to previously widely used bcrypt.
+This way not even the developers or administrators of the system can know what the password of the users are,
+only re-hasing the password with the salt and comparing the hash with the stored one can be used to check if a password is correct.
+As for authorization, the role of the user is stored in the JWT which can only be valid when signed by the secret kept in the Kubernetes secret,
+which means that the role of the user can only be changed by the authentication service, which ensures that the role of the user is correct.
+Thereby, when a user is in possession of a valid token which as the correct role, they can indeed be assumed to truly possess that role even across services.
+
+    
+\subsubsection{Monitoring and Logging}
+
+Jonas
+
+- Prometheus + Grafana
+- Google Cloud dashboard (logging, billing, resources etc.)
+
+\subsection{Testing \& Evaluation}
+
+Danni + Stefan
+
+\subsubsection{Unit and integration tests}
+
+Danni + Stefan
+
+\section{Related Work and Discussion}
+
+In this section you review the relevant state of the art. This may include
+alternative solutions to the same challenge you have tried to address in your
+project, or alternative methodologies that you may have followed (e.g., choice
+of other technologies for implementing the project). Provide a discussion on the
+implications of your choices in the design of your work and the
+technologies/techniques that you have used.
+
+- Kubernetes for local development, alternatives? (Viktor)
+- Vendor lock-in (benefits and disadvantages) (Henrik)
+
+\subsubsection{Missing features}
+
+Discuss what are the shortcomings/limitations of
+your project, possibly explaining how they could be solved or mitigated.
+
+On rather important feature that is missing is TLS/HTTPS. 
+The project currently only uses HTTP, which means that all communication to and from the services is unencrypted.
+Which, if this was a real world application, would be a huge security risk, especially when we utilize JWTs for authentication.
+As this is very open to man-in-the-middle attacks, where an attacker can intercept the JWT and use it to impersonate the user and a litany of other risks.
+However, this proved to be a rather involved task, as it required setting up a certificate authority, and then generating certificates for each service for each deployment.
+This could be done by using a tool such as cert-manager \cite{cert-manager}, which is a Kubernetes native tool for managing certificates,
+but was it proved more tricky to have working and as such was not implemented in time for this project.
+In the future, this should be implemented to ensure that the services are secure, especially if the project is to be put into real use.
+
+- Monitoring (mention) (Jonas)
+- User jobs queue (Viktor)
+
+\subsubsection{Potential improvements}
+
+Danni + Stefan
+
+- Overall job stability (sometimes jobs finish without saving results)
+- Stress testing (test scaling)
+
+\section{References}
+
+This section should contain references to the articles/websites/resources/etc.
+cited in your report.
+
+
+    \label{lastpage} % Allows using the page number of this page as the last in 
+% the footer
+    \newpage
+    \pagenumbering{gobble} % Stop numbering pages
+    \rfoot{} % Remove page number from footer
+
+\printbibliography
+    
+
+% \appendix
+% \section{Whatever you want to add}
+
+\end{document}
